@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chenyu Li — Mechanical Engineering @ UofT</title>
+
+  <!--
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║  CHENYU LI — PERSONAL PORTFOLIO                                 ║
+  ║  University of Toronto · Mechanical Engineering                 ║
+  ╠══════════════════════════════════════════════════════════════════╣
+  ║  PHOTO FILENAMES — save photos in the same folder as this file  ║
+  ║  ──────────────────────────────────────────────────────────     ║
+  ║  photo.jpg               → Hero section headshot                ║
+  ║  about.jpg               → About section photo                  ║
+  ║                                                                  ║
+  ║  projects/vawt.jpg            → Wind turbine project            ║
+  ║  projects/actuator.jpg        → Actuator & braking system       ║
+  ║  projects/fitbit.jpg          → Fitbit EMA app (BEIE Lab)       ║
+  ║  projects/airflow.jpg         → Tracer gas testing (BEIE Lab)   ║
+  ║  projects/cooling.jpg         → IT facility cooling (IIB Lab)   ║
+  ║  projects/finliti.jpg         → Finliti product (UTESCA)        ║
+  ║  projects/canstruction-2025.jpg → 2025 CANstruction build       ║
+  ║  projects/canstruction-2024.jpg → 2024 CANstruction build       ║
+  ║  projects/rc-car.jpg          → RC car (high school)            ║
+  ║  projects/ultrasonic-drawer.jpg → Ultrasonic drawer (HS)        ║
+  ║                                                                  ║
+  ║  travel/spain-1.jpg      → Spain photo 1                        ║
+  ║  travel/spain-2.jpg      → Spain photo 2                        ║
+  ║  travel/czechia.jpg      → Czechia photo                        ║
+  ║                                                                  ║
+  ║  hockey/u11-coaching.jpg → U11 volunteer coaching               ║
+  ║  hockey/private-coaching.jpg → Private coaching                 ║
+  ║                                                                  ║
+  ║  ORGANIZATION LOGOS (Experience section, optional)               ║
+  ║  logos/uoft.png       logos/essco.png      logos/utek.png       ║
+  ║  logos/utwind.png     logos/utesca.png     logos/snowscape.png  ║
+  ║  Until added, each shows a small text monogram instead.         ║
+  ║                                                                  ║
+  ║  HOW TO SWAP IN A PHOTO                                          ║
+  ║  Find the section labeled "📷 PHOTO:" in the HTML.              ║
+  ║  Delete the <div class="ph"> block.                             ║
+  ║  Replace with: <img src="FILENAME" alt="..." class="ri" />      ║
+  ╚══════════════════════════════════════════════════════════════════╝
+  -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+  /* ═══════════════════════════════════════════════════════════════
+     DESIGN TOKENS
+     Change colours here and they update everywhere on the site.
+     UofT official colours: Navy #002A5C · Blue #007FA3 · White #FFF
+  ═══════════════════════════════════════════════════════════════ */
+  :root {
+    --navy:       #002A5C;
+    --navy-deep:  #001A3A;
+    --blue:       #007FA3;
+    --blue-mid:   #0093BF;
+    --blue-lt:    #5AB8D4;
+    --blue-pale:  #EAF4F8;
+    --blue-ghost: #F2F8FB;
+
+    --white:      #FFFFFF;
+    --off-white:  #F7FBFD;
+
+    --text:       #0B1928;
+    --text-mid:   #3A5870;
+    --text-dim:   #7A9BB0;
+
+    --border:     #CBE0EC;
+    --border-mid: #A8CAD9;
+
+    --shadow-sm:  0 1px 6px rgba(0,42,92,0.07);
+    --shadow:     0 4px 22px rgba(0,42,92,0.10);
+    --shadow-lg:  0 10px 48px rgba(0,42,92,0.14);
+
+    --f-display:  'Cormorant Garamond', Georgia, serif;
+    --f-body:     'Manrope', sans-serif;
+    --f-mono:     'Space Mono', monospace;
+
+    --r:    12px;
+    --r-lg: 20px;
+
+    /* ── Legacy name aliases ── map old names to Apple system values */
+    --off-white:  var(--grey);
+    --text-mid:   var(--mid);
+    --text-dim:   var(--dim);
+    --blue-pale:  rgba(0,42,92,0.05);
+    --blue-ghost: var(--grey);
+    --navy-deep:  #1d1d1f;
+    --hairline:   rgba(0,0,0,0.08);
+    --ink:        var(--dark);
+    --ink-soft:   var(--mid);
+    --ink-faint:  var(--dim);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--f-body);
+    background: var(--white);
+    color: var(--dark);
+    line-height: 1.7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  img { display: block; max-width: 100%; }
+  a   { color: inherit; text-decoration: none; }
+  ul  { list-style: none; }
+  ::selection { background: var(--blue); color: #fff; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--off-white); }
+  ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 2px; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 clamp(1.5rem, 5vw, 4rem); }
+
+  /* ═══════════════════════════════════════════════════════════════
+     NAVIGATION
+     TO ADD A LINK: copy an <li> inside .nav-links and update href
+  ═══════════════════════════════════════════════════════════════ */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    height: 48px;
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: saturate(180%) blur(24px);
+    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 clamp(1.5rem,5vw,4rem);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; }
+  .nav-mono {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--navy); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--f-mono); font-size: 0.68rem; font-weight: 700;
+    color: white; letter-spacing: 0.04em;
+  }
+  .nav-name {
+    font-size: 0.9rem; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; line-height: 1.2;
+  }
+  .nav-name small {
+    display: block; font-family: var(--f-mono); font-size: 0.6rem;
+    font-weight: 400; color: var(--text-dim); letter-spacing: 0.04em;
+  }
+  .nav-links { display: flex; gap: 0; }
+  .nav-links a {
+    font-size: 0.78rem; font-weight: 400; color: var(--mid);
+    padding: 6px 12px; letter-spacing: -0.01em;
+    transition: color .18s;
+  }
+  .nav-links a:hover { color: var(--dark); background: none; }
+  .nav-right { display: flex; gap: 8px; align-items: center; }
+  .nav-icon-link {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: none; background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--mid); font-size: 1rem;
+    transition: color .18s, background .18s;
+  }
+  .nav-icon-link:hover { color: var(--dark); background: rgba(0,0,0,0.06); }
+
+  /* ═══════════════════════════════════════════════════════════════
+     HERO
+  ═══════════════════════════════════════════════════════════════ */
+  #hero {
+    min-height: calc(100vh - 64px);
+    background: var(--navy-deep);
+    display: grid; grid-template-columns: 1fr 420px;
+    position: relative; overflow: hidden;
+  }
+  /* Blueprint dot grid */
+  #hero::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(0,127,163,.18) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+  /* Soft blue glow */
+  #hero::after {
+    content: ''; position: absolute;
+    top: 50%; right: 340px; transform: translate(50%,-50%);
+    width: 560px; height: 560px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,127,163,.2) 0%, transparent 68%);
+    pointer-events: none;
+  }
+
+  .hero-text {
+    position: relative; z-index: 1;
+    padding: clamp(4rem,8vh,7rem) clamp(1.5rem,5vw,4rem);
+    display: flex; flex-direction: column; justify-content: center;
+    opacity: 0; animation: up .8s .1s forwards;
+  }
+  .hero-pill-logo { height: 16px; width: auto; display: block; flex-shrink: 0; }
+
+  .hero-pill {
+    display: inline-flex; align-items: center; gap: 9px;
+    background: rgba(0,127,163,.15); border: 1px solid rgba(0,127,163,.3);
+    border-radius: 99px; padding: 6px 14px; margin-bottom: 1.9rem; width: fit-content;
+  }
+  .hero-pill-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--blue-lt);
+    animation: blink 2.4s ease-in-out infinite; flex-shrink: 0;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .hero-pill span {
+    font-family: var(--f-mono); font-size: 0.66rem;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--blue-lt);
+  }
+  h1.hero-name {
+    font-family: var(--f-display); font-size: clamp(4rem,7vw,7.5rem);
+    font-weight: 600; line-height: .93; color: #fff;
+    letter-spacing: -.02em; margin-bottom: .5rem;
+  }
+  h1.hero-name em { font-style: italic; font-weight: 500; color: var(--blue-lt); }
+  .hero-deg {
+    font-family: var(--f-mono); font-size: .68rem;
+    color: rgba(255,255,255,.3); letter-spacing: .14em;
+    text-transform: uppercase; margin-bottom: 1.9rem;
+  }
+  .hero-bio {
+    font-size: 1.05rem; color: rgba(255,255,255,.65);
+    max-width: 500px; line-height: 1.78; margin-bottom: 2.4rem;
+  }
+  .hero-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 2.6rem; }
+  .chip {
+    font-family: var(--f-mono); font-size: .62rem;
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 3px;
+    border: 1px solid rgba(0,127,163,.4);
+    background: rgba(0,127,163,.1); color: var(--blue-lt);
+  }
+  .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-blue {
+    font-family: var(--f-body); font-weight: 600; font-size: .9rem;
+    background: var(--blue); color: #fff;
+    padding: 12px 26px; border-radius: var(--r);
+    transition: background .2s, transform .2s;
+  }
+  .btn-blue:hover { background: var(--blue-mid); transform: translateY(-2px); }
+  .btn-ghost {
+    font-size: .9rem; font-weight: 500;
+    color: rgba(255,255,255,.72); border: 1px solid rgba(255,255,255,.2);
+    padding: 12px 26px; border-radius: var(--r);
+    transition: border-color .2s, color .2s;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,.55); color: #fff; }
+
+  /* Hero photo column */
+  .hero-photo-col {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 1.2rem;
+    padding: 4rem clamp(1.5rem,4vw,3rem) 4rem 0;
+    border-left: 1px solid rgba(255,255,255,.06);
+    opacity: 0; animation: up .8s .32s forwards;
+  }
+
+  /* ── 📷 PHOTO: Hero headshot ──────────────────────────────
+       Delete the <div class="ph hero-ph"> block.
+       Replace with:
+       <img src="photo.png" alt="Chenyu Li" class="ri hero-img" />
+  ────────────────────────────────────────────────────────── */
+  .hero-img { width: 100%; max-width: 290px; aspect-ratio: 3/4; object-fit: cover; border-radius: var(--r-lg); border: 2px solid rgba(255,255,255,.1); }
+  .ph {
+    border: 2px dashed rgba(0,127,163,.35); border-radius: var(--r-lg);
+    background: rgba(0,127,163,.07);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px; color: rgba(255,255,255,.22);
+    font-family: var(--f-mono); font-size: .6rem; letter-spacing: .08em; text-align: center; line-height: 1.7;
+  }
+  .ph .ei { font-size: 2rem; opacity: .4; }
+  .hero-ph { width: 100%; max-width: 290px; aspect-ratio: 3/4; }
+  .ri { display: block; width: 100%; }
+
+  .hero-stats { display: flex; gap: 10px; width: 100%; max-width: 290px; }
+  .hs {
+    flex: 1; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.09);
+    border-radius: var(--r); padding: 12px 8px; text-align: center;
+  }
+  .hs-n { font-family: var(--f-display); font-size: 1.8rem; color: var(--blue-lt); line-height: 1; margin-bottom: 4px; }
+  .hs-l { font-family: var(--f-mono); font-size: .54rem; color: rgba(255,255,255,.28); letter-spacing: .07em; text-transform: uppercase; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     SECTION FOUNDATION
+     ─────────────────────────────────────────────────────────────
+     TO ADD A NEW SECTION — copy this template:
+
+     <section id="YOUR-ID" class="sec bg-white">
+       <div class="wrap">
+         <header class="sec-hd reveal">
+           <p class="lbl">XX — Label</p>
+           <h2 class="h2">Heading</h2>
+           <p class="intro">Optional subtitle.</p>
+         </header>
+         <!-- content here -->
+       </div>
+     </section>
+
+     Alternate bg-white / bg-pale for visual rhythm.
+     Add a nav link: <li><a href="#YOUR-ID">Label</a></li>
+  ═══════════════════════════════════════════════════════════════ */
+  .sec { padding: 6rem 0; }
+  .bg-white { background: var(--white); }
+  .bg-pale  { background: var(--blue-ghost); }
+  .bg-navy  { background: var(--navy-deep); }
+
+  .sec-hd { margin-bottom: 3.5rem; }
+  .lbl {
+    font-family: var(--f-body); font-size: .74rem; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--mid); margin-bottom: 12px;
+  }
+  .bg-navy .lbl { color: var(--blue-lt); }
+  .h2 {
+    font-family: var(--f-display);
+    font-size: clamp(2.2rem, 4.5vw, 4rem);
+    font-weight: 700; line-height: 1.06; letter-spacing: -.03em;
+    color: var(--dark); margin-bottom: 16px;
+  }
+  .bg-navy .h2 { color: #fff; }
+  .intro { font-size: .95rem; color: var(--text-mid); max-width: 560px; line-height: 1.8; }
+  .bg-navy .intro { color: rgba(255,255,255,.5); }
+
+  /* ═══════════════════════════════════════════════════════════════
+     ABOUT
+  ═══════════════════════════════════════════════════════════════ */
+  .about-grid { display: grid; grid-template-columns: 1fr 320px; gap: 4rem; align-items: start; }
+  .about-bio p { font-size: .94rem; color: var(--text-mid); line-height: 1.85; margin-bottom: 1rem; }
+  .about-bio strong { color: var(--navy); font-weight: 600; }
+
+  .sk-block { margin-top: 1.8rem; }
+  .sk-block + .sk-block { margin-top: 1.2rem; }
+  .sk-lbl { font-family: var(--f-mono); font-size: .6rem; letter-spacing: .18em; text-transform: uppercase; color: var(--blue); margin-bottom: 7px; }
+  .sk-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    font-family: var(--f-body); font-size: .68rem; padding: 5px 11px; font-weight: 500;
+    background: rgba(0,0,0,0.05); border: none;
+    color: var(--mid); border-radius: 99px;
+    transition: background .18s, color .18s;
+  }
+  .pill:hover { background: rgba(0,42,92,0.08); color: var(--navy); }
+
+  .about-side { display: flex; flex-direction: column; gap: 1rem; }
+
+  /* ── 📷 PHOTO: About section ──────────────────────────────
+     Delete the <div class="ph about-ph"> block.
+     Replace with:
+       <img src="about.png" alt="Chenyu Li" class="ri about-img" />
+  ────────────────────────────────────────────────────────── */
+  .about-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--r-lg); border: 1px solid var(--border); }
+  .about-ph { width: 100%; aspect-ratio: 1; }
+
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-box {
+    background: var(--white); border: 1px solid var(--border);
+    border-top: 3px solid var(--navy); border-radius: var(--r); padding: 13px 12px;
+  }
+  .stat-box .n { font-family: var(--f-display); font-size: 2rem; color: var(--navy); line-height: 1; margin-bottom: 4px; }
+  .stat-box .l { font-family: var(--f-mono); font-size: .56rem; color: var(--text-dim); letter-spacing: .1em; text-transform: uppercase; }
+
+  .award-item {
+    background: #f5f5f7; border: none;
+    border-radius: var(--r);
+    padding: 14px 16px; display: flex; gap: 11px; align-items: flex-start;
+  }
+  .award-item .ai { font-size: 1.2rem; flex-shrink: 0; }
+  .award-item strong { display: block; font-size: .82rem; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .award-item p { font-size: .75rem; color: var(--text-mid); line-height: 1.55; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     PROJECTS
+     TO ADD A PROJECT: copy any <!-- PROJ --> block, paste in .proj-grid
+  ═══════════════════════════════════════════════════════════════ */
+  .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+  .proj-card {
+    background: #fff; border: none;
+    border-radius: var(--r-lg); overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    transition: transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .28s;
+  }
+  .proj-card:hover { transform: translateY(-6px) scale(1.005); box-shadow: 0 24px 56px rgba(0,0,0,0.14); }
+
+  /* ── 📷 PHOTO: Project image ──────────────────────────────
+     Delete <div class="proj-ph"> and replace with:
+       <img src="projects/FILENAME.jpg" alt="Name" class="proj-img" />
+  ────────────────────────────────────────────────────────── */
+  .proj-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+  .proj-ph {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--blue-ghost); border-bottom: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 5px; color: var(--text-dim);
+    font-family: var(--f-mono); font-size: .58rem; letter-spacing: .07em; text-align: center;
+  }
+  .proj-ph .e { font-size: 2rem; }
+
+  .proj-body { padding: 1.6rem 1.4rem; flex: 1; display: flex; flex-direction: column; }
+  .proj-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px; }
+  .proj-n { font-family: var(--f-mono); font-size: .57rem; color: var(--text-dim); letter-spacing: .12em; }
+  .badge {
+    font-family: var(--f-mono); font-size: .57rem;
+    letter-spacing: .05em; padding: 3px 8px; border-radius: 99px;
+  }
+  .b-act  { background: #E5F5EE; color: #1A7840; border: 1px solid #A8DCBE; }
+  .b-done { background: var(--blue-pale); color: var(--text-mid); border: 1px solid var(--border); }
+  .b-win  { background: #EAF2FC; color: #174A8A; border: 1px solid #A8C8EC; }
+  .b-intl { background: #E5EFF9; color: #1A4A7A; border: 1px solid #A8C4E2; }
+
+  .proj-card h3 { font-size: .94rem; font-weight: 700; color: var(--navy); line-height: 1.4; margin-bottom: 6px; }
+  .proj-card p  { font-size: .8rem; color: var(--text-mid); line-height: 1.72; margin-bottom: .9rem; flex: 1; }
+  .proj-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+  .ptag {
+    font-family: var(--f-mono); font-size: .6rem; padding: 4px 9px;
+    background: rgba(0,0,0,0.04); border: none;
+    color: var(--mid); border-radius: 99px;
+  }
+  .proj-link {
+    font-family: var(--f-mono); font-size: .64rem;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--blue);
+    display: inline-flex; align-items: center; gap: 5px;
+    transition: gap .18s, color .18s;
+  }
+  .proj-link:hover { gap: 9px; color: var(--navy); }
+
+  /* ═══════════════════════════════════════════════════════════════
+     EXPERIENCE
+     TO ADD A ROLE: copy any <!-- EXP --> block, paste in .exp-list
+     (newer roles go at the top)
+  ═══════════════════════════════════════════════════════════════ */
+  .exp-list { display: flex; flex-direction: column; }
+  .exp-row {
+    display: grid; grid-template-columns: 200px 1fr;
+    gap: 2.5rem; padding: 2.4rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+  }
+  .exp-row:first-child { border-top: 1px solid rgba(0,0,0,0.07); }
+  .exp-date { font-family: var(--f-mono); font-size: .63rem; color: var(--text-dim); letter-spacing: .06em; margin-bottom: 5px; }
+  .exp-org-row { display: flex; align-items: center; gap: 10px; }
+  .exp-logo {
+    width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0;
+    background: #fff; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .exp-logo img { width: 100%; height: 100%; object-fit: contain; padding: 1px; }
+  .exp-logo-mono { font-family: var(--f-mono); font-weight: 700; font-size: .62rem; letter-spacing: -.01em; color: var(--blue); }
+  .exp-co   { font-size: .83rem; font-weight: 700; color: var(--blue); margin-bottom: 2px; }
+  .exp-loc  { font-family: var(--f-mono); font-size: .6rem; color: var(--text-dim); letter-spacing: .04em; }
+  .exp-role { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+  .exp-pts  { padding-left: 1.1rem; }
+  .exp-pts li { font-size: .84rem; color: var(--text-mid); line-height: 1.76; margin-bottom: 5px; }
+  .exp-pts li strong { color: var(--navy); font-weight: 600; }
+  .exp-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .ec {
+    font-family: var(--f-body); font-size: .6rem; padding: 4px 10px; font-weight: 500;
+    background: rgba(0,0,0,0.05); border: none;
+    color: var(--mid); border-radius: 99px; letter-spacing: 0;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     HOBBIES
+     ─────────────────────────────────────────────────────────────
+     Layout: Row 1 — four single cards (Skiing, Hiking, Golf, Running)
+             Row 2 — Travelling spans 2 cols · Hockey spans 2 cols
+     TO ADD A HOBBY: copy any single .hob-card, paste in .hob-grid
+  ═══════════════════════════════════════════════════════════════ */
+  .hob-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
+  }
+
+  /* Travelling and Hockey each span 2 columns */
+  .hob-wide { grid-column: span 2; }
+
+  .hob-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--r-lg); overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .hob-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+
+  /* Single hobby card photo */
+  /* ── 📷 PHOTO: Single hobby ─────────────────────────────
+     Delete <div class="hob-ph">EMOJI</div>
+     Replace with:
+       <img src="hobbies/FILENAME.jpg" alt="..." class="hob-img" />
+  ────────────────────────────────────────────────────────── */
+  .hob-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+  .hob-ph {
+    width: 100%; aspect-ratio: 4/3;
+    background: var(--blue-pale); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 2.6rem;
+  }
+  .hob-body { padding: .9rem 1rem 1.1rem; }
+  .hob-body h3 { font-size: .9rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .hob-body p  { font-size: .76rem; color: var(--text-mid); line-height: 1.65; }
+
+  /* ── Travelling wide card — 3-photo gallery ────────────── */
+  .travel-card { display: flex; flex-direction: column; }
+  .travel-gallery {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 3px; height: 210px;
+  }
+  /* ── 📷 PHOTO: Travel photos ─────────────────────────────
+     Three slots: spain-1, spain-2, czechia.
+     For each slot, delete <div class="tph"> and replace with:
+       <img src="travel/spain-1.jpg" alt="Spain" class="tph-img" />
+     (use class tph-img for all three)
+  ────────────────────────────────────────────────────────── */
+  .tph-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tph {
+    background: var(--blue-pale); border-right: 2px solid var(--white);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 4px;
+    color: var(--text-dim); font-family: var(--f-mono);
+    font-size: .55rem; letter-spacing: .07em; text-align: center;
+    padding: 4px;
+  }
+  .tph:last-child { border-right: none; }
+  .tph .te { font-size: 1.5rem; }
+  .travel-body { padding: .9rem 1rem 1.1rem; }
+  .travel-body h3 { font-size: .9rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .travel-body p  { font-size: .76rem; color: var(--text-mid); line-height: 1.65; }
+  .travel-countries { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+  .country-tag {
+    font-family: var(--f-mono); font-size: .6rem; padding: 2px 8px;
+    background: var(--blue-pale); border: 1px solid var(--border);
+    color: var(--navy); border-radius: 4px;
+  }
+
+  /* ── Hockey wide card — 2-photo layout ────────────────── */
+  .hockey-card { display: flex; flex-direction: column; }
+  .hockey-photos {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 3px; height: 210px; overflow: hidden;
+  }
+  .hockey-photos .tph-img { height: 210px; width: 100%; object-fit: cover; }
+  /* ── 📷 PHOTO: Hockey coaching photos ────────────────────
+     Two slots: u11 volunteer coaching + private coaching.
+     For each, delete <div class="hkph"> and replace with:
+       <img src="hockey/u11-coaching.jpg" alt="U11 coaching" class="tph-img" />
+  ────────────────────────────────────────────────────────── */
+  .hkph {
+    background: var(--blue-pale); border-right: 2px solid var(--white);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 4px;
+    color: var(--text-dim); font-family: var(--f-mono);
+    font-size: .55rem; letter-spacing: .07em; text-align: center;
+    padding: 4px;
+  }
+  .hkph:last-child { border-right: none; }
+  .hkph .he { font-size: 1.5rem; }
+  .hockey-body { padding: .9rem 1rem 1.1rem; }
+  .hockey-body h3 { font-size: .9rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .hockey-body p  { font-size: .76rem; color: var(--text-mid); line-height: 1.65; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     VOLUNTEERING — clean bullet-point list layout
+     TO ADD AN ENTRY: copy any .vol-entry block
+  ═══════════════════════════════════════════════════════════════ */
+  .vol-list { display: flex; flex-direction: column; gap: 0; }
+  .vol-entry {
+    display: grid; grid-template-columns: 56px 1fr;
+    gap: 1.5rem; padding: 1.75rem 0;
+    border-bottom: 1px solid var(--border); align-items: start;
+  }
+  .vol-entry:first-child { border-top: 1px solid var(--border); }
+  .vol-icon-wrap {
+    width: 44px; height: 44px; border-radius: var(--r);
+    background: var(--navy); display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; flex-shrink: 0; margin-top: 2px;
+  }
+  .vol-info h3 { font-size: .98rem; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+  .vol-org { font-family: var(--f-mono); font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+  .vol-pts { padding-left: 1.1rem; }
+  .vol-pts li { font-size: .84rem; color: var(--text-mid); line-height: 1.76; margin-bottom: 4px; }
+  .vol-pts li strong { color: var(--navy); font-weight: 600; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     CONTACT
+  ═══════════════════════════════════════════════════════════════ */
+  .contact-c { max-width: 600px; margin: 0 auto; text-align: center; }
+  .contact-h {
+    font-family: var(--f-display);
+    font-size: clamp(2.4rem,5vw,4.5rem);
+    font-weight: 600; color: #fff;
+    line-height: 1.08; letter-spacing: -.02em; margin-bottom: 1.1rem;
+  }
+  .contact-h em { font-style: italic; color: var(--blue-lt); }
+  .contact-sub { font-size: .95rem; color: rgba(255,255,255,.48); line-height: 1.78; margin-bottom: 2.5rem; }
+  .contact-btns { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+
+  /* Icon link buttons */
+  .clink {
+    display: flex; align-items: center; gap: 9px;
+    font-family: var(--f-mono); font-size: .7rem;
+    letter-spacing: .1em; text-transform: uppercase;
+    padding: 13px 22px; border-radius: var(--r);
+    border: 1px solid rgba(255,255,255,.18);
+    color: rgba(255,255,255,.75);
+    transition: border-color .18s, color .18s, background .18s;
+  }
+  .clink:hover { border-color: var(--blue-lt); color: #fff; background: rgba(0,127,163,.15); }
+  .clink-primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .clink-primary:hover { background: var(--blue-mid); border-color: var(--blue-mid); }
+  .clink svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* ─── FOOTER ──────────────────────────────────────────── */
+  footer {
+    background: var(--navy-deep); border-top: 1px solid rgba(255,255,255,.07);
+    padding: 1.75rem clamp(1.5rem,5vw,4rem);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 10px;
+  }
+  footer p { font-family: var(--f-mono); font-size: .63rem; color: rgba(255,255,255,.22); letter-spacing: .06em; }
+  footer a { color: rgba(90,184,212,.7); }
+  footer a:hover { color: var(--blue-lt); }
+
+  /* ── ANIMATIONS ─────────────────────────────────────────── */
+  @keyframes up { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+  .reveal { opacity:0; transform:translateY(22px); transition:opacity .62s ease,transform .62s ease; }
+  .reveal.visible { opacity:1; transform:none; }
+
+  /* ── RESPONSIVE ─────────────────────────────────────────── */
+  @media (max-width: 1060px) {
+    #hero { grid-template-columns: 1fr; }
+    .hero-photo-col { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+    .proj-grid { grid-template-columns: 1fr 1fr; }
+    .hob-grid { grid-template-columns: 1fr 1fr; }
+    .hob-wide { grid-column: span 2; }
+    .exp-row { grid-template-columns: 1fr; gap: .5rem; }
+    .exp-left-meta { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+  }
+  @media (max-width: 680px) {
+    .nav-links { display: none; }
+    .sec { padding: 4rem 0; }
+    .proj-grid { grid-template-columns: 1fr; }
+    .hob-grid { grid-template-columns: 1fr 1fr; }
+    .hob-wide { grid-column: span 2; }
+    footer { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* ── PROJECT IMAGE GALLERY ──────────────────────────────────── */
+  .proj-img-wrap {
+    position: relative; cursor: zoom-in; overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .lb-trigger { cursor: zoom-in; }
+  .proj-img-wrap .proj-img { transition: transform 0.3s; }
+  .proj-img-wrap:hover .proj-img { transform: scale(1.04); }
+  .img-count {
+    position: absolute; bottom: 8px; right: 8px;
+    background: rgba(0,0,0,0.62); color: #fff;
+    font-family: var(--f-mono); font-size: 0.62rem;
+    letter-spacing: 0.06em; padding: 3px 9px;
+    border-radius: 4px; pointer-events: none;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  /* ── LIGHTBOX ───────────────────────────────────────────────── */
+  .lb-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,8,18,0.93);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .lb-overlay.lb-open { opacity: 1; pointer-events: all; }
+  .lb-box { position: relative; }
+  .lb-main {
+    max-width: 88vw; max-height: 80vh;
+    object-fit: contain; border-radius: var(--r-lg);
+    display: block;
+  }
+  .lb-close {
+    position: absolute; top: -42px; right: 0;
+    background: none; border: none;
+    color: rgba(255,255,255,0.6); font-size: 1.5rem;
+    cursor: pointer; line-height: 1; padding: 4px 8px;
+    transition: color 0.15s;
+  }
+  .lb-close:hover { color: #fff; }
+  .lb-counter {
+    position: absolute; bottom: -34px; left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--f-mono); font-size: 0.7rem;
+    color: rgba(255,255,255,0.45); letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+  .lb-arrow {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff; font-size: 1.6rem;
+    width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.15s; z-index: 501;
+    line-height: 1;
+  }
+  .lb-arrow:hover { background: rgba(255,255,255,0.22); }
+  .lb-arrow.lb-prev { left: 18px; }
+  .lb-arrow.lb-next { right: 18px; }
+  .lb-arrow[hidden] { display: none; }
+  .lb-dots {
+    position: absolute; bottom: -52px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 6px;
+  }
+  .lb-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(255,255,255,0.25); cursor: pointer;
+    transition: background 0.15s;
+  }
+  .lb-dot.active { background: var(--blue-lt); }
+  /* ════════════════════════════════════════════════════════════════
+     STRAVA / RUNNING SECTION
+     Data is loaded from strava.json which GitHub Actions updates nightly.
+     If the file doesn't exist yet, placeholder content shows instead.
+  ════════════════════════════════════════════════════════════════ */
+  .run-stats-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+    background: rgba(255,255,255,0.1);
+    border-radius: var(--r-lg); overflow: hidden; margin-bottom: 3.5rem;
+  }
+  .run-stat-box {
+    background: rgba(255,255,255,0.07);
+    padding: 2.4rem 2rem; text-align: center;
+  }
+  .run-stat-box .rsn {
+    font-family: var(--f-display); font-size: clamp(2.8rem, 5vw, 4.5rem);
+    font-weight: 700; color: #fff; line-height: 1; margin-bottom: 6px;
+    letter-spacing: -0.03em;
+  }
+  .run-stat-box .rsl {
+    font-size: 0.78rem; color: rgba(255,255,255,0.5); letter-spacing: 0.04em;
+  }
+
+  .run-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem;
+    margin-bottom: 2.5rem;
+  }
+  .run-card {
+    background: rgba(255,255,255,0.07);
+    border-radius: var(--r-lg); padding: 1.4rem 1.2rem;
+    transition: background .2s;
+  }
+  .run-card:hover { background: rgba(255,255,255,0.11); }
+  .run-card-type {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--blue-lt); margin-bottom: 6px;
+  }
+  .run-card-name {
+    font-family: var(--f-display); font-size: 1.1rem; font-weight: 600;
+    color: #fff; margin-bottom: 0.9rem; line-height: 1.3;
+  }
+  .run-card-stats { display: flex; gap: 1.2rem; }
+  .run-card-stat .v { font-size: 1rem; font-weight: 700; color: #fff; }
+  .run-card-stat .u { font-size: 0.68rem; color: rgba(255,255,255,0.45); margin-top: 1px; }
+  .run-date { font-size: 0.68rem; color: rgba(255,255,255,0.35); margin-top: 0.8rem; }
+
+  .run-placeholder {
+    text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,0.35);
+    font-size: 0.9rem; grid-column: 1 / -1;
+  }
+  .strava-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 99px;
+    padding: 9px 20px; transition: border-color .18s, color .18s;
+    margin: 0 auto; display: flex; width: fit-content;
+  }
+  .strava-cta:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+  .strava-cta svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     NAVIGATION
+     TO ADD A NAV LINK: copy any <li> and update href + text
+═══════════════════════════════════════════════════════════════ -->
+<nav>
+  <a href="#hero" class="nav-brand">
+    <div class="nav-mono">CL</div>
+    <div class="nav-name">
+      Chenyu Li
+      <small>MechEng · UofT</small>
+    </div>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#running">Running</a></li>
+    <li><a href="#hobbies">Life</a></li>
+    <li><a href="#volunteering">Volunteering</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+
+  <!-- Icon links: GitHub, LinkedIn, Research Group -->
+  <div class="nav-right">
+    <!-- GitHub -->
+    <a href="https://github.com/chenyu-u" class="nav-icon-link" target="_blank" title="GitHub">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+    </a>
+    <!-- LinkedIn -->
+    <a href="https://linkedin.com/in/li-chenyu" class="nav-icon-link" target="_blank" title="LinkedIn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+    </a>
+    <!-- Research Group — update href to your lab's URL -->
+    <a href="https://hab.civmin.utoronto.ca/people/chenyu-li/" class="nav-icon-link" target="_blank" title="Research Group">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+    </a>
+  </div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-text">
+    <div class="hero-pill">
+      <img src="logos/uoftheader.png" alt="University of Toronto" class="hero-pill-logo" />
+      <span>University of Toronto · BASc Mechanical Engineering</span>
+    </div>
+    <h1 class="hero-name">Chenyu<br/><em>Li</em></h1>
+    <p class="hero-deg">Robotics &amp; Mechatronics · EV Design · PEY Co-op</p>
+    <p class="hero-bio">Second-year Mechanical Engineering student at UofT — building robots, wind turbines, and engineering competitions while doing research on building airflow and thermal systems.</p>
+    <div class="hero-chips">
+      <span class="chip">Robotics</span>
+      <span class="chip">SolidWorks</span>
+      <span class="chip">FEA / CFD</span>
+      <span class="chip">Python</span>
+      <span class="chip">3D Printing</span>
+      <span class="chip">Arduino</span>
+      <span class="chip">EV Systems</span>
+      <span class="chip">MATLAB</span>
+    </div>
+    <div class="hero-ctas">
+      <a href="#projects" class="btn-blue">See My Work</a>
+      <a href="#contact" class="btn-ghost">Get In Touch</a>
+    </div>
+  </div>
+
+  <div class="hero-photo-col">
+    <img src="photo.png" alt="Chenyu Li" class="ri hero-img" />
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-n">2026</div><div class="hs-l">UTEK Win</div></div>
+      <div class="hs"><div class="hs-n">6</div><div class="hs-l">Roles</div></div>
+      <div class="hs"><div class="hs-n">3</div><div class="hs-l">Languages</div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     ABOUT
+═══════════════════════════════════════════════════════════════ -->
+<section id="about" class="sec bg-white">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <p class="lbl">01 — About</p>
+      <h2 class="h2">The Engineer<br/>Behind the Work</h2>
+    </header>
+    <div class="about-grid">
+      <div class="reveal">
+        <div class="about-bio">
+          <p>I'm <strong>Chenyu Li</strong>, a second-year <strong>Mechanical Engineering student at the University of Toronto</strong> in the BASc + PEY Co-op program, with a Robotics &amp; Mechatronics Minor, Business Minor, and EV Design Certificate on the go.</p>
+          <p>I like making things that actually work — modelling in SolidWorks, validating in ANSYS, printing prototypes, and then seeing how they hold up in the real world. That process took me from Calgary to <strong>the Netherlands this past year</strong> to compete at the International Small Wind Turbine Competition.</p>
+          <p>Before university I ran a landscaping business from age 14, which turned out to be a better education in managing people, schedules, and equipment than most things I've done since. I speak <strong>English and Mandarin</strong> natively and get by in <strong>German</strong>.</p>
+        </div>
+        <div class="sk-block">
+          <p class="sk-lbl">CAD &amp; Simulation</p>
+          <div class="sk-row">
+            <span class="pill">SolidWorks</span><span class="pill">Autodesk Fusion</span><span class="pill">ANSYS Mechanical</span><span class="pill">ANSYS Fluent</span><span class="pill">Visio</span><span class="pill">Tableau</span>
+          </div>
+        </div>
+        <div class="sk-block">
+          <p class="sk-lbl">Programming</p>
+          <div class="sk-row">
+            <span class="pill">Python</span><span class="pill">MATLAB</span><span class="pill">JavaScript</span><span class="pill">HTML / CSS</span><span class="pill">Pandas</span><span class="pill">NumPy</span><span class="pill">Matplotlib</span>
+          </div>
+        </div>
+        <div class="sk-block">
+          <p class="sk-lbl">Manufacturing &amp; Hardware</p>
+          <div class="sk-row">
+            <span class="pill">FDM 3D Printing</span><span class="pill">SLA 3D Printing</span><span class="pill">Lathe &amp; Milling</span><span class="pill">Arduino</span><span class="pill">Soldering</span>
+          </div>
+        </div>
+        <div class="sk-block">
+          <p class="sk-lbl">Languages</p>
+          <div class="sk-row">
+            <span class="pill">English (Native)</span><span class="pill">Mandarin (Native)</span><span class="pill">German (B1)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-side reveal">
+        <img src="about.png" alt="Chenyu Li" class="ri about-img" />
+        <div class="award-item">
+          <span class="ai">🏆</span>
+          <div><strong>UofT Excellence Award</strong><p>Research award to fund undegraduate student research.</p></div>
+        </div>
+        <div class="award-item">
+          <span class="ai">🥇</span>
+          <div><strong>2026 UTEK Junior Design Winner</strong><p>First place among 270+ competitors at the University of Toronto Engineering Kompetitions.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PROJECTS
+     TO ADD A PROJECT: copy any <!-- PROJ --> block, paste in .proj-grid
+═══════════════════════════════════════════════════════════════ -->
+<section id="projects" class="sec bg-pale">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <p class="lbl">02 — Projects</p>
+      <h2 class="h2">What I've Built</h2>
+      <p class="intro">Engineering projects across robotics, mechanical design, and software — each taken from concept to working result.</p>
+    </header>
+    <div class="proj-grid">
+
+      <!-- PROJ ──────────────────────────────────────────────────
+           📷 PHOTO: delete <div class="proj-ph"> and replace with:
+           <img src="projects/vawt.jpg" alt="VAWT" class="proj-img" />
+      ─────────────────────────────────────────────────────────── -->
+      <div class="proj-card reveal">
+        <div class="proj-ph"><span class="e">🌀</span><span>projects/vawt.jpg</span></div>
+        <div class="proj-body">
+          <div class="proj-top"><span class="proj-n">001</span><span class="badge b-intl">🌍 Netherlands</span></div>
+          <h3>Vertical Axis Wind Turbine</h3>
+          <p>Co-designed and assembled a custom 6-foot VAWT with UofT's Wind Turbine Design Team. Presented a technical design report at the 2026 ISWTC symposium and achieved 100% of projected performance metrics in the field.</p>
+          <div class="proj-tags"><span class="ptag">SolidWorks</span><span class="ptag">FDM 3D Printing</span><span class="ptag">Machining</span><span class="ptag">ANSYS Mechanical</span><span class="ptag">UTWind</span></div>
+          <a href="#" class="proj-link">Details →</a>
+        </div>
+      </div>
+
+      <!-- PROJ ─────────────────────────────────────────────── -->
+      <div class="proj-card reveal">
+        <div class="proj-ph"><span class="e">⚙️</span><span>projects/actuator.jpg</span></div>
+        <div class="proj-body">
+          <div class="proj-top"><span class="proj-n">002</span><span class="badge b-act">Active</span></div>
+          <h3>Modular Actuator &amp; Braking System</h3>
+          <p>Prototyped a modular turbine-shaft actuator and braking sub-system using SolidWorks parametric modelling and FDM 3D printing. Iterated through multiple design cycles for reliable field performance.</p>
+          <div class="proj-tags"><span class="ptag">SolidWorks</span><span class="ptag">FDM 3D Printing</span><span class="ptag">Machining</span><span class="ptag">ANSYS Mechanical</span><span class="ptag">UTWind</span></div>
+          <a href="#" class="proj-link">Details →</a>
+        </div>
+      </div>
+
+      <!-- PROJ ─────────────────────────────────────────────── -->
+      <div class="proj-card reveal">
+        <div class="proj-img-wrap" data-images='["projects/EMA-survey.jpg"]'>
+          <img src="projects/EMA-survey.jpg" alt="Fitbit EMA Survey App" class="proj-img" />
+        </div>
+        <div class="proj-body">
+          <div class="proj-top"><span class="proj-n">003</span><span class="badge b-act">BEIE Lab</span></div>
+          <h3>Fitbit EMA Survey App</h3>
+          <p>Built a custom Fitbit OS clock-face and companion app in JavaScript and HTML/CSS to automate ecological momentary assessment surveys for 20+ participants across a multi-summer heat-exposure study, with automated CSV export for downstream analysis.</p>
+          <div class="proj-tags"><span class="ptag">JavaScript</span><span class="ptag">CSS/HTML</span><span class="ptag">Fitbit OS</span><span class="ptag">JSONBin.io</span><span class="ptag">HAB Research Group</span></div>
+          <a href="#" class="proj-link">Details →</a>
+        </div>
+      </div>
+
+      <!-- PROJ ─────────────────────────────────────────────── -->
+      <div class="proj-card reveal">
+        <div class="proj-img-wrap" data-images='["projects/finliti-card-dealer.jpg"]'>
+          <img src="projects/finliti-card-dealer.jpg" alt="Finliti Product" class="proj-img" />
+        </div>
+        <div class="proj-body">
+          <div class="proj-top"><span class="proj-n">004</span><span class="badge b-win">🥇 All KPIs Met</span></div>
+          <h3>Finliti — Product Development</h3>
+          <p>Worked on the mechanical CAD and prototyping for Finliti's financial literacy board game product as part of a UTESCA consulting engagement. Used Autodesk Fusion to redesign the physical product to be 30% more compact, and produced FDM 3D printed prototypes to validate the design — achieving 100% of client KPIs.</p>
+          <div class="proj-tags"><span class="ptag">Autodesk Fusion</span><span class="ptag">ANSYS Mechanical</span><span class="ptag">FDM 3D Printing</span><span class="ptag">UTESCA</span></div>
+          <a href="#" class="proj-link">Details →</a>
+        </div>
+      </div>
+
+      <!-- PROJ ─────────────────────────────────────────────── -->
+      <div class="proj-card reveal">
+        <div class="proj-img-wrap" data-images='["projects/cantsruction-2025.jpg"]'>
+          <img src="projects/cantsruction-2025.jpg" alt="CANstruction 2025" class="proj-img" />
+        </div>
+        <div class="proj-body">
+          <div class="proj-top"><span class="proj-n">005</span><span class="badge b-done">Community · 2025</span></div>
+          <h3>Calgary Food Bank — CANstruction 2025</h3>
+          <p>Designed and built a large-scale structural sculpture made entirely from donated canned goods for the 2025 Calgary Food Bank CANstruction event. Collaborated with professional engineers from FLUOR Corporation to apply structural principles for maximum height and stability — all cans donated after the competition.</p>
+          <a href="#" class="proj-link">Details →</a>
+        </div>
+      </div>
+
+      <!-- PROJ ─────────────────────────────────────────────── -->
+      <div class="proj-card reveal">
+        <div class="proj-img-wrap" data-images='["projects/canstruction2024-1.jpg","projects/canstruction-2024-2.jpg"]' data-rotate='[0,90]'>
+          <img src="projects/canstruction2024-1.jpg" alt="CANstruction 2024" class="proj-img" />
+          <span class="img-count">📷 2</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-top"><span class="proj-n">006</span><span class="badge b-done">Community · 2024</span></div>
+          <h3>Calgary Food Bank — CANstruction 2024</h3>
+          <p>Participated in the 2024 Calgary Food Bank CANstruction competition, designing and constructing a canned-food sculpture under real structural constraints. Gained hands-on experience applying load distribution and stability analysis in a team environment alongside industry engineers.</p>
+          <a href="#" class="proj-link">Details →</a>
+        </div>
+      </div>
+
+      <!-- PROJ ─────────────────────────────────────────────── -->
+      <div class="proj-card reveal">
+        <div class="proj-img-wrap" data-images='["projects/rc-car-1.jpg","projects/rc-car-2.jpg"]'>
+          <img src="projects/rc-car-1.jpg" alt="RC Car" class="proj-img" />
+          <span class="img-count">📷 2</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-top"><span class="proj-n">007</span><span class="badge b-done">High School</span></div>
+          <h3>Custom RC Car</h3>
+          <p>Designed, wired, and built a custom remote-controlled car from scratch in high school. Integrated motor drivers, a receiver module, and battery management into a self-fabricated chassis — learning hands-on electronics, soldering, and basic control systems in the process.</p>
+          <div class="proj-tags"><span class="ptag">Arduino</span><span class="ptag">Soldering</span><span class="ptag">3D Printing</span><span class="ptag">Autodesk Fusion</span><span class="ptag">Motor Controllers</span><span class="ptag">Circuit Design</span><span class="ptag">Personal Project</span></div>
+          <a href="#" class="proj-link">Details →</a>
+        </div>
+      </div>
+
+      <!-- PROJ ─────────────────────────────────────────────── -->
+      <div class="proj-card reveal">
+        <div class="proj-img-wrap" data-images='["projects/ultrasonic-drawer.jpg"]'>
+          <img src="projects/ultrasonic-drawer.jpg" alt="Ultrasonic Drawer" class="proj-img" />
+        </div>
+        <div class="proj-body">
+          <div class="proj-top"><span class="proj-n">008</span><span class="badge b-done">High School</span></div>
+          <h3>Ultrasonic Sensor Drawer</h3>
+          <p>Built an automatic drawer that opens when a hand is detected nearby, using an ultrasonic distance sensor and a servo motor controlled by an Arduino. Designed and fabricated the drawer housing, wired all components, and wrote the control firmware — an early introduction to embedded systems and mechatronics.</p>
+          <div class="proj-tags"><span class="ptag">Arduino</span><span class="ptag">Soldering</span><span class="ptag">3D Printing</span><span class="ptag">Autodesk Fusion</span><span class="ptag">Ultrasonic Sensor</span><span class="ptag">Circuit Design</span><span class="ptag">Personal Project</span></div>
+          <a href="#" class="proj-link">Details →</a>
+        </div>
+      </div>
+
+    </div><!-- /.proj-grid -->
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     EXPERIENCE
+     TO ADD A ROLE: copy any <!-- EXP --> block, paste in .exp-list
+     (newer roles go at the top)
+═══════════════════════════════════════════════════════════════ -->
+<section id="experience" class="sec bg-white">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <p class="lbl">03 — Experience</p>
+      <h2 class="h2">Where I've Worked</h2>
+    </header>
+    <div class="exp-list">
+
+      <!-- EXP ──────────────────────────────────────────────── -->
+      <div class="exp-row reveal">
+        <div>
+          <p class="exp-date">May 2026 – Present</p>
+          <div class="exp-org-row">
+            <span class="exp-logo"><img src="logos/uoft.jpg" alt="University of Toronto" /></span>
+            <p class="exp-co">University of Toronto</p>
+          </div>
+          <p class="exp-loc">Toronto, Ontario</p>
+        </div>
+        <div>
+          <p class="exp-role">Undergraduate Researcher — Hub for Advancing Buildings (HAB)</p>
+          <ul class="exp-pts">
+            <li>Developed Python scripts to process and visualise research data quantifying outdoor air delivery and interzonal airflow across multiple high-rise units, analysing doped tracer-gas concentration and differential-pressure data.</li>
+            <li>Developed a custom <strong>Fitbit OS clock-face and companion app</strong> using JavaScript and HTML/CSS to automate survey data collection and CSV export for a multi-summer heat-exposure research study.</li>
+          </ul>
+          <div class="exp-chips"><span class="ec">Python</span><span class="ec">JavaScript</span><span class="ec">Fitbit OS</span><span class="ec">Data Analysis</span><span class="ec">Openpyxl</span><span class="ec">Matplotlib</span><span class="ec">Pandas</span><span class="ec">NumPy</span><span class="ec">HOBOware</span><span class="ec">Analog Logger</span><span class="ec">Differential Pressure Transmitter</span><span class="ec">Mass Flow Controller</span><span class="ec">Duct Blaster</span><span class="ec">Research Paper Writing</span><span class="ec">Technical Communication</span><span class="ec">LaTeX</span><span class="ec">Microsoft Excel</span></div>
+        </div>
+      </div>
+
+      <!-- EXP ──────────────────────────────────────────────── -->
+      <div class="exp-row reveal">
+        <div>
+          <p class="exp-date">May 2026 – Present</p>
+          <div class="exp-org-row">
+            <span class="exp-logo"><img src="logos/essco.png" alt="ESSCO" /></span>
+            <p class="exp-co">ESSCO</p>
+          </div>
+          <p class="exp-loc">Toronto, Ontario</p>
+        </div>
+        <div>
+          <p class="exp-role">VP Competitions — Ontario Engineering Competition 2028</p>
+          <ul class="exp-pts">
+            <li>Lead a team of <strong>18 competition directors</strong> alongside two co-VPs to plan and develop 9 engineering competitions, anticipating an attendance of 350+ undergraduate engineering students from 16+ Ontario universities.</li>
+          </ul>
+          <div class="exp-chips"><span class="ec">Leadership</span><span class="ec">Event Planning</span><span class="ec">Microsoft Excel</span><span class="ec">Communication</span><span class="ec">Logistics</span><span class="ec">Recruiting</span></div>
+        </div>
+      </div>
+
+      <!-- EXP ──────────────────────────────────────────────── -->
+      <div class="exp-row reveal">
+        <div>
+          <p class="exp-date">Mar 2026 – Present</p>
+          <div class="exp-org-row">
+            <span class="exp-logo"><img src="logos/utek.png" alt="UTEK" /></span>
+            <p class="exp-co">UTEK</p>
+          </div>
+          <p class="exp-loc">Toronto, Ontario</p>
+        </div>
+        <div>
+          <p class="exp-role">Junior Design Director</p>
+          <ul class="exp-pts">
+            <li>Collaborated with 3 co-directors to design a comprehensive <strong>hydraulic infrastructure competition</strong>, tailored to challenge 250+ first- and second-year engineering students at the University of Toronto.</li>
+            <li>Managed competition package development, financing, scheduling, and judge and sponsorship recruitment.</li>
+          </ul>
+          <div class="exp-chips"><span class="ec">Leadership</span><span class="ec">Event Planning</span><span class="ec">Microsoft Excel</span><span class="ec">Communication</span><span class="ec">Logistics</span></div>
+        </div>
+      </div>
+
+      <!-- EXP ──────────────────────────────────────────────── -->
+      <div class="exp-row reveal">
+        <div>
+          <p class="exp-date">Sep 2025 – Present</p>
+          <div class="exp-org-row">
+            <span class="exp-logo"><img src="logos/utwind.jpg" alt="UofT Wind Turbine Design Team" /></span>
+            <p class="exp-co">UofT Wind Turbine Design Team</p>
+          </div>
+          <p class="exp-loc">Toronto · Netherlands</p>
+        </div>
+        <div>
+          <p class="exp-role">Mechanical &amp; Manufacturing Team Member</p>
+          <ul class="exp-pts">
+            <li>Prototyped modular actuator and turbine-shaft braking subsystems using SolidWorks and FDM 3D printing.</li>
+            <li>Co-authored a vertical-axis wind turbine report presented at the International Small Wind Turbine Contest.</li>
+            <li>Assembled and wind-tunnel tested a turbine prototype at TU Delft to maximise energy yield.</li>
+          </ul>
+          <div class="exp-chips"><span class="ec">SolidWorks</span><span class="ec">FDM 3D Printing</span><span class="ec">Machining</span><span class="ec">ANSYS Mechanical</span><span class="ec">Technical Report Writing</span></div>
+        </div>
+      </div>
+
+      <!-- EXP ──────────────────────────────────────────────── -->
+      <div class="exp-row reveal">
+        <div>
+          <p class="exp-date">Oct 2025 – Apr 2026</p>
+          <div class="exp-org-row">
+            <span class="exp-logo"><img src="logos/utesca.png" alt="UTESCA" /></span>
+            <p class="exp-co">UofT Eng. Students Consulting Assoc.</p>
+          </div>
+          <p class="exp-loc">Toronto, Ontario</p>
+        </div>
+        <div>
+          <p class="exp-role">Engineering Consultant — Finliti Product Development</p>
+          <ul class="exp-pts">
+            <li>Worked on the mechanical CAD and prototyping for a <strong>card dealer and discard product</strong> for Finliti, redesigning the physical product in Autodesk Fusion to be significantly more compact while meeting all required performance tests.</li>
+            <li>Produced a manufacturing plan using a <strong>gravity-weighted mechanism</strong> and an optimised FDM 3D-printable workflow to keep production cost low while minimising part complexity.</li>
+          </ul>
+          <div class="exp-chips"><span class="ec">Autodesk Fusion</span><span class="ec">ANSYS Mechanical</span><span class="ec">Client Communication</span><span class="ec">Manufacturing</span><span class="ec">FDM 3D Printing</span><span class="ec">Microsoft PowerPoint</span></div>
+        </div>
+      </div>
+
+      <!-- EXP ──────────────────────────────────────────────── -->
+      <div class="exp-row reveal">
+        <div>
+          <p class="exp-date">Jun 2022 – May 2025</p>
+          <div class="exp-org-row">
+            <span class="exp-logo"><img src="logos/snowscape.jpg" alt="SnowScape Landscaping" /></span>
+            <p class="exp-co">SnowScape Landscaping</p>
+          </div>
+          <p class="exp-loc">Calgary, Alberta</p>
+        </div>
+        <div>
+          <p class="exp-role">Founder &amp; Owner — Self-Employed</p>
+          <ul class="exp-pts">
+            <li>Generated <strong>$28,000+ in net profit</strong> and executed projects for 100+ clients through effective resource optimization.</li>
+            <li>Achieved a client repeat rate of <strong>39% within 3 years</strong> by leading a cross-functional team of 10+ to build effective landscaping solutions for diverse client needs while ensuring strict quality control standards.</li>
+          </ul>
+          <div class="exp-chips"><span class="ec">Microsoft Excel</span><span class="ec">Leadership</span><span class="ec">Canva</span><span class="ec">Client Communication and CRM</span><span class="ec">Budget</span><span class="ec">Sourcing</span><span class="ec">Quality Control</span><span class="ec">Scheduling</span><span class="ec">Logistics</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HOBBIES
+     Row 1: Skiing · Hiking · Golf · Running  (4 single cards)
+     Row 2: Travelling (span 2, 3 photos) · Hockey (span 2, 2 photos)
+     TO ADD A HOBBY: copy any single .hob-card and paste in .hob-grid
+═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════
+     RUNNING / STRAVA SECTION
+     Data loads from strava.json which GitHub Actions refreshes nightly.
+     See .github/workflows/strava.yml to set up the auto-update.
+     ─────────────────────────────────────────────────────────────
+     UPDATE YOUR STRAVA LINK: replace YOUR_ATHLETE_ID below with
+     your actual Strava athlete ID (find it in your Strava profile URL).
+═══════════════════════════════════════════════════════════════ -->
+<section id="running" class="sec bg-navy">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <p class="lbl" style="color:rgba(255,255,255,0.45);">04 — Running</p>
+      <h2 class="h2" style="color:#fff;">Training Log</h2>
+      <p class="intro" style="color:rgba(255,255,255,0.5);">Powered by Strava — updated every night via GitHub Actions.</p>
+    </header>
+
+    <!-- Strava aggregate stats strip -->
+    <div class="run-stats-row reveal" id="run-stats-row">
+      <div class="run-stat-box"><div class="rsn" id="ytd-km">—</div><div class="rsl">km this year</div></div>
+      <div class="run-stat-box"><div class="rsn" id="ytd-runs">—</div><div class="rsl">runs this year</div></div>
+      <div class="run-stat-box"><div class="rsn" id="ytd-time">—</div><div class="rsl">hours on feet</div></div>
+    </div>
+
+    <!-- Recent activity cards -->
+    <div class="run-grid reveal" id="run-grid">
+      <div class="run-placeholder">Loading recent activities…</div>
+    </div>
+
+    <!-- Link to Strava profile — replace YOUR_ATHLETE_ID -->
+    <a href="https://www.strava.com/athletes/YOUR_ATHLETE_ID" class="strava-cta reveal" target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0l-7 13.828h4.169"/></svg>
+      View on Strava
+    </a>
+  </div>
+</section>
+
+
+<section id="hobbies" class="sec bg-pale">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <p class="lbl">04 — Life Outside Engineering</p>
+      <h2 class="h2">What I Do<br/>For Fun</h2>
+      <p class="intro">The best engineers are well-rounded people. Here's what I love to do in my free time outside of studying and working on projects.</p>
+    </header>
+    <div class="hob-grid">
+
+      <!-- Single hobby cards ─────────────────────────────────
+           📷 PHOTO: Delete <div class="hob-ph"> and replace with:
+           <img src="hobbies/skiing.jpg" alt="Skiing" class="hob-img" />
+      ─────────────────────────────────────────────────────── -->
+      <div class="hob-card reveal">
+        <div data-images='["hobbies/skiing.jpg"]' class="lb-trigger">
+          <img src="hobbies/skiing.jpg" alt="Skiing" class="hob-img" style="object-position: 50% 20%;" />
+        </div>
+        <div class="hob-body">
+          <h3>Skiing</h3>
+          <p>Grew up skiing in Banff since nothing beats a powder day in the Rockies. I'm hoping to ski tour the Alps someday.</p>
+        </div>
+      </div>
+
+      <div class="hob-card reveal">
+        <div data-images='["hobbies/hiking.jpg"]' class="lb-trigger">
+          <img src="hobbies/hiking.jpg" alt="Hiking" class="hob-img" />
+        </div>
+        <div class="hob-body">
+          <h3>Hiking</h3>
+          <p>Just like skiing, most of my best hikes have been in Banff, the kind of trails where you're too tired to think about anything else. A good way to reset between school terms.</p>
+        </div>
+      </div>
+
+      <div class="hob-card reveal">
+        <div data-images='["hobbies/golf.jpg"]' class="lb-trigger">
+          <img src="hobbies/golf.jpg" alt="Golf" class="hob-img" />
+        </div>
+        <div class="hob-body">
+          <h3>Golf</h3>
+          <p> I picked up golf during my senior year of high school and have been itching to play ever since. I'm always up for a casual round with friends or family when the weather's good. Still working on keeping it out of the trees.</p>
+        </div>
+      </div>
+
+      <div class="hob-card reveal">
+        <div data-images='["hobbies/running.jpg"]' class="lb-trigger">
+          <img src="hobbies/running.jpg" alt="Running" class="hob-img" />
+        </div>
+        <div class="hob-body">
+          <h3>Running</h3>
+          <p>My go-to way to clear my head and think about new ideas. No goal in particular, I just love running, espeically downtown along the coast of Lake Ontario.</p>
+        </div>
+      </div>
+
+      <!-- Travelling — wide card spanning 2 columns with 3 photos ─
+           📷 PHOTOS: For each slot, delete <div class="tph"> and replace with:
+           Slot 1: <img src="travel/spain-1.jpg" alt="Spain" class="tph-img" />
+           Slot 2: <img src="travel/spain-2.jpg" alt="Spain" class="tph-img" />
+           Slot 3: <img src="travel/czechia.jpg" alt="Czechia" class="tph-img" />
+      ─────────────────────────────────────────────────────────── -->
+      <div class="hob-card hob-wide travel-card reveal">
+        <div class="travel-gallery lb-trigger" data-images='["travel/spain-1.jpg","travel/germany.jpg","travel/czechia.jpg"]'>
+          <!-- Slot 1 — spain-1 ✓ -->
+          <img src="travel/spain-1.jpg" alt="Spain" class="tph-img" />
+          <!-- Slot 2 — germany ✓ -->
+          <img src="travel/germany.jpg" alt="Germany" class="tph-img" />
+          <!-- Slot 3 — czechia ✓ -->
+          <img src="travel/czechia.jpg" alt="Czechia" class="tph-img" />
+        </div>
+        <div class="travel-body">
+          <h3>Travelling</h3>
+          <p>I travel to see how things are built. The engineering, the history, and the different ways people have solved the same problem is always fascinating. Every city has its own answer to how infrastructure, technology, and public life should work, and it's hard not to notice that once you start looking. The food is always a plus as well! </p>
+          <div class="travel-countries">
+            <span class="country-tag">🇪🇸 Spain</span>
+            <span class="country-tag">🇩🇪 Germany</span>
+            <span class="country-tag">🇨🇿 Czechia</span>
+            <span class="country-tag">🇳🇱 Netherlands</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hockey — wide card spanning 2 columns with 2 coaching photos ─
+           📷 PHOTOS: For each slot, delete <div class="hkph"> and replace with:
+           Slot 1: <img src="hockey/u11-coaching.jpg" alt="U11 coaching" class="tph-img" />
+           Slot 2: <img src="hockey/private-coaching.jpg" alt="Private coaching" class="tph-img" />
+      ─────────────────────────────────────────────────────────── -->
+      <div class="hob-card hob-wide hockey-card reveal">
+        <div class="hockey-photos lb-trigger" data-images='["hockey/u11-coaching.jpg","hockey/private-coaching.jpg","hockey/hockey.jpg"]'>
+          <img src="hockey/u11-coaching.jpg" alt="U11 coaching" class="tph-img" />
+          <img src="hockey/private-coaching.jpg" alt="Private coaching" class="tph-img" />
+          <img src="hockey/hockey.jpg" alt="Hockey" class="tph-img" />
+        </div>
+        <div class="hockey-body">
+          <h3>Hockey</h3>
+          <p>Started playing club hockey at 6 and never really stopped — still get out to rip pucks whenever I can, over a decade in now. I've done plenty of coaching too, privately and as a volunteer with two U11 teams for Knights Hockey Club through high school, which turned out to be a great way to practice explaining things clearly and adjusting on the fly.</p>
+        </div>
+      </div>
+
+    </div><!-- /.hob-grid -->
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     VOLUNTEERING — bullet point list
+     TO ADD AN ENTRY: copy any VOL block, paste in .vol-list
+═══════════════════════════════════════════════════════════════ -->
+<section id="volunteering" class="sec bg-white">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <p class="lbl">05 — Volunteering</p>
+      <h2 class="h2">Giving Back</h2>
+      <p class="intro">Engineering is most powerful when it creates opportunities for others.</p>
+    </header>
+    <div class="vol-list">
+
+      <!-- VOL ──────────────────────────────────────────────── -->
+      <div class="vol-entry reveal">
+        <div class="vol-icon-wrap">🥫</div>
+        <div class="vol-info">
+          <h3>Calgary Food Bank — CANstruction</h3>
+          <p class="vol-org">CANstruction Calgary · 2024 &amp; 2025</p>
+          <ul class="vol-pts">
+            <li>Competed in both the <strong>2024 and 2025</strong> CANstruction events for the Calgary Food Bank, designing and building structures made entirely from donated cans alongside engineers from <strong>FLUOR Corporation</strong>.</li>
+            <li>All cans are donated to the food bank after the competition. Photos from both years are in the Projects section above.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- VOL ──────────────────────────────────────────────── -->
+      <div class="vol-entry reveal">
+        <div class="vol-icon-wrap">🏒</div>
+        <div class="vol-info">
+          <h3>Coaching — Knights Hockey</h3>
+          <p class="vol-org">Knights Hockey · U11 Volunteer Coach</p>
+          <ul class="vol-pts">
+            <li>Volunteer coach for the <strong>U11 Knights Hockey</strong> team, running on-ice practices and helping players develop their skating, puck-handling, and game sense.</li>
+            <li>Working with kids at that age is a good reminder that clear communication matters more than technical knowledge.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- VOL ──────────────────────────────────────────────── -->
+      <div class="vol-entry reveal">
+        <div class="vol-icon-wrap">🎓</div>
+        <div class="vol-info">
+          <h3>UofT Engineering Scholarships &amp; Awards Committee</h3>
+          <p class="vol-org">University of Toronto · Student Representative</p>
+          <ul class="vol-pts">
+            <li>Student rep on the Faculty of Engineering's scholarships and awards committee — reviewing applications and making sure the student perspective is in the room when financial support decisions get made.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- /.vol-list -->
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CONTACT
+═══════════════════════════════════════════════════════════════ -->
+<section id="contact" class="sec bg-navy">
+  <div class="wrap">
+    <div class="contact-c reveal">
+      <p class="lbl">06 — Contact</p>
+      <h2 class="contact-h">Let's Build<br/><em>Something</em> Together</h2>
+      <p class="contact-sub">Open to internships, research, and design-team opportunities. Also happy to chat about anything, so feel free to reach out!</p>
+      <div class="contact-btns">
+
+        <!-- Email -->
+        <a href="mailto:Che.li@mail.utoronto.ca" class="clink clink-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 01-2.06 0L2 7"/></svg>
+          Email Me
+        </a>
+
+        <!-- LinkedIn -->
+        <a href="https://linkedin.com/in/li-chenyu" class="clink" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+
+        <!-- GitHub -->
+        <a href="https://github.com/chenyu-u" class="clink" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          GitHub
+        </a>
+
+        <!-- Research Group — update href -->
+        <a href="https://hab.civmin.utoronto.ca/people/chenyu-li/" class="clink" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          Research Group
+        </a>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════════════════════ -->
+<footer>
+  <p>© 2026 Chenyu Li · University of Toronto · BASc Mechanical Engineering</p>
+  <p>
+    <a href="https://github.com/chenyu-u" target="_blank">GitHub</a> ·
+    <a href="https://linkedin.com/in/li-chenyu" target="_blank">LinkedIn</a> ·
+    <a href="mailto:Che.li@mail.utoronto.ca">Che.li@mail.utoronto.ca</a>
+  </p>
+</footer>
+
+
+<!--
+╔══════════════════════════════════════════════════════════════════╗
+║  SECTION TEMPLATE — copy this to add any new section            ║
+╠══════════════════════════════════════════════════════════════════╣
+
+<section id="YOUR-ID" class="sec bg-pale">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <p class="lbl">07 — Label</p>
+      <h2 class="h2">Heading</h2>
+      <p class="intro">Optional subtitle.</p>
+    </header>
+    (your content cards go here)
+  </div>
+</section>
+
+Also add a nav link inside ul.nav-links:
+<li><a href="#YOUR-ID">Label</a></li>
+
+Use bg-white or bg-pale — alternate them for visual rhythm.
+╚══════════════════════════════════════════════════════════════════╝
+-->
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     LIGHTBOX — click any project image to open gallery
+═══════════════════════════════════════════════════════════════ -->
+<div class="lb-overlay" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button class="lb-arrow lb-prev" id="lbPrev" aria-label="Previous">&#8249;</button>
+  <div class="lb-box">
+    <button class="lb-close" id="lbClose" aria-label="Close">&#x2715;</button>
+    <img class="lb-main" id="lbImg" src="" alt="" />
+    <div class="lb-dots" id="lbDots"></div>
+    <div class="lb-counter" id="lbCounter"></div>
+  </div>
+  <button class="lb-arrow lb-next" id="lbNext" aria-label="Next">&#8250;</button>
+</div>
+
+<script>
+  /* Scroll reveal */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const siblings = [...entry.target.parentElement.querySelectorAll('.reveal:not(.visible)')];
+      const idx = siblings.indexOf(entry.target);
+      setTimeout(() => entry.target.classList.add('visible'), Math.min(idx, 5) * 85);
+      io.unobserve(entry.target);
+    });
+  }, { threshold: 0.07, rootMargin: '0px 0px -20px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* Lightbox */
+  const lb      = document.getElementById('lb');
+  const lbImg   = document.getElementById('lbImg');
+  const lbPrev  = document.getElementById('lbPrev');
+  const lbNext  = document.getElementById('lbNext');
+  const lbClose = document.getElementById('lbClose');
+  const lbDots  = document.getElementById('lbDots');
+  const lbCount = document.getElementById('lbCounter');
+
+  let images = [], rotations = [], current = 0;
+
+  function openLb(imgs, rots, idx) {
+    images = imgs; rotations = rots; current = idx;
+    render();
+    lb.classList.add('lb-open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLb() {
+    lb.classList.remove('lb-open');
+    document.body.style.overflow = '';
+  }
+  function render() {
+    lbImg.src = images[current];
+    lbImg.alt = 'Photo ' + (current + 1);
+    const deg = rotations[current] || 0;
+    lbImg.style.transform = deg ? `rotate(${deg}deg)` : '';
+    /* shrink the box when rotated so image fits viewport */
+    lbImg.style.maxWidth  = deg ? '80vh' : '88vw';
+    lbImg.style.maxHeight = deg ? '88vw' : '80vh';
+    lbPrev.hidden = images.length < 2;
+    lbNext.hidden = images.length < 2;
+    lbCount.textContent = images.length > 1 ? (current + 1) + ' / ' + images.length : '';
+    /* dots */
+    lbDots.innerHTML = '';
+    if (images.length > 1) {
+      images.forEach((_, i) => {
+        const d = document.createElement('span');
+        d.className = 'lb-dot' + (i === current ? ' active' : '');
+        d.onclick = () => { current = i; render(); };
+        lbDots.appendChild(d);
+      });
+    }
+  }
+  function prev() { current = (current - 1 + images.length) % images.length; render(); }
+  function next() { current = (current + 1) % images.length; render(); }
+
+  lbPrev.addEventListener('click', e => { e.stopPropagation(); prev(); });
+  lbNext.addEventListener('click', e => { e.stopPropagation(); next(); });
+  lbClose.addEventListener('click', closeLb);
+  lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('lb-open')) return;
+    if (e.key === 'Escape')      closeLb();
+    if (e.key === 'ArrowLeft')   prev();
+    if (e.key === 'ArrowRight')  next();
+  });
+
+  /* Wire up ALL clickable gallery triggers (projects + hobbies) */
+  document.querySelectorAll('[data-images]').forEach(wrap => {
+    wrap.addEventListener('click', () => {
+      const imgs = JSON.parse(wrap.dataset.images);
+      const rots = wrap.dataset.rotate ? JSON.parse(wrap.dataset.rotate) : imgs.map(() => 0);
+      openLb(imgs, rots, 0);
+    });
+  });
+  /* ── Strava data loader ─────────────────────────────────────── */
+  async function loadStrava() {
+    try {
+      const res = await fetch('strava.json');
+      if (!res.ok) throw new Error('not found');
+      const d = await res.json();
+
+      // Stats strip
+      if (d.ytd) {
+        document.getElementById('ytd-km').textContent   = (d.ytd.distance / 1000).toFixed(0);
+        document.getElementById('ytd-runs').textContent = d.ytd.count;
+        document.getElementById('ytd-time').textContent = (d.ytd.moving_time / 3600).toFixed(0);
+      }
+
+      // Activity cards
+      const grid = document.getElementById('run-grid');
+      if (d.activities && d.activities.length) {
+        grid.innerHTML = d.activities.slice(0, 6).map(a => {
+          const km    = (a.distance / 1000).toFixed(2);
+          const mins  = Math.floor(a.moving_time / 60);
+          const h     = Math.floor(mins / 60);
+          const m     = mins % 60;
+          const time  = h > 0 ? `${h}h ${m}m` : `${m}m`;
+          const pace  = a.distance > 0 ? (a.moving_time / 60 / (a.distance / 1000)).toFixed(2).replace('.', ':') + '/km' : '—';
+          const date  = new Date(a.start_date).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' });
+          return `<div class="run-card">
+            <div class="run-card-type">${a.type}</div>
+            <div class="run-card-name">${a.name}</div>
+            <div class="run-card-stats">
+              <div class="run-card-stat"><div class="v">${km} km</div><div class="u">Distance</div></div>
+              <div class="run-card-stat"><div class="v">${time}</div><div class="u">Time</div></div>
+              <div class="run-card-stat"><div class="v">${pace}</div><div class="u">Pace</div></div>
+            </div>
+            <div class="run-date">${date}</div>
+          </div>`;
+        }).join('');
+      } else {
+        grid.innerHTML = '<div class="run-placeholder">No recent activities — go for a run! 🏃</div>';
+      }
+    } catch {
+      document.getElementById('run-grid').innerHTML =
+        '<div class="run-placeholder">Connect Strava to see activities — see setup guide.</div>';
+    }
+  }
+  loadStrava();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "updated_at": null,
+  "ytd": {
+    "distance": 0,
+    "count": 0,
+    "moving_time": 0
+  },
+  "all_time": {
+    "distance": 0,
+    "count": 0
+  },
+  "activities": []
+}
