@@ -1,127 +1,130 @@
 """
 fetch_strava.py
-───────────────
-Fetches recent activities and year-to-date stats from the Strava API
-and writes them to strava.json in the repo root.
+────────────────────────────────────────────────────────────────
+Fetches your year-to-date running stats and most recent activities
+from the Strava API, and writes them to strava.json in the repo
+root. Your live site reads strava.json directly (see loadStrava()
+in index.html) — this script is what keeps that file fresh.
 
-Run by GitHub Actions nightly (see .github/workflows/strava.yml).
-Requires three environment variables set as GitHub Secrets:
+Run automatically every night by GitHub Actions
+(.github/workflows/strava.yml). You will not normally run this
+yourself, but you can test it locally if you want (see bottom).
+
+REQUIRES THREE ENVIRONMENT VARIABLES (set as GitHub Secrets):
   STRAVA_CLIENT_ID
   STRAVA_CLIENT_SECRET
   STRAVA_REFRESH_TOKEN
 
-HOW TO GET YOUR STRAVA TOKENS
-──────────────────────────────
-1. Go to https://www.strava.com/settings/api
-2. Create an app (name/website can be anything, e.g. "My Portfolio")
-3. Copy your Client ID and Client Secret → add as GitHub Secrets
-4. Get a refresh token with the right scope:
-   a. In your browser, visit this URL (replace CLIENT_ID):
-      https://www.strava.com/oauth/authorize?client_id=CLIENT_ID&response_type=code&redirect_uri=http://localhost&approval_prompt=force&scope=read,activity:read_all
-   b. Authorise → you'll be redirected to localhost (page won't load, that's fine)
-   c. Copy the "code" value from the URL
-   d. Run this curl command to exchange it for a refresh token:
-      curl -X POST https://www.strava.com/oauth/token \\
-        -F client_id=CLIENT_ID \\
-        -F client_secret=CLIENT_SECRET \\
-        -F code=YOUR_CODE \\
-        -F grant_type=authorization_code
-   e. Copy the "refresh_token" from the JSON response → add as GitHub Secret
-
-HOW TO ADD GITHUB SECRETS
-──────────────────────────
-1. Go to your repo on GitHub
-2. Settings → Secrets and variables → Actions → New repository secret
-3. Add:  STRAVA_CLIENT_ID  /  STRAVA_CLIENT_SECRET  /  STRAVA_REFRESH_TOKEN
+See SETUP_GUIDE.md, Part 4, for exactly how to obtain these three
+values. None of them are ever written into this file or committed
+to the repo — they're injected at run time by GitHub Actions.
+────────────────────────────────────────────────────────────────
 """
 
-import os
 import json
-import requests
+import os
+import sys
 from datetime import datetime, timezone
 
-# ─── 1. Exchange refresh token for a new access token ───────────────────────
+import requests
 
-client_id     = os.environ["STRAVA_CLIENT_ID"]
-client_secret = os.environ["STRAVA_CLIENT_SECRET"]
-refresh_token = os.environ["STRAVA_REFRESH_TOKEN"]
+CLIENT_ID     = os.environ.get("STRAVA_CLIENT_ID")
+CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET")
+REFRESH_TOKEN = os.environ.get("STRAVA_REFRESH_TOKEN")
 
-token_res = requests.post(
-    "https://www.strava.com/oauth/token",
-    data={
-        "client_id":     client_id,
-        "client_secret": client_secret,
-        "refresh_token": refresh_token,
+TOKEN_URL      = "https://www.strava.com/oauth/token"
+ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
+STATS_URL_TMPL = "https://www.strava.com/api/v3/athletes/{id}/stats"
+
+OUTPUT_PATH = "strava.json"
+MAX_ACTIVITIES = 12   # site only shows 6, but we keep a few extra as buffer
+
+
+def fail(msg):
+    print(f"ERROR: {msg}", file=sys.stderr)
+    sys.exit(1)
+
+
+def get_access_token():
+    if not (CLIENT_ID and CLIENT_SECRET and REFRESH_TOKEN):
+        fail("Missing one or more required env vars: "
+             "STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN")
+
+    resp = requests.post(TOKEN_URL, data={
+        "client_id":     CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
+        "refresh_token":  REFRESH_TOKEN,
         "grant_type":    "refresh_token",
-    },
-    timeout=10,
-)
-token_res.raise_for_status()
-access_token = token_res.json()["access_token"]
-headers = {"Authorization": f"Bearer {access_token}"}
+    })
+    if resp.status_code != 200:
+        fail(f"Token refresh failed ({resp.status_code}): {resp.text}")
 
-# ─── 2. Fetch athlete stats (year-to-date totals) ───────────────────────────
+    data = resp.json()
+    return data["access_token"], data["athlete"]["id"]
 
-athlete_res = requests.get("https://www.strava.com/api/v3/athlete", headers=headers, timeout=10)
-athlete_res.raise_for_status()
-athlete_id = athlete_res.json()["id"]
 
-stats_res = requests.get(
-    f"https://www.strava.com/api/v3/athletes/{athlete_id}/stats",
-    headers=headers,
-    timeout=10,
-)
-stats_res.raise_for_status()
-stats = stats_res.json()
+def get_activities(access_token):
+    resp = requests.get(
+        ACTIVITIES_URL,
+        headers={"Authorization": f"Bearer {access_token}"},
+        params={"per_page": MAX_ACTIVITIES},
+    )
+    if resp.status_code != 200:
+        fail(f"Fetching activities failed ({resp.status_code}): {resp.text}")
+    return resp.json()
 
-ytd_run = stats.get("ytd_run_totals", {})
-all_run = stats.get("all_run_totals", {})
 
-# ─── 3. Fetch most recent 20 activities ─────────────────────────────────────
+def get_run_stats(access_token, athlete_id):
+    """Returns (ytd_totals, all_time_totals) for runs."""
+    resp = requests.get(
+        STATS_URL_TMPL.format(id=athlete_id),
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    if resp.status_code != 200:
+        fail(f"Fetching athlete stats failed ({resp.status_code}): {resp.text}")
+    stats = resp.json()
 
-acts_res = requests.get(
-    "https://www.strava.com/api/v3/athlete/activities",
-    headers=headers,
-    params={"per_page": 20, "page": 1},
-    timeout=10,
-)
-acts_res.raise_for_status()
+    def pick(key):
+        t = stats.get(key, {}) or {}
+        return {
+            "distance":    t.get("distance", 0),
+            "count":       t.get("count", 0),
+            "moving_time": t.get("moving_time", 0),
+        }
 
-# Keep only the fields the website actually uses
-def slim(a):
-    return {
-        "id":          a["id"],
-        "name":        a["name"],
-        "type":        a["type"],
-        "distance":    a["distance"],           # metres
-        "moving_time": a["moving_time"],        # seconds
-        "elapsed_time":a["elapsed_time"],
-        "start_date":  a["start_date"],         # ISO 8601 UTC
-        "average_speed": a.get("average_speed"),
-        "max_speed":     a.get("max_speed"),
-        "average_heartrate": a.get("average_heartrate"),
-        "total_elevation_gain": a.get("total_elevation_gain"),
+    return pick("ytd_run_totals"), pick("all_run_totals")
+
+
+def main():
+    access_token, athlete_id = get_access_token()
+
+    raw_activities = get_activities(access_token)
+    runs = [a for a in raw_activities if a.get("type") == "Run"]
+
+    activities = [{
+        "type":         a["type"],
+        "name":         a["name"],
+        "distance":     a["distance"],       # meters
+        "moving_time":  a["moving_time"],    # seconds
+        "start_date":   a["start_date"],
+    } for a in runs[:6]]
+
+    ytd, all_time = get_run_stats(access_token, athlete_id)
+
+    payload = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "ytd": ytd,
+        "all": all_time,
+        "activities": activities,
     }
 
-activities = [slim(a) for a in acts_res.json()]
+    with open(OUTPUT_PATH, "w") as f:
+        json.dump(payload, f, indent=2)
 
-# ─── 4. Write strava.json ────────────────────────────────────────────────────
+    print(f"Wrote {OUTPUT_PATH}: {len(activities)} activities, "
+          f"YTD {ytd['distance']/1000:.1f} km, "
+          f"all-time {all_time['distance']/1000:.1f} km over {all_time['count']} runs.")
 
-output = {
-    "updated_at": datetime.now(timezone.utc).isoformat(),
-    "ytd": {
-        "distance":    ytd_run.get("distance", 0),    # metres
-        "count":       ytd_run.get("count", 0),
-        "moving_time": ytd_run.get("moving_time", 0), # seconds
-    },
-    "all_time": {
-        "distance":    all_run.get("distance", 0),
-        "count":       all_run.get("count", 0),
-    },
-    "activities": activities,
-}
 
-with open("strava.json", "w") as f:
-    json.dump(output, f, indent=2)
-
-print(f"✓ Wrote strava.json — {len(activities)} activities, {ytd_run.get('count', 0)} runs YTD")
+if __name__ == "__main__":
+    main()
