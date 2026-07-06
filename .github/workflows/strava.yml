@@ -2,9 +2,9 @@ name: Update Strava Data
 
 on:
   schedule:
-    # Runs every night at 2:00 AM UTC (10 PM ET / 11 PM ET DST)
+    # Runs every night at 2:00 AM UTC (~10 PM ET / 11 PM ET during DST)
     - cron: '0 2 * * *'
-  # Also allows you to trigger it manually from the GitHub Actions tab
+  # Lets you trigger it manually from the Actions tab, any time
   workflow_dispatch:
 
 jobs:
@@ -37,7 +37,6 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add strava.json
-          # Only commit if strava.json actually changed
           if git diff --staged --quiet; then
             echo "No changes to strava.json — skipping commit."
           else
