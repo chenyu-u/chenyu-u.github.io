@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Travel Map · Chenyu Li</title>
+<meta name="author" content="Chenyu Li" />
+<meta name="copyright" content="© 2026 Chenyu Li" />
+<link rel="license" href="LICENSE" />
+<!--
+  Full-screen travel map · Chenyu Li · MIT · v1.0.1
+  Same CITIES data as the map on index.html#hobbies. Opened by the Maps app
+  on the 3D landing (laptop.html).
+  Third-party: Leaflet 1.9.4 (BSD-2) · tiles © OpenStreetMap / CARTO.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+  :root{ --navy:#002A5C; --blue:#1668C2; --line:#DCE4EC; --ink:#16273B; --ink-soft:#4A5B70;
+         --f-body:'IBM Plex Sans',system-ui,sans-serif; --f-disp:'Archivo',sans-serif;
+         --f-mono:'IBM Plex Mono',monospace; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body,#map{height:100%}
+  body{font-family:var(--f-body)}
+  #map{width:100%}
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;
+          justify-content:space-between;padding:12px 18px;pointer-events:none}
+  .topbar a,.topbar .count{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;
+            background:rgba(255,255,255,.92);color:var(--navy);border:1px solid var(--line);
+            border-radius:3px;padding:9px 14px}
+  .topbar a{pointer-events:auto;text-decoration:none;box-shadow:0 2px 10px rgba(0,42,92,.12)}
+  .topbar a:hover{background:var(--navy);color:#fff}
+  .leaflet-popup-content-wrapper{border-radius:4px;border:1px solid var(--line);
+    border-left:3px solid var(--navy);font-family:var(--f-body);color:var(--ink)}
+  .leaflet-popup-content{margin:0;width:250px !important}
+  .leaflet-popup-content p{margin:0}
+  .cl-pin{width:14px;height:14px;border-radius:50%;background:var(--blue);border:2.5px solid #fff;
+    box-shadow:0 0 0 2px var(--navy),0 2px 6px rgba(0,42,92,.35);transition:transform .15s}
+  .cl-pin:hover{transform:scale(1.35)}
+  .mp-img{width:100%;height:130px;object-fit:cover;display:block}
+  .mp-body{padding:.75rem .85rem .85rem}
+  .mp-city{font-family:var(--f-mono);font-size:.58rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--blue)}
+  .mp-title{font-family:var(--f-disp);font-weight:700;font-size:.98rem;color:var(--navy);margin:.2rem 0 .35rem}
+  .mp-desc{font-size:.8rem;line-height:1.5;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="laptop.html">← BACK TO THE OFFICE</a>
+  <span class="count" id="map-count"></span>
+  <a href="index.html#hobbies">SEE IT ON THE SITE →</a>
+</div>
+<div id="map" role="application" aria-label="Travel map"></div>
+<script>
+  (() => {
+    const CITIES = [
+      // [slug, city, lat, lng, note]
+      ['calgary',   'Calgary, Canada',        51.0447, -114.0719, 'Where I grew up, Stampede every summer, and the city where I first started building things.'],
+      ['banff',     'Banff, Canada',          51.1784, -115.5708, 'Skiing and hiking in the Rockies, the mountains I grew up travelling to all the time for some peace in nature.'],
+      ['toronto',   'Toronto, Canada',        43.6532,  -79.3832, 'Home for university, where the engineering degree, the research, and most of this website happen.'],
+      ['london',    'London, UK',             51.5074,   -0.1278, 'Classic engineering on display. Tower Bridge\u2019s bascules and Big Ben\u2019s clockwork are Victorian machines still running every day.'],
+      ['barcelona', 'Barcelona, Spain',       41.3874,    2.1686, 'The Sagrada Fam\u00edlia is structural engineering as art, the port infrastructure is massive, and the Montju\u00efc communications tower looked so much like a wind turbine it fooled me at first glance.'],
+      ['madrid',    'Madrid, Spain',          40.4168,   -3.7038, 'The Royal Palace\u2019s artwork is lit almost entirely with natural light. Architects were solving illumination problems centuries before the light bulb.'],
+      ['busan',     'Busan, South Korea',     35.1796,  129.0756, 'One of my favourite cities, with the ocean everywhere, incredible seafood, and the lit-up harbour bridge stitching the skyline together at night.'],
+      ['seoul',     'Seoul, South Korea',     37.5665,  126.9780, 'Palace halls built with joinery instead of nails, museums of naval and military innovation, and Korean BBQ as the reward after.'],
+      ['dali',      'Dali, China',            25.6065,  100.2676, 'The perfect vacation city, with unreal scenery and the Three Pagodas standing through a millennium of earthquakes on Tang-dynasty engineering.'],
+      ['datong',    'Datong, China',          40.0768,  113.3001, 'The Hanging Temple, cantilevered off a cliff on timber beams 1,500 years ago, is some of the boldest structural thinking I\u2019ve ever seen, next to the carved grottoes.'],
+      ['taiyuan',   'Taiyuan, China',         37.8706,  112.5489, 'Where I was born, and still home to the best food I know. Shanxi noodle-making is its own engineering discipline.'],
+      ['qingdao',   'Qingdao, China',         36.0671,  120.3826, 'German colonial houses against the mountains, facades that turn into light shows at night, and delivery robots already part of daily life. A century of engineering side by side.'],
+      ['vienna',    'Vienna, Austria',        48.2082,   16.3738, 'The city that got me into classical music. It\u2019s in the streets, the opera houses, everywhere. My study playlist traces back to here.'],
+      ['salzburg',  'Salzburg, Austria',      47.8095,   13.0550, 'A slower pace of life under a hilltop fortress, Mozart\u2019s hometown, where the old town feels untouched by centuries.'],
+      ['munich',    'Munich, Germany',        48.1351,   11.5820, 'Automotive history at its source, a century of German car engineering, framed by Gothic and baroque architecture.'],
+      ['nuremberg', 'Nuremberg, Germany',     49.4521,   11.0767, 'A city for learning history head-on, medieval walls and a castle above, and the weight of the twentieth century below.'],
+      ['berlin',    'Berlin, Germany',        52.5200,   13.4050, 'German history at its rawest. The divided city, the Brandenburg Gate, and the Reichstag\u2019s mirrored dome funnelling daylight into parliament. Old wounds, modern engineering.'],
+      ['dresden',   'Dresden, Germany',       51.0504,   13.7373, 'A city once consumed by flames, rebuilt stone by stone, the clearest lesson I\u2019ve seen in how engineering can both destroy and restore.'],
+      ['amsterdam', 'Amsterdam, Netherlands', 52.3676,    4.9041, 'Naval engineering history everywhere, and a city that still runs daily life on water. Canals as infrastructure that never went obsolete.'],
+      ['delft',     'Delft, Netherlands',     52.0116,    4.3571, 'Wind energy country. The Dutch have been engineering the wind for centuries, from mills to modern turbine research.'],
+      ['antwerp',   'Antwerp, Belgium',       51.2194,    4.4025, 'A port city built around its diamond trade and Gothic cathedral, with engineering in the locks and cranes that still move the harbour today.'],
+      ['groningen', 'Groningen, Netherlands', 53.2194,    6.5665, 'A cycling-first city built almost entirely around bikes, proof that infrastructure design shapes how people actually live.'],
+      ['brussels',  'Brussels, Belgium',      50.8476,    4.3572, 'European art and the EU institutions in one city, where policy shaping the continent\u2019s engineering and industry gets decided.'],
+      ['prague',    'Prague, Czechia',        50.0755,   14.4378, 'Prague Castle makes it feel medieval again. The defensive engineering and weaponry show how much problem-solving went into fortification centuries before CAD.'],
+      ['rome',      'Rome, Italy',            41.9028,   12.4964, 'The Colosseum is 2,000-year-old crowd-flow engineering. The Romans solved problems we still study, with concrete we still can\u2019t fully replicate.'],
+      ['pompeii',   'Pompeii, Italy',         40.7462,   14.4989, 'Walking the ruins of a complete Roman city, with streets, plumbing, and homes engineered two millennia ago, preserved mid-use.'],
+      ['sorrento',  'Sorrento, Italy',        40.6263,   14.3758, 'Cliffside coastline atmosphere and lemon sorbets the size of a softball. In this case, I\u2019d like to tell myself that not everything needs an engineering angle.'],
+      ['assisi',    'Assisi, Italy',          43.0707,   12.6196, 'Beautiful basilicas built into the hillside in pink stone, sacred architecture doing serious structural work on a slope.'],
+      ['pisa',      'Pisa, Italy',            43.7228,   10.4017, 'The Leaning Tower is a masterclass in engineering adaptation, a marvellous idea acting as an incredible testament to the power of science.'],
+      ['florence',  'Florence, Italy',        43.7696,   11.2558, 'Brunelleschi\u2019s dome: four million bricks, no scaffolding, pure geometric problem-solving. The art everywhere (and the best sandwich I\u2019ve had) seal it.'],
+      ['venice',    'Venice, Italy',          45.4408,   12.3155, 'A city where nature constantly takes from building science, and engineering keeps adapting back, from timber-pile foundations to modern flood barriers.'],
+      ['sirmione',  'Sirmione, Italy',        45.4934,   10.6081, 'Preserved medieval streets on a lake peninsula, old European architecture that survived because it was over-engineered from the start.'],
+    ];
+
+    const map = L.map(document.getElementById('map'), { worldCopyJump: true, zoomControl: true })
+      .setView([38, 25], 3);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd', maxZoom: 19,
+    }).addTo(map);
+
+    const icon = L.divIcon({ className: '', html: '<div class="cl-pin"></div>', iconSize: [14, 14], iconAnchor: [7, 7] });
+
+    CITIES.forEach(([slug, name, lat, lng, note]) => {
+      const imgSrc = `travel/map/${slug}.jpg`;
+      const html =
+        `<img class="mp-img" src="${imgSrc}" alt="${name}" onerror="this.remove()">` +
+        `<div class="mp-body"><p class="mp-city">Field Note</p>` +
+        `<p class="mp-title">${name}</p>` +
+        `<p class="mp-desc">${note}</p></div>`;
+      const marker = L.marker([lat, lng], { icon, title: name })
+        .addTo(map).bindPopup(html, { maxWidth: 260 });
+      marker.on('popupopen', (e) => {
+        const img = e.popup.getElement().querySelector('.mp-img');
+        if (img && img.isConnected) {
+          img.style.cursor = 'zoom-in';
+          img.addEventListener('click', () => window.open(imgSrc, '_blank', 'noopener'));
+        }
+      });
+    });
+
+    const counter = document.getElementById('map-count');
+    if (counter) counter.textContent = CITIES.length + ' CITIES';
+  })();
+</script>
+</body>
+</html>

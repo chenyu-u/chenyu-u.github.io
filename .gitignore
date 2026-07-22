@@ -1,0 +1,17 @@
+# dev notes, not part of the deployed site
+*.md
+!README.md
+
+# CAD source — large, browser never touches these
+cad/
+*.step
+*.stp
+
+# early drafts, if superseded
+sim_module.js
+*.jsx
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/
