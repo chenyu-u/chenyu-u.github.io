@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chenyu Li · Portfolio</title>
+<meta name="author" content="Chenyu Li" />
+<meta name="description" content="Portfolio of Chenyu Li — Mechanical Engineering, University of Toronto." />
+<meta name="copyright" content="© 2026 Chenyu Li" />
+<link rel="license" href="LICENSE" />
+
+<!--
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║  3D OFFICE LANDING — a desk by the window                        ║
+  ║  Chenyu Li · University of Toronto · Mechanical Engineering      ║
+  ╠══════════════════════════════════════════════════════════════════╣
+  ║  Author   Chenyu Li <Che.li@mail.utoronto.ca>                    ║
+  ║  Version  0.4.0 · License MIT — see LICENSE                      ║
+  ║  © 2026 Chenyu Li                                                ║
+  ╠══════════════════════════════════════════════════════════════════╣
+  ║  THE SCENE                                                       ║
+  ║  An office room: table on legs, plant, lamp, posters, and a      ║
+  ║  large window behind the laptop. The window view is YOUR image:  ║
+  ║                                                                  ║
+  ║      ADD A FILE NAMED  window-view.jpg  TO THE SITE ROOT.        ║
+  ║      (Same folder as this file. A wide landscape photo works     ║
+  ║      best — it's shown ~13:8. If missing, the window shows a     ║
+  ║      plain sky and the console explains.)                        ║
+  ║                                                                  ║
+  ║  The laptop runs a Windows-11-style desktop. By DEFAULT a        ║
+  ║  browser window is open showing the live site (index.html);      ║
+  ║  the red dot closes it back to the desktop, the Chrome icon      ║
+  ║  reopens it. Taskbar: Start, search, pinned apps, tray with      ║
+  ║  wifi/battery and a LIVE clock. Apps:                            ║
+  ║    LinkedIn → linkedin.com/in/li-chenyu          (new tab)       ║
+  ║    GitHub   → github.com/chenyu-u                (new tab)       ║
+  ║    Maps     → index.html#hobbies — full-page travel map          ║
+  ║    Chrome   → the site, inside the on-screen browser             ║
+  ║  The search bar takes real queries: URLs open in a new tab,      ║
+  ║  anything else runs a web search in a new tab (search engines    ║
+  ║  refuse to be embedded in iframes — their rule, not ours).       ║
+  ║                                                                  ║
+  ║  The keyboard is a real layout — 6 rows, printed legends —       ║
+  ║  drawn to a canvas texture, not 70 blank chiclets.               ║
+  ║                                                                  ║
+  ║  The arm prototype still opens robot-sim.html. Orbit is still    ║
+  ║  clamped to ~270° and stays inside the room.                     ║
+  ╠══════════════════════════════════════════════════════════════════╣
+  ║  BRAND MARKS: the LinkedIn, GitHub and Windows glyphs are used   ║
+  ║  solely as links to the corresponding accounts/OS metaphor,      ║
+  ║  per each brand's usage guidance. All marks belong to their      ║
+  ║  owners and are not claimed under this file's MIT licence.       ║
+  ╠══════════════════════════════════════════════════════════════════╣
+  ║  THIRD-PARTY (CDN, not redistributed)                            ║
+  ║  three.js r160 — MIT — © 2010-2026 three.js authors              ║
+  ╚══════════════════════════════════════════════════════════════════╝
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --navy:#002A5C; --blue:#1668C2; --line:#DCE4EC;
+    --ink-soft:#3E4C5E; --ink-faint:#6E7E90;
+    --f-disp:'Archivo',system-ui,sans-serif;
+    --f-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{overflow:hidden;font-family:var(--f-disp);background:#EDEAE4}
+
+  #css3d,#webgl{position:fixed;inset:0}
+  #webgl{pointer-events:none}
+  #catcher{position:fixed;inset:0;cursor:grab;touch-action:none}
+  #catcher.grabbing{cursor:grabbing}
+  #catcher.hover{cursor:pointer}
+
+  .hud{position:fixed;z-index:10;pointer-events:none;transition:opacity .35s}
+  body.focused .hud{opacity:0}
+  #masthead{top:26px;left:30px;background:rgba(255,255,255,.78);backdrop-filter:blur(8px);
+            padding:12px 16px;border-radius:4px;border:1px solid rgba(0,42,92,.14);
+            box-shadow:0 2px 10px rgba(0,42,92,.10)}
+  #masthead .over{font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;color:var(--ink-soft)}
+  #masthead h1{font-size:26px;font-weight:700;color:var(--navy);letter-spacing:-.02em;margin-top:4px}
+  #hint{bottom:26px;left:30px;font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;
+        color:var(--navy);background:rgba(255,255,255,.78);backdrop-filter:blur(8px);
+        padding:9px 13px;border-radius:4px;border:1px solid rgba(0,42,92,.14)}
+  #skip{top:26px;right:30px;pointer-events:auto;font-family:var(--f-mono);font-size:10px;
+        letter-spacing:.12em;color:var(--navy);text-decoration:none;
+        background:rgba(255,255,255,.78);backdrop-filter:blur(8px);
+        padding:9px 13px;border-radius:4px;border:1px solid rgba(0,42,92,.14);
+        box-shadow:0 2px 10px rgba(0,42,92,.10)}
+  #skip:hover{color:var(--blue);border-color:rgba(0,42,92,.3)}
+  body.focused #skip{pointer-events:none}
+
+  #exit{position:fixed;top:22px;right:26px;z-index:20;display:none;
+        font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;
+        background:var(--navy);color:#fff;border:0;border-radius:3px;
+        padding:10px 16px;cursor:pointer}
+  #exit:hover{background:var(--blue)}
+
+  #certview{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
+            background:rgba(14,20,30,.92);backdrop-filter:blur(6px);padding:70px 30px 30px}
+  #certview.open{display:flex}
+  #certview img{max-width:92%;max-height:88%;object-fit:contain;border-radius:4px;
+                box-shadow:0 12px 50px rgba(0,0,0,.6);background:#fff}
+  #certback{position:fixed;top:22px;left:26px;font-family:var(--f-mono);font-size:11px;
+            letter-spacing:.12em;background:#fff;color:var(--navy);border:0;border-radius:3px;
+            padding:10px 16px;cursor:pointer}
+  #certback:hover{background:var(--blue);color:#fff}
+
+  #mobilebar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;
+             background:var(--navy);color:#fff;padding:12px 16px;text-align:center;
+             font-family:var(--f-mono);font-size:11px;letter-spacing:.08em}
+  #mobilebar a{color:#fff}
+  @media(max-width:719px){#mobilebar{display:block}}
+
+  #fail{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;
+        background:#F4F7FA;padding:30px}
+  #fail .box{max-width:520px;font-family:var(--f-mono);font-size:12px;line-height:1.7;color:#B4342B;
+             white-space:pre-wrap}
+  #fail a{color:var(--navy)}
+
+  /* ── The Windows-11-style desktop that lives on the laptop screen ── */
+  .win{width:1280px;height:800px;position:relative;overflow:hidden;border-radius:6px;
+       font-family:'Segoe UI',system-ui,sans-serif;user-select:none;
+       background:
+         radial-gradient(900px 520px at 68% 30%, #3E7EC2 0%, transparent 60%),
+         radial-gradient(700px 500px at 25% 75%, #7FB2E5 0%, transparent 55%),
+         linear-gradient(135deg, #0B3B74 0%, #1668C2 45%, #6FA6DC 100%)}
+  .win .icons{position:absolute;top:26px;left:26px;display:grid;grid-template-columns:100px;gap:18px}
+  .win .ico{display:flex;flex-direction:column;align-items:center;gap:7px;padding:10px 4px;
+            border-radius:6px;cursor:pointer;border:1px solid transparent;background:none;width:100px}
+  .win .ico:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22)}
+  .win .ico svg{width:44px;height:44px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+  .win .ico span{color:#fff;font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  .win .bar{position:absolute;left:0;right:0;bottom:0;height:52px;
+            background:rgba(238,243,249,.86);backdrop-filter:blur(14px);
+            display:flex;align-items:center;padding:0 14px;box-shadow:0 -1px 0 rgba(0,0,0,.08)}
+  .win .bar .center{position:absolute;left:50%;transform:translateX(-50%);
+                    display:flex;align-items:center;gap:6px}
+  .win .tbtn{width:40px;height:40px;border-radius:6px;border:0;background:none;cursor:pointer;
+             display:flex;align-items:center;justify-content:center}
+  .win .tbtn:hover{background:rgba(0,0,0,.08)}
+  .win .tbtn svg{width:24px;height:24px}
+  .win .search{height:36px;border-radius:18px;border:1px solid rgba(0,0,0,.12);cursor:pointer;
+               background:#fff;display:flex;align-items:center;gap:9px;padding:0 16px 0 12px;
+               color:#5A6572;font-size:13px}
+  .win .search:hover{border-color:#1668C2}
+  .win .browser{position:absolute;left:64px;right:64px;top:34px;bottom:78px;
+       background:#fff;border-radius:8px;box-shadow:0 18px 50px rgba(0,0,0,.42);
+       display:flex;flex-direction:column;overflow:hidden}
+  .win .browser.closed{display:none}
+  .win .b-top{height:42px;background:#DEE3EA;display:flex;align-items:center;gap:10px;
+       padding:0 12px;flex:0 0 auto}
+  .win .b-dot{width:12px;height:12px;border-radius:50%;border:0;cursor:pointer}
+  .win .b-close{background:#E5484D}
+  .win .b-close:hover{filter:brightness(1.15)}
+  .win .b-url{flex:1;height:28px;border-radius:14px;border:1px solid rgba(0,0,0,.14);
+       background:#fff;padding:0 14px;font-size:13px;color:#333;font-family:inherit;outline:none}
+  .win .b-url:focus{border-color:#1668C2}
+  .win .browser iframe{flex:1;border:0;width:100%}
+  .win .tray{margin-left:auto;display:flex;align-items:center;gap:12px;color:#25313E}
+  .win .tray svg{width:17px;height:17px}
+  .win .clock{text-align:right;font-size:12.5px;line-height:1.35;color:#25313E}
+</style>
+</head>
+<body>
+
+<div id="css3d"></div>
+<div id="webgl"></div>
+<div id="catcher"></div>
+
+<div class="hud" id="masthead">
+  <p class="over">MECHANICAL ENGINEERING · UNIVERSITY OF TORONTO</p>
+  <h1>Chenyu Li</h1>
+</div>
+<div class="hud" id="hint">DRAG — LOOK AROUND · CLICK THE LAPTOP — USE IT · CLICK THE ARM — OPEN THE SIMULATOR</div>
+<a class="hud" id="skip" href="index.html">PREFER THE REGULAR SITE? OPEN IT DIRECTLY →</a>
+<button id="exit">← BACK TO THE DESK &nbsp;(ESC)</button>
+
+<!-- Certificate viewer overlay: opens when a framed certificate is clicked,
+     with a clear way back to the room. -->
+<div id="certview" role="dialog" aria-label="Certificate viewer">
+  <button id="certback">← BACK TO THE ROOM &nbsp;(ESC)</button>
+  <img id="certimg" alt="Certificate" />
+</div>
+
+<div id="mobilebar">3D view is best on desktop — <a href="index.html">tap here for the regular site</a></div>
+
+<div id="fail"><div class="box" id="failmsg"></div></div>
+
+<noscript>
+  <div style="position:fixed;inset:0;background:#F4F7FA;z-index:50;display:flex;align-items:center;justify-content:center;font-family:monospace">
+    <a href="index.html">JavaScript is off — open the regular site →</a>
+  </div>
+</noscript>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+/**
+ * 3D office landing — © 2026 Chenyu Li · MIT
+ * Table on legs in an office room, window view from a user-supplied image,
+ * Windows-11-style desktop on the laptop, canvas-textured real keyboard.
+ */
+import * as THREE from 'three';
+import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
+
+try {
+
+/* ── Tunables ──────────────────────────────────────────────────────── */
+const SCREEN_W = 30, SCREEN_H = 18.75;
+const SCR_PX_W = 1280, SCR_PX_H = 800;
+const LID_OPEN = -0.35, STAND_TILT = -0.12;      // lid verified in v0.2
+/* ±66°. Was ±135°, which let the camera swing to z≈-92 — straight through
+   the window wall and out of the room. cos(theta) must stay positive so
+   the camera always remains in the front half. Containment PROVEN
+   numerically for every phi/theta/radius extreme. */
+const THETA0 = 0.0, THETA_RANGE = 0.75;
+const PHI_MIN = 0.72, PHI_MAX = 1.40;   // up to banner (not straight up), down to desk
+const ORBIT0 = { theta: 0, phi: 1.12, radius: 132 };   // default frames desk + laptop
+
+/* Room shell. Floor sits under the table legs; the window wall is behind
+   the laptop (-z). Camera max radius stays inside these bounds. */
+const FLOOR_Y = -74, CEIL_Y = 150;   // desk sits 74 (≈74cm) above floor
+const ROOM_HX = 170;             // half width  (walls at ±170)
+const WALL_BACK_Z = -62, WALL_FRONT_Z = 280;   // extra depth so you can pull back further
+const WIN = { cx: -6, w: 128, y0: 4, y1: 92 };   // window opening in back wall
+
+const LINKS = {
+  linkedin:  'https://linkedin.com/in/li-chenyu',
+  github:    'https://github.com/chenyu-u',
+  maps:      'map.html',            // full-screen travel map (same data as the site)
+  portfolio: 'index.html',
+};
+
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const NAVY=0x002A5C, BLUE=0x1668C2;
+
+/* ── Renderers ─────────────────────────────────────────────────────── */
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xEDEAE4);
+
+const camera = new THREE.PerspectiveCamera(40, 1, 0.5, 2000);
+camera.up.set(0, 1, 0);
+
+const cssRenderer = new CSS3DRenderer();
+document.getElementById('css3d').appendChild(cssRenderer.domElement);
+
+const glRenderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+glRenderer.setClearColor(0x000000, 0);
+/* Filmic tone mapping + correct color space is the single biggest step from
+   "flat 3D" toward "photographed room" — it rolls off highlights and
+   deepens shadows the way a camera does instead of clipping to pure white. */
+glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+glRenderer.toneMappingExposure = 1.0;
+glRenderer.outputColorSpace = THREE.SRGBColorSpace;
+glRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+glRenderer.shadowMap.enabled = true;
+glRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.getElementById('webgl').appendChild(glRenderer.domElement);
+
+// Golden-hour fill matched to the Busan harbour photo: a warm peach sky tone
+// from above, cool blue-grey bounce from below (the water/shadow side).
+scene.add(new THREE.HemisphereLight(0xFAD9B0, 0x6E7E92, 0.5));
+scene.add(new THREE.AmbientLight(0xFFE9CE, 0.16));                 // warm lift in the shadows
+
+/* A soft ceiling fixture over the desk (see the fixture mesh later). */
+const ceilingLight = new THREE.PointLight(0xFFEAC6, 34, 220, 2);
+ceilingLight.position.set(0, CEIL_Y - 14, 20);
+ceilingLight.castShadow = true;
+ceilingLight.shadow.mapSize.set(1024, 1024);
+scene.add(ceilingLight);
+/* Daylight pouring in through the window (from -z, slightly high/left). */
+// Low, warm setting sun raking in through the window, like the photo. Warmer
+// colour and a lower angle so the light comes across the room, not straight down.
+const daylight = new THREE.DirectionalLight(0xFFCE8A, 1.5);
+daylight.position.set(WIN.cx + 40, 60, WALL_BACK_Z - 80);
+daylight.target.position.set(-10, 8, 30);
+daylight.castShadow = true;
+daylight.shadow.mapSize.set(2048, 2048);
+daylight.shadow.bias = -0.0004;
+daylight.shadow.normalBias = 0.6;
+Object.assign(daylight.shadow.camera, { left:-140, right:140, top:140, bottom:-140, far:600 });
+scene.add(daylight, daylight.target);
+
+/* ── The room ──────────────────────────────────────────────────────── */
+const wallMat  = new THREE.MeshStandardMaterial({ color: 0xF2EFE9, roughness:.98 });   // warm off-white, not pure
+const floorMat = new THREE.MeshStandardMaterial({ color: 0x7C5F42, roughness:.55, metalness:.05 });  // engineered wood
+const trimMat  = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, roughness:.9 });
+
+const floor = new THREE.Mesh(new THREE.BoxGeometry(ROOM_HX*2, 2, WALL_FRONT_Z - WALL_BACK_Z), floorMat);
+floor.position.set(0, FLOOR_Y - 1, (WALL_BACK_Z + WALL_FRONT_Z)/2);
+floor.receiveShadow = true;
+scene.add(floor);
+
+const ceil = new THREE.Mesh(new THREE.BoxGeometry(ROOM_HX*2, 2, WALL_FRONT_Z - WALL_BACK_Z), trimMat);
+ceil.position.set(0, CEIL_Y + 1, (WALL_BACK_Z + WALL_FRONT_Z)/2);
+scene.add(ceil);
+
+/* Back wall built as four slabs around the window opening. */
+{
+  const T = 3, H = CEIL_Y - FLOOR_Y;
+  const x0 = WIN.cx - WIN.w/2, x1 = WIN.cx + WIN.w/2;
+  const seg = (w, h, x, y) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, T), wallMat);
+    m.position.set(x, y, WALL_BACK_Z);
+    m.receiveShadow = true;
+    scene.add(m);
+  };
+  seg(x0 - (-ROOM_HX), H, (x0 + -ROOM_HX)/2, FLOOR_Y + H/2);            // left of window
+  seg(ROOM_HX - x1,    H, (x1 + ROOM_HX)/2,  FLOOR_Y + H/2);            // right of window
+  seg(WIN.w, WIN.y0 - FLOOR_Y, WIN.cx, (FLOOR_Y + WIN.y0)/2);           // below sill
+  seg(WIN.w, CEIL_Y - WIN.y1,  WIN.cx, (WIN.y1 + CEIL_Y)/2);           // above header
+}
+
+/* Window frame + mullions */
+{
+  const frameM = new THREE.MeshStandardMaterial({ color: 0x3A4552, roughness:.5, metalness:.3 });
+  const fz = WALL_BACK_Z + 0.5, t = 2.2, d = 2.6;
+  const mk = (w,h,x,y) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), frameM);
+    m.position.set(x,y,fz); m.castShadow = true; scene.add(m);
+  };
+  mk(WIN.w + t*2, t, WIN.cx, WIN.y1 + t/2);
+  mk(WIN.w + t*2, t, WIN.cx, WIN.y0 - t/2);
+  mk(t, WIN.y1 - WIN.y0, WIN.cx - WIN.w/2 - t/2, (WIN.y0+WIN.y1)/2);
+  mk(t, WIN.y1 - WIN.y0, WIN.cx + WIN.w/2 + t/2, (WIN.y0+WIN.y1)/2);
+  const sill = new THREE.Mesh(new THREE.BoxGeometry(WIN.w + 10, 2, 7), trimMat);
+  sill.position.set(WIN.cx, WIN.y0 - 1, WALL_BACK_Z + 3.4);
+  sill.castShadow = sill.receiveShadow = true; scene.add(sill);
+}
+
+/* THE VIEW — your photo behind the glass, as a CSS3D <img>.
+   DOM images render from anywhere — including file:// — unlike WebGL
+   textures, which browsers block for local files. A NoBlending "hole"
+   plane in the window opening lets it show through, exactly the same
+   trick as the laptop screen; the frame and walls still occlude it. */
+const VIEW_PX_W = 1280, VIEW_PX_H = 880;
+const viewEl = document.createElement('div');
+viewEl.style.cssText = `width:${VIEW_PX_W}px;height:${VIEW_PX_H}px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  background:linear-gradient(#7FA3CF,#DCE9F5);color:#1F3B5C;
+  font:700 42px/1.5 system-ui,sans-serif`;
+viewEl.innerHTML = 'Add  window-view.jpg  next to laptop.html<br>' +
+  '<span style="font-size:26px;font-weight:400">(Windows hides extensions — the file may really be window-view.jpg.jpg)</span>';
+{
+  const names = ['window-view.jpg', 'window-view.jpeg', 'window-view.png',
+                 'window-view.jpg.jpg', 'window-view.JPG', 'busan.jpg'];
+  (function tryImg(i) {
+    if (i >= names.length) {
+      console.warn('[office] no window-view image found. Tried: ' + names.join(', '));
+      return;
+    }
+    const im = new Image();
+    im.onload = () => {
+      viewEl.innerHTML = '';
+      im.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
+      viewEl.appendChild(im);
+      console.info('[office] window view loaded from ' + names[i]);
+    };
+    im.onerror = () => tryImg(i + 1);
+    im.src = names[i];
+  })(0);
+}
+const viewObj = new CSS3DObject(viewEl);
+viewObj.position.set(WIN.cx, (WIN.y0 + WIN.y1) / 2, WALL_BACK_Z - 1.5);
+viewObj.scale.setScalar((WIN.w * 1.08) / VIEW_PX_W);  // slight overscan hides the reveal
+scene.add(viewObj);
+/* The see-through hole, sized to the opening, sitting in the wall plane. */
+const winHole = new THREE.Mesh(
+  new THREE.PlaneGeometry(WIN.w, WIN.y1 - WIN.y0),
+  new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0, transparent: false,
+                                blending: THREE.NoBlending, side: THREE.DoubleSide }));
+winHole.position.set(WIN.cx, (WIN.y0 + WIN.y1) / 2, WALL_BACK_Z + 0.2);
+scene.add(winHole);
+
+/* Side walls + posters */
+for (const sx of [-1, 1]) {
+  const w = new THREE.Mesh(new THREE.BoxGeometry(3, CEIL_Y - FLOOR_Y, WALL_FRONT_Z - WALL_BACK_Z), wallMat);
+  w.position.set(sx * ROOM_HX, (FLOOR_Y + CEIL_Y)/2, (WALL_BACK_Z + WALL_FRONT_Z)/2);
+  w.receiveShadow = true; scene.add(w);
+}
+{ // front wall behind the viewer, so the 270° sweep never faces void
+  const w = new THREE.Mesh(new THREE.BoxGeometry(ROOM_HX*2, CEIL_Y - FLOOR_Y, 3), wallMat);
+  w.position.set(0, (FLOOR_Y + CEIL_Y)/2, WALL_FRONT_Z);
+  scene.add(w);
+}
+/* Four certificate frames on the BACK wall, flanking the window, where the
+   camera actually looks. Rendered as CSS3D <img>s so they load over file://
+   too. Each is clickable — opens the full certificate in a new tab. The dark
+   frame + matte sit BEHIND the photo (larger z-offset) so the image is never
+   covered; a NoBlending hole keeps the wall from bleeding through. */
+const CERT_W = 30, CERT_H = 23, CERT_PX_W = 660, CERT_PX_H = 510;
+const frameMat = new THREE.MeshStandardMaterial({ color: 0x2A2016, roughness:.55 });
+const matteMat = new THREE.MeshStandardMaterial({ color: 0xF3EFE7, roughness:.9 });
+const certObjs = [];   // for raycasting
+
+/* [x on back wall, y, number] — two low on each side of the window, two high */
+const CERTS = [
+  [-110, 40, 1], [-110, 78, 2],
+  [ 100, 40, 3], [ 100, 78, 4],
+];
+for (const [cx, cy, num] of CERTS) {
+  const zWall = WALL_BACK_Z;                 // back wall plane
+  // frame + matte BEHIND the image
+  const fr = new THREE.Mesh(new THREE.BoxGeometry(CERT_W + 6, CERT_H + 6, 1.4), frameMat);
+  fr.position.set(cx, cy, zWall + 1.0); fr.castShadow = true; scene.add(fr);
+  const matte = new THREE.Mesh(new THREE.BoxGeometry(CERT_W + 2.5, CERT_H + 2.5, 0.6), matteMat);
+  matte.position.set(cx, cy, zWall + 1.7); scene.add(matte);
+
+  // the certificate image, as a CSS3D <img>, in FRONT of the matte
+  const el = document.createElement('div');
+  el.style.cssText = `width:${CERT_PX_W}px;height:${CERT_PX_H}px;overflow:hidden;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    background:#FBF9F4;color:#7A6A52;font:600 32px/1.4 system-ui,sans-serif`;
+  el.innerHTML = `Certificate ${num}<br><span style="font-size:21px;font-weight:400">` +
+    `add certificate-${num}.jpg</span>`;
+
+  let foundSrc = null;
+  (function loadCert(cands, i) {
+    if (i >= cands.length) {
+      console.warn(`[office] certificate-${num}: none of ${cands.join(', ')} loaded.`);
+      return;
+    }
+    const im = new Image();
+    im.onload = () => {
+      foundSrc = cands[i];
+      chole.userData.src = cands[i];         // raycaster reads this on click
+      el.innerHTML = '';
+      im.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;pointer-events:none';
+      el.appendChild(im);
+      console.info(`[office] certificate-${num} loaded from ${cands[i]}`);
+    };
+    im.onerror = () => loadCert(cands, i + 1);
+    im.src = cands[i];
+  })([`certificate-${num}.jpg`, `certificate-${num}.jpeg`, `certificate-${num}.png`,
+      `certificate-${num}.JPG`], 0);
+
+  const obj = new CSS3DObject(el);
+  obj.position.set(cx, cy, zWall + 2.4);     // in front of the matte
+  obj.scale.setScalar(CERT_H / CERT_PX_H);
+  scene.add(obj);
+
+  // see-through hole so the WebGL wall doesn't paint over the CSS layer;
+  // also the raycast target for clicking the certificate.
+  const chole = new THREE.Mesh(
+    new THREE.PlaneGeometry(CERT_W, CERT_H),
+    new THREE.MeshBasicMaterial({ color:0, opacity:0, transparent:false,
+                                  blending: THREE.NoBlending, side: THREE.DoubleSide }));
+  chole.position.set(cx, cy, zWall + 2.2);
+  chole.userData.cert = num;
+  scene.add(chole);
+  certObjs.push(chole);
+}
+
+/* ── Nameplate: the masthead as a physical display piece on the wall.
+   Canvas-drawn for crisp text, clickable → the About section. ─────── */
+function nameplateTexture() {
+  const W = 1024, H = 288, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.fillStyle = '#002A5C'; g.fillRect(0, 0, W, H);
+  g.strokeStyle = '#F5D9A0'; g.lineWidth = 4;
+  g.strokeRect(18, 18, W - 36, H - 36);
+  g.fillStyle = '#FFFFFF';
+  g.textAlign = 'center';
+  g.font = '700 92px Archivo, system-ui, sans-serif';
+  g.fillText('CHENYU LI', W / 2, 138);
+  g.fillStyle = '#BFD2E6';
+  g.font = '500 34px "IBM Plex Mono", monospace';
+  g.fillText('MECHANICAL ENGINEERING · UNIVERSITY OF TORONTO', W / 2, 208);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  return tex;
+}
+const plate = new THREE.Mesh(
+  new THREE.PlaneGeometry(62, 17.4),
+  new THREE.MeshBasicMaterial({ map: nameplateTexture() }));   // unlit = max contrast
+plate.position.set(WIN.cx, 120, WALL_BACK_Z + 2.2);
+scene.add(plate);
+const plateBack = new THREE.Mesh(new THREE.BoxGeometry(64, 19.4, 1.2),
+  new THREE.MeshStandardMaterial({ color: 0x2E3742, roughness:.5 }));
+plateBack.position.set(WIN.cx, 120, WALL_BACK_Z + 1.4);
+plateBack.castShadow = true;
+scene.add(plateBack);
+
+/* Rug under the desk */
+const rug = new THREE.Mesh(new THREE.BoxGeometry(210, 0.8, 130),
+  new THREE.MeshStandardMaterial({ color: 0xB9C2CC, roughness:.98 }));
+rug.position.set(0, FLOOR_Y + 0.4, 8);
+rug.receiveShadow = true;
+scene.add(rug);
+
+/* ── The table — now properly on legs ──────────────────────────────── */
+const deskTop = new THREE.Mesh(new THREE.BoxGeometry(150, 4, 90),
+  new THREE.MeshStandardMaterial({ color: 0x9A7B57, roughness:.85 }));
+deskTop.position.set(0, -2, 2);
+deskTop.castShadow = deskTop.receiveShadow = true;
+scene.add(deskTop);
+
+{
+  const legM = new THREE.MeshStandardMaterial({ color: 0x35404C, roughness:.5, metalness:.4 });
+  const LEG_H = (-4) - FLOOR_Y;                 // underside of top → floor
+  for (const [lx, lz] of [[-68, -36], [68, -36], [-68, 40], [68, 40]]) {
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(4, LEG_H, 4), legM);
+    leg.position.set(lx, -4 - LEG_H/2, lz + 2);
+    leg.castShadow = true;
+    scene.add(leg);
+  }
+  for (const lz of [-36, 40]) {                 // stretcher rails
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(132, 2.4, 3), legM);
+    rail.position.set(0, -7, lz + 2);
+    rail.castShadow = true;
+    scene.add(rail);
+  }
+}
+
+/* Large desk mousepad (extended type, ~80×35cm) under keyboard and mouse. */
+const mat = new THREE.Mesh(new THREE.BoxGeometry(80, 0.3, 35),
+  new THREE.MeshStandardMaterial({ color: 0x1A1E24, roughness:.98 }));
+mat.position.set(2, 0.15, 3); mat.receiveShadow = true; scene.add(mat);
+// stitched edge
+const matEdge = new THREE.Mesh(new THREE.BoxGeometry(81, 0.42, 36),
+  new THREE.MeshStandardMaterial({ color: 0x2C3138, roughness:.9 }));
+matEdge.position.set(2, 0.14, 3); scene.add(matEdge);
+
+/* ── Laptop stand ──────────────────────────────────────────────────── */
+const standMat = new THREE.MeshStandardMaterial({ color: 0x2A3138, roughness:.5, metalness:.4 });
+const standBase = new THREE.Mesh(new THREE.BoxGeometry(20, 0.8, 16), standMat);
+standBase.position.set(-6, 0.8, -2); standBase.castShadow = true; scene.add(standBase);
+for (const sx of [-1, 1]) {              // plain vertical supports — no odd angles
+  const post = new THREE.Mesh(new THREE.BoxGeometry(1.6, 7.6, 1.4), standMat);
+  post.position.set(-6 + sx * 8, 4.9, -2);
+  post.castShadow = true;
+  scene.add(post);
+}
+const standTop = new THREE.Mesh(new THREE.BoxGeometry(22, 0.8, 17), standMat);
+standTop.position.set(-6, 9.0, -2.6);
+standTop.rotation.x = STAND_TILT;         // matches the laptop's tilt exactly
+standTop.castShadow = true;
+scene.add(standTop);
+
+/* ── Laptop ────────────────────────────────────────────────────────── */
+const alu  = new THREE.MeshStandardMaterial({ color: 0xC7D2DE, roughness:.35, metalness:.6 });
+const dark = new THREE.MeshStandardMaterial({ color: 0x151B22, roughness:.55 });
+
+const laptop = new THREE.Group();
+laptop.position.set(-6, 10.0, -3.0);      // resting on the stand's top plate
+laptop.rotation.x = STAND_TILT;
+scene.add(laptop);
+
+const base = new THREE.Mesh(new THREE.BoxGeometry(SCREEN_W + 2, 1.1, 21), alu);
+base.castShadow = base.receiveShadow = true; laptop.add(base);
+
+/* Realistic ports recessed into the chassis edges. Each is a dark inset slot
+   sitting flush in the aluminium, sized like the real connectors. The base
+   is 1.1 tall, so ports are thin slots centred on the edge. */
+{
+  const slotM = new THREE.MeshStandardMaterial({ color: 0x090B0E, roughness:.8 });
+  const usbBlue = new THREE.MeshStandardMaterial({ color: 0x2559A6, roughness:.6 });
+  const halfW = (SCREEN_W + 2) / 2;
+  // recess a slot: a dark box set INTO the edge (x just inside the wall)
+  const portSlot = (w, h, z, side, mat) => {
+    const s = new THREE.Mesh(new THREE.BoxGeometry(1.2, h, w), mat);
+    s.position.set(side * (halfW - 0.4), 0.05, z);   // 0.4 inset so it reads as recessed
+    laptop.add(s);
+    return s;
+  };
+  // LEFT edge: USB-C, USB-C, HDMI
+  portSlot(1.6, 0.55, -5.5, -1, slotM);
+  portSlot(1.6, 0.55, -3.0, -1, slotM);
+  portSlot(2.6, 0.7, 0.2, -1, slotM);       // HDMI, wider
+  // RIGHT edge: USB-A (blue tongue), 3.5mm jack
+  portSlot(2.2, 0.75, -4.0, 1, slotM);
+  const tongue = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.28, 1.7), usbBlue);
+  tongue.position.set(halfW - 0.55, 0.05, -4.0); laptop.add(tongue);
+  const jack = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 1.0, 12), slotM);
+  jack.rotation.z = Math.PI/2; jack.position.set(halfW - 0.4, 0.05, -0.5); laptop.add(jack);
+  // the charging cable plugs into a USB-C on the LEFT rear — barrel + cable stub
+  const plugHead = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.7, 1.5), slotM);
+  plugHead.position.set(-(halfW + 0.6), 0.05, -8.0); laptop.add(plugHead);
+}
+
+/* ── Real keyboard: full layout drawn to a canvas texture ──────────── */
+function keyboardTexture() {
+  const W = 2048, H = 900, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.fillStyle = '#10151B'; g.fillRect(0, 0, W, H);          // deck well
+
+  const rows = [
+    // [ [label, widthUnits], ... ]  — a standard 60%+fn laptop layout
+    [['esc',1.3],['F1',1],['F2',1],['F3',1],['F4',1],['F5',1],['F6',1],['F7',1],['F8',1],['F9',1],['F10',1],['F11',1],['F12',1],['del',1.3]],
+    [['`',1],['1',1],['2',1],['3',1],['4',1],['5',1],['6',1],['7',1],['8',1],['9',1],['0',1],['-',1],['=',1],['⌫',1.7]],
+    [['tab',1.6],['Q',1],['W',1],['E',1],['R',1],['T',1],['Y',1],['U',1],['I',1],['O',1],['P',1],['[',1],[']',1],['\\',1.1]],
+    [['caps',1.9],['A',1],['S',1],['D',1],['F',1],['G',1],['H',1],['J',1],['K',1],['L',1],[';',1],["'",1],['enter ⏎',2]],
+    [['shift',2.4],['Z',1],['X',1],['C',1],['V',1],['B',1],['N',1],['M',1],[',',1],['.',1],['/',1],['shift',2.4]],
+    [['ctrl',1.3],['fn',1.1],['⊞',1.1],['alt',1.1],['',6.4],['alt',1.1],['ctrl',1.1],['◄',1],['▲▼',1],['►',1]],
+  ];
+
+  const PAD = 44, GAP = 10, ROW_H = (H - PAD*2 - GAP*5) / 6;
+  let y = PAD;
+  for (const row of rows) {
+    const units = row.reduce((s, k) => s + k[1], 0);
+    const unitW = (W - PAD*2 - GAP*(row.length-1)) / units;
+    let x = PAD;
+    for (const [label, u] of row) {
+      const kw = unitW * u;
+      // key cap
+      g.fillStyle = '#232C36';
+      g.beginPath(); g.roundRect(x, y, kw, ROW_H, 9); g.fill();
+      g.fillStyle = '#2B3541';
+      g.beginPath(); g.roundRect(x+3, y+2, kw-6, ROW_H-8, 7); g.fill();
+      // legend
+      if (label) {
+        g.fillStyle = '#C9D3DE';
+        const small = label.length > 2;
+        g.font = (small ? 26 : 34) + 'px "Segoe UI", system-ui, sans-serif';
+        g.textAlign = label.length === 1 ? 'left' : 'center';
+        g.textBaseline = label.length === 1 ? 'top' : 'middle';
+        if (label.length === 1) g.fillText(label, x + 12, y + 10);
+        else g.fillText(label, x + kw/2, y + ROW_H/2);
+      }
+      x += kw + GAP;
+    }
+    y += ROW_H + GAP;
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  return tex;
+}
+
+const kbd = new THREE.Mesh(
+  new THREE.PlaneGeometry(SCREEN_W - 2, 12.2),
+  new THREE.MeshStandardMaterial({ map: keyboardTexture(), roughness:.85 }));
+kbd.rotation.x = -Math.PI / 2;
+kbd.position.set(0, 0.58, -2.4);
+laptop.add(kbd);
+
+const trackpad = new THREE.Mesh(new THREE.BoxGeometry(9.5, 0.1, 5.6),
+  new THREE.MeshStandardMaterial({ color: 0xAEBBC9, roughness:.3, metalness:.4 }));
+trackpad.position.set(0, 0.61, 6.6); laptop.add(trackpad);
+
+const lid = new THREE.Group();
+lid.position.set(0, 0.55, -10.3);
+lid.rotation.x = LID_OPEN;
+laptop.add(lid);
+
+const lidShell = new THREE.Mesh(new THREE.BoxGeometry(SCREEN_W + 2, SCREEN_H + 2.2, 0.7), alu);
+lidShell.position.y = (SCREEN_H + 2.2) / 2;
+lidShell.castShadow = true; lid.add(lidShell);
+
+const bezel = new THREE.Mesh(new THREE.BoxGeometry(SCREEN_W + 0.7, SCREEN_H + 1.1, 0.18), dark);
+bezel.position.set(0, (SCREEN_H + 2.2) / 2, 0.42); lid.add(bezel);
+
+for (const x of [-9, 9]) {
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 5.5, 16), dark);
+  barrel.rotation.z = Math.PI / 2;
+  barrel.position.set(x, 0.55, -10.3);
+  laptop.add(barrel);
+}
+
+/* ── The screen: a Windows-11-style desktop ────────────────────────── */
+const screenAnchor = new THREE.Object3D();
+screenAnchor.position.set(0, (SCREEN_H + 2.2) / 2, 0.54);
+lid.add(screenAnchor);
+
+const SVGS = {
+  win: '<svg viewBox="0 0 24 24"><path fill="#1668C2" d="M3 3h8.5v8.5H3zM12.5 3H21v8.5h-8.5zM3 12.5h8.5V21H3zM12.5 12.5H21V21h-8.5z"/></svg>',
+  linkedin: '<svg viewBox="0 0 24 24"><rect width="24" height="24" rx="3.5" fill="#0A66C2"/><path fill="#fff" d="M7.1 9.2H4.6V19h2.5zM5.85 8.1a1.45 1.45 0 1 0 0-2.9 1.45 1.45 0 0 0 0 2.9zM19.4 13.6c0-2.6-1.4-4.6-3.9-4.6-1.3 0-2.2.7-2.7 1.5V9.2H10.3V19h2.5v-5c0-1.2.6-2.2 1.9-2.2s1.7 1 1.7 2.2v5h2.5z"/></svg>',
+  github: '<svg viewBox="0 0 24 24"><path fill="#0F1720" d="M12 1.8a10.2 10.2 0 0 0-3.22 19.88c.51.1.7-.22.7-.49v-1.9c-2.84.62-3.44-1.2-3.44-1.2-.46-1.18-1.13-1.5-1.13-1.5-.93-.63.07-.62.07-.62 1.03.07 1.57 1.06 1.57 1.06.91 1.57 2.4 1.11 2.98.85.09-.66.36-1.11.65-1.37-2.27-.26-4.65-1.13-4.65-5.04 0-1.11.4-2.02 1.05-2.74-.1-.26-.45-1.3.1-2.7 0 0 .86-.28 2.8 1.05a9.7 9.7 0 0 1 5.1 0c1.95-1.33 2.8-1.05 2.8-1.05.56 1.4.21 2.44.1 2.7.66.72 1.05 1.63 1.05 2.74 0 3.92-2.39 4.78-4.66 5.03.37.32.69.94.69 1.9v2.82c0 .27.18.6.7.49A10.2 10.2 0 0 0 12 1.8z"/></svg>',
+  maps: '<svg viewBox="0 0 24 24"><path fill="#E5484D" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.6" fill="#fff"/></svg>',
+  magnifier: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="#F5D9A0" stroke-width="2.6"/><path stroke="#F5D9A0" stroke-width="2.8" stroke-linecap="round" d="m15.3 15.3 5 5"/></svg>',
+  globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="#7FDBCA" stroke-width="2.1"/><path fill="none" stroke="#7FDBCA" stroke-width="1.8" d="M3 12h18M12 3a14.5 14.5 0 0 1 0 18M12 3a14.5 14.5 0 0 0 0 18"/></svg>',
+  /* Chrome-style roundel: three wedges + blue hub, as a browser glyph. */
+  chrome: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#fff"/><path fill="#EA4335" d="M12 12 L3.34 7 A10 10 0 0 1 20.66 7 Z"/><path fill="#34A853" d="M12 12 L3.34 7 A10 10 0 0 0 12 22 Z"/><path fill="#FBBC05" d="M12 12 L12 22 A10 10 0 0 0 20.66 7 Z"/><circle cx="12" cy="12" r="5.3" fill="#fff"/><circle cx="12" cy="12" r="4.2" fill="#4285F4"/></svg>',
+  wifi: '<svg viewBox="0 0 24 24"><path fill="none" stroke="#25313E" stroke-width="1.9" stroke-linecap="round" d="M2.5 9.2a14.5 14.5 0 0 1 19 0M5.6 12.6a10 10 0 0 1 12.8 0M8.8 15.9a5.4 5.4 0 0 1 6.4 0"/><circle cx="12" cy="19" r="1.5" fill="#25313E"/></svg>',
+  battery: '<svg viewBox="0 0 24 24"><rect x="2" y="8" width="17" height="9" rx="2" fill="none" stroke="#25313E" stroke-width="1.7"/><rect x="4" y="10" width="11" height="5" rx="1" fill="#25313E"/><rect x="20" y="10.6" width="2" height="3.8" rx="1" fill="#25313E"/></svg>',
+};
+
+const winEl = document.createElement('div');
+winEl.className = 'win';
+winEl.innerHTML = `
+  <div class="icons">
+    <button class="ico" data-go="linkedin">${SVGS.linkedin}<span>LinkedIn</span></button>
+    <button class="ico" data-go="github">${SVGS.github}<span>GitHub</span></button>
+    <button class="ico" data-go="maps">${SVGS.maps}<span>Maps</span></button>
+    <button class="ico" data-go="portfolio">${SVGS.chrome}<span>Chrome</span></button>
+  </div>
+  <div class="browser" id="w-browser">
+    <div class="b-top">
+      <button class="b-dot b-close" id="w-close" title="Close" aria-label="Close browser"></button>
+      <input class="b-url" id="w-url" value="chenyu-u.github.io"
+             aria-label="Address and search bar" spellcheck="false" />
+    </div>
+    <iframe id="w-frame" src="index.html" title="Chenyu Li — portfolio site"></iframe>
+  </div>
+  <div class="bar">
+    <div class="center">
+      <button class="tbtn" data-go="portfolio" title="Start">${SVGS.win}</button>
+      <button class="search">${SVGS.magnifier.replace('#F5D9A0','#5A6572')} Type here to search</button>
+      <button class="tbtn" data-go="linkedin">${SVGS.linkedin}</button>
+      <button class="tbtn" data-go="github">${SVGS.github}</button>
+      <button class="tbtn" data-go="maps">${SVGS.maps}</button>
+      <button class="tbtn" data-go="portfolio">${SVGS.chrome}</button>
+    </div>
+    <div class="tray">
+      ${SVGS.wifi}${SVGS.battery}
+      <div class="clock"><div id="w-time">--:--</div><div id="w-date">—</div></div>
+    </div>
+  </div>`;
+const browserEl = () => winEl.querySelector('#w-browser');
+winEl.addEventListener('click', e => {
+  if (e.target.closest('#w-close')) { browserEl().classList.add('closed'); return; }
+  const b = e.target.closest('[data-go]');
+  if (!b) return;
+  const go = b.dataset.go;
+  if (go === 'portfolio') {                      // Chrome: open/raise the browser
+    browserEl().classList.remove('closed');
+    winEl.querySelector('#w-frame').src = 'index.html';
+    winEl.querySelector('#w-url').value = 'chenyu-u.github.io';
+    return;
+  }
+  const url = LINKS[go];
+  if (/^https?:/.test(url)) window.open(url, '_blank', 'noopener');
+  else window.location.href = url;               // maps → full-page travel map
+});
+
+/* The search pill opens the browser and puts the cursor in its address bar.
+   Type anything, press Enter: URLs load in a new tab; anything else runs a
+   real web search in a new tab. (Search engines refuse to be iframed, so
+   results open outside — that's their restriction, not ours.) */
+winEl.querySelector('.search').addEventListener('click', () => {
+  browserEl().classList.remove('closed');
+  const u = winEl.querySelector('#w-url');
+  u.value = ''; u.placeholder = 'Search the web or type a URL';
+  u.focus();
+});
+winEl.querySelector('#w-url').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const q = e.target.value.trim();
+  if (!q) return;
+  if (/^https?:\/\//.test(q)) window.open(q, '_blank', 'noopener');
+  else if (/^[\w-]+(\.[\w-]+)+/.test(q)) window.open('https://' + q, '_blank', 'noopener');
+  else window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank', 'noopener');
+});
+
+function tickClock() {
+  const n = new Date();
+  const t = winEl.querySelector('#w-time'), d = winEl.querySelector('#w-date');
+  if (t) t.textContent = n.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
+  if (d) d.textContent = n.toLocaleDateString([], { month:'numeric', day:'numeric', year:'numeric' });
+}
+tickClock();
+setInterval(tickClock, 15000);
+
+const cssObj = new CSS3DObject(winEl);
+cssObj.scale.setScalar(SCREEN_W / SCR_PX_W);
+screenAnchor.add(cssObj);
+
+const hole = new THREE.Mesh(
+  new THREE.PlaneGeometry(SCREEN_W, SCREEN_H),
+  new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0, transparent: false,
+                                blending: THREE.NoBlending, side: THREE.DoubleSide }));
+screenAnchor.add(hole);
+
+/* ── Mouse: a real mouse shape (~11×6cm), not a squashed ball ──────── */
+{
+  const mBody = new THREE.MeshStandardMaterial({ color: 0x2B3038, roughness:.5, metalness:.15 });
+  const mouse = new THREE.Group();
+  // domed body: a scaled hemisphere-ish capsule from a sphere
+  const shell = new THREE.Mesh(new THREE.SphereGeometry(3, 28, 18, 0, Math.PI*2, 0, Math.PI/2), mBody);
+  shell.scale.set(1, 1.1, 1.7); shell.position.y = 0.3; shell.castShadow = true; mouse.add(shell);
+  const bottom = new THREE.Mesh(new THREE.BoxGeometry(6, 0.6, 10.2), mBody);
+  bottom.position.y = 0.3; mouse.add(bottom);
+  // scroll wheel
+  const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.8, 14),
+    new THREE.MeshStandardMaterial({ color: 0x11151A, roughness:.6 }));
+  wheel.rotation.z = Math.PI/2; wheel.position.set(0, 3.5, -3); mouse.add(wheel);
+  // button split line
+  const split = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.2, 5),
+    new THREE.MeshStandardMaterial({ color: 0x11151A }));
+  split.position.set(0, 3.4, -1.5); mouse.add(split);
+  mouse.position.set(30, 0.3, 5);
+  mouse.rotation.y = -0.15;
+  scene.add(mouse);
+}
+
+
+/* ── Robotic-arm prototype — larger (~1.7×), more detail. Pose still uses
+   the verified +0.95 / -1.35 signs so nothing folds through the board. ── */
+const armGroup = new THREE.Group();
+armGroup.position.set(-58, 0, -3);
+armGroup.rotation.y = 0;
+armGroup.scale.setScalar(1.7);
+scene.add(armGroup);
+{
+  const linkM   = new THREE.MeshStandardMaterial({ color: NAVY, roughness:.4, metalness:.35 });
+  const jointM  = new THREE.MeshStandardMaterial({ color: BLUE, roughness:.3, metalness:.45 });
+  const servoM  = new THREE.MeshStandardMaterial({ color: 0x1B222B, roughness:.55, metalness:.2 });
+  const steelM  = new THREE.MeshStandardMaterial({ color: 0xB8C0C8, roughness:.35, metalness:.7 });
+
+  const board = new THREE.Mesh(new THREE.BoxGeometry(20, 1.0, 18),
+    new THREE.MeshStandardMaterial({ color: 0x3A2E22, roughness:.8 }));   // dark ply base
+  board.position.y = 0.5; board.castShadow = board.receiveShadow = true; armGroup.add(board);
+
+  // base servo housing + turntable
+  const houseB = new THREE.Mesh(new THREE.BoxGeometry(7, 4, 7), servoM);
+  houseB.position.y = 3; houseB.castShadow = true; armGroup.add(houseB);
+  const turn = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 4.0, 1.6, 32), jointM);
+  turn.position.y = 5.6; turn.castShadow = true; armGroup.add(turn);
+  const column = new THREE.Mesh(new THREE.CylinderGeometry(1.7, 2.0, 3.4, 20), linkM);
+  column.position.y = 7.6; column.castShadow = true; armGroup.add(column);
+
+  const shoulder = new THREE.Group();
+  shoulder.position.y = 9.3;
+  shoulder.rotation.z = 0.80;            // extends toward the laptop (verified claw above it)
+  armGroup.add(shoulder);
+  // shoulder servo block
+  const sServo = new THREE.Mesh(new THREE.BoxGeometry(4.6, 4.6, 5), servoM);
+  sServo.castShadow = true; shoulder.add(sServo);
+  const j1 = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 1.8, 5.4, 22), jointM);
+  j1.rotation.x = Math.PI/2; j1.castShadow = true; shoulder.add(j1);
+  // twin-plate upper arm (two side plates + spacer = bracket look)
+  for (const s of [1,-1]) {
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(10, 3, 0.6), linkM);
+    plate.position.set(5, 0, s*1.9); plate.castShadow = true; shoulder.add(plate);
+  }
+  const spacer = new THREE.Mesh(new THREE.BoxGeometry(9.4, 2.2, 3), linkM);
+  spacer.position.x = 5; shoulder.add(spacer);
+
+  const elbow = new THREE.Group();
+  elbow.position.x = 10;
+  elbow.rotation.z = -0.95;             // cumulative -0.15: claw tip lands above the laptop
+  shoulder.add(elbow);
+  const eServo = new THREE.Mesh(new THREE.BoxGeometry(3.8, 3.8, 4.4), servoM);
+  eServo.castShadow = true; elbow.add(eServo);
+  const j2 = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 4.6, 20), jointM);
+  j2.rotation.x = Math.PI/2; j2.castShadow = true; elbow.add(j2);
+  for (const s of [1,-1]) {
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(8, 2.4, 0.5), linkM);
+    plate.position.set(4, 0, s*1.5); plate.castShadow = true; elbow.add(plate);
+  }
+
+  // wrist + gripper
+  const wrist = new THREE.Group();
+  wrist.position.x = 8;
+  elbow.add(wrist);
+  const wServo = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 3.4), servoM);
+  wServo.castShadow = true; wrist.add(wServo);
+  const palm = new THREE.Mesh(new THREE.BoxGeometry(2, 3.4, 3.4), steelM);
+  palm.position.x = 2.2; wrist.add(palm);
+  for (const s of [1, -1]) {                       // two gripper fingers
+    const fingr = new THREE.Mesh(new THREE.BoxGeometry(4, 0.7, 0.7), steelM);
+    fingr.position.set(5, 0, s * 1.1);
+    fingr.rotation.y = -s * 0.24;
+    fingr.castShadow = true;
+    wrist.add(fingr);
+  }
+
+  // a small blue part on the board for it to pick
+  const cube = new THREE.Mesh(new THREE.BoxGeometry(2.2, 2.2, 2.2),
+    new THREE.MeshStandardMaterial({ color: 0x3B82D9, roughness:.4 }));
+  cube.position.set(5, 2.1, 4.5); cube.castShadow = true; armGroup.add(cube);
+}
+
+/* ══ CABLE MANAGEMENT — routed to a power bar on the window wall ═════
+   Laptop and lamp cables run to the BACK edge of the desk, down the back
+   leg, then along the floor to a power bar sitting against the window
+   (back) wall. The bar is fed by an outlet on that wall above it. Cables
+   hug surfaces, stay clear of the 3D printer, and nothing floats. */
+{
+  const cableM = new THREE.MeshStandardMaterial({ color: 0x15171B, roughness:.9 });
+  const stripM = new THREE.MeshStandardMaterial({ color: 0xECECEE, roughness:.5 });
+  const plateM = new THREE.MeshStandardMaterial({ color: 0xF4F1EB, roughness:.7 });
+  const up = new THREE.Vector3(0,1,0), dir = new THREE.Vector3();
+  const V = (x,y,z)=>new THREE.Vector3(x,y,z);
+  function run(pts, r=0.5){                // polyline cable hugging surfaces
+    for(let i=0;i<pts.length-1;i++){
+      dir.subVectors(pts[i+1],pts[i]); const len=dir.length();
+      if(len<0.01) continue;
+      const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,6),cableM);
+      m.position.copy(pts[i]).add(pts[i+1]).multiplyScalar(0.5);
+      m.quaternion.setFromUnitVectors(up,dir.clone().normalize());
+      scene.add(m);
+    }
+  }
+
+  const BW = WALL_BACK_Z;                  // window/back wall plane z=-62
+  const bz = BW + 6;                       // bar sits just off the wall
+  const BARX = 78;                         // right of the window, clear of the view
+  const BARY = FLOOR_Y + 4;                // bar body centre height
+
+  // --- power strip: a raised white body with recessed sockets on top ---
+  const bar = new THREE.Group();
+  const barBody = new THREE.Mesh(new THREE.BoxGeometry(64, 8, 12), stripM);
+  barBody.castShadow = barBody.receiveShadow = true; bar.add(barBody);
+  // rounded dark end caps
+  for (const sx of [-1, 1]) {
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(2, 8.4, 12.4),
+      new THREE.MeshStandardMaterial({ color: 0x2A2D33, roughness:.6 }));
+    cap.position.set(sx * 32, 0, 0); bar.add(cap);
+  }
+  // six recessed socket wells on the top face
+  const SOCK = [-25, -15, -5, 5, 15, 25];
+  for (const sx of SOCK) {
+    const well = new THREE.Mesh(new THREE.BoxGeometry(7, 1.2, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3A3D42, roughness:.7 }));
+    well.position.set(sx, 4, 0); bar.add(well);
+    // two slots in each socket
+    for (const dz of [-1.4, 1.4]) {
+      const slot = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 2.4),
+        new THREE.MeshStandardMaterial({ color: 0x0B0C0E }));
+      slot.position.set(sx, 4.5, dz); bar.add(slot);
+    }
+  }
+  // power indicator + its own cable to the wall outlet
+  const led = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.6, 12),
+    new THREE.MeshStandardMaterial({ color: 0x37C878, emissive: 0x1C7A44, emissiveIntensity:.9 }));
+  led.rotation.x = Math.PI/2; led.position.set(-30, 2, 6.1); bar.add(led);
+  bar.position.set(BARX, BARY, bz); scene.add(bar);
+
+  // --- wall outlet above the bar, with the strip's own plug seated in it ---
+  const outlet = new THREE.Group();
+  outlet.add(new THREE.Mesh(new THREE.BoxGeometry(8, 12, 0.8), plateM));
+  for (const oy of [-2.6, 2.6]) {
+    const face = new THREE.Mesh(new THREE.BoxGeometry(5, 4, 0.4),
+      new THREE.MeshStandardMaterial({ color: 0xDAD6CE, roughness:.6 }));
+    face.position.set(0, oy, 0.5); outlet.add(face);
+    for (const dx of [-1, 1]) {
+      const slot = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.4, 0.4),
+        new THREE.MeshStandardMaterial({ color: 0x0B0C0E }));
+      slot.position.set(dx, oy + 0.3, 0.6); outlet.add(slot);
+    }
+  }
+  outlet.position.set(BARX, FLOOR_Y + 30, BW + 1.5); scene.add(outlet);
+  // the strip's plug seated in the LOWER outlet socket
+  const wallPlug = new THREE.Mesh(new THREE.BoxGeometry(5.4, 4, 3.2),
+    new THREE.MeshStandardMaterial({ color: 0xF3F3F0, roughness:.5 }));
+  wallPlug.position.set(BARX, FLOOR_Y + 27.4, BW + 3.2); wallPlug.castShadow = true; scene.add(wallPlug);
+  // cord from that plug down the wall into the strip
+  run([ V(BARX, FLOOR_Y + 25.4, bz), V(BARX, BARY + 5, bz), V(BARX, BARY + 4, bz) ], 0.5);
+
+  const dz = -41;                          // desk back edge
+
+  /* A plug that SEATS into a socket well on the strip: a moulded body sitting
+     in the well with the cable exiting the top, styled per device. Returns the
+     point where the device cable joins the plug. */
+  function plugAt(sockX, kind) {
+    const wx = BARX + sockX, wy = BARY + 4.5, wz = bz;   // top of that socket well
+    const g = new THREE.Group();
+    let col = 0x15171B, w = 5, h = 4.5, d = 6;
+    if (kind === 'brick') { col = 0xF3F3F0; w = 6; h = 5.5; d = 8; }   // white laptop brick
+    else if (kind === 'wart')  { col = 0x1B1D22; w = 4.5; h = 4.5; d = 5.5; }
+    else if (kind === 'slim')  { col = 0x111318; w = 4;   h = 3.6; d = 4; }
+    else /* earth */           { col = 0x14161A; w = 5;   h = 5;   d = 4.5; }
+    const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d),
+      new THREE.MeshStandardMaterial({ color: col, roughness:.55 }));
+    body.position.set(0, h/2 - 0.6, 0);      // sink slightly into the well
+    body.castShadow = true; g.add(body);
+    // strain-relief neck where the cable exits the top-back of the plug
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 2.2, 8),
+      new THREE.MeshStandardMaterial({ color: 0x15171B, roughness:.9 }));
+    neck.position.set(0, h - 0.4, -d/2 + 0.6); g.add(neck);
+    g.position.set(wx, wy, wz); scene.add(g);
+    return new THREE.Vector3(wx, wy + h - 0.4, wz - d/2 + 0.6);
+  }
+
+  // one plug per device, each in its own socket well (all six get used/visible)
+  const pLaptop = plugAt(-25, 'brick');
+  const pLamp   = plugAt(-5,  'wart');
+  const pSound  = plugAt(5,   'slim');
+  const pPrint  = plugAt(25,  'earth');
+
+  // --- laptop charger: plug at left-rear of laptop, with a little slack, to
+  //     the back desk edge, down the back-left leg, to its plug on the strip ---
+  run([
+    V(-22.6,10,-11),                                // exits the laptop
+    V(-24,7.5,-13), V(-24,5,-11), V(-23,2.5,-13),   // a loose slack loop hanging off the port
+    V(-22.6,0.6,dz+4), V(-25,0.5,dz),               // relaxed drop onto the desk, not taut
+    V(-42,0.7,dz), V(-58,0.5,dz),                   // gentle waviness along the back edge
+    V(-68,0.4,dz), V(-68,FLOOR_Y+5,dz),
+    V(-68,FLOOR_Y+3,dz), V(-68,FLOOR_Y+3,bz),
+    V(BARX-30,FLOOR_Y+3,bz), pLaptop
+  ],0.42);
+
+  // --- desk lamp: from the clamp on the right desk edge, back to the desk
+  //     edge, down the back-right leg, to its plug on the strip ---
+  run([
+    V(70,1,-6), V(70,0.4,-22), V(70,0.4,dz),
+    V(68,0.4,dz), V(68,FLOOR_Y+5,dz),
+    V(68,FLOOR_Y+3,dz), V(68,FLOOR_Y+3,bz), pLamp
+  ],0.42);
+
+  // --- soundbar: straight down the window wall into its plug ---
+  run([
+    V(WIN.cx+40,WIN.y0-1,BW+7), V(WIN.cx+40,FLOOR_Y+3,BW+5),
+    V(BARX+5,FLOOR_Y+3,bz), pSound
+  ],0.42);
+
+  // --- 3D printer: from the back of the printer along the wall to its plug ---
+  run([
+    V(120,FLOOR_Y+4,1), V(120,FLOOR_Y+3,bz), V(BARX+25,FLOOR_Y+3,bz), pPrint
+  ],0.5);
+}
+
+/* ══ OFFICE PROPS — realistic scale, all primitives ══════════════════ */
+
+/* Bambu-Lab-style printer to match the reference: dark grey enclosure with a
+   glass front, a black control-panel band across the top, and an AMS on top
+   where four spools stand upright inside a curved translucent hood. Grey/white
+   body, UofT-coloured filament. On the floor to the right. */
+{
+  const bodyM  = new THREE.MeshStandardMaterial({ color: 0xF0F0F2, roughness:.45, metalness:.15 });  // white body
+  const panelM = new THREE.MeshStandardMaterial({ color: 0x2A2D33, roughness:.5, metalness:.35 });  // dark grey panel
+  const lightM = new THREE.MeshStandardMaterial({ color: 0xC7CACE, roughness:.5, metalness:.2 });  // light grey trim
+  const glassM = new THREE.MeshStandardMaterial({ color: 0x11161B, roughness:.08, metalness:.2,
+                                                  transparent:true, opacity:.42 });
+  const hoodM  = new THREE.MeshStandardMaterial({ color: 0x2A2D33, roughness:.2, metalness:.1,
+                                                  transparent:true, opacity:.38 });
+  const p = new THREE.Group();
+  p.position.set(120, FLOOR_Y, 20);
+  const S = 38, wallT = 1.2;
+  const mkFace = (w,h,d,x,y,z,m) => { const f=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);
+    f.position.set(x,y,z); f.castShadow=f.receiveShadow=true; p.add(f); return f; };
+
+  // --- lower print enclosure ---
+  const EH = S;                                    // enclosure height
+  mkFace(S, wallT, S, 0, 2, 0, bodyM);             // floor
+  mkFace(wallT, EH, S, -S/2, 2+EH/2, 0, bodyM);    // left
+  mkFace(wallT, EH, S,  S/2, 2+EH/2, 0, bodyM);    // right
+  mkFace(S, EH, wallT, 0, 2+EH/2, -S/2, bodyM);    // back
+  mkFace(S, EH, 0.5,   0, 2+EH/2,  S/2, glassM);   // glass front door
+  // door frame + handle
+  mkFace(S, 1.4, 0.8, 0, 2, S/2+0.3, panelM);      // bottom door rail
+  mkFace(1.6, 5, 0.8, S/2-5, 2+EH/2, S/2+0.4, lightM);  // handle
+
+  // interior: bed + gantry + toolhead (visible through glass)
+  mkFace(S-8, 1, S-8, 0, 7, 0, new THREE.MeshStandardMaterial({ color:0x14161A, roughness:.7 }));
+  const gantry = new THREE.Mesh(new THREE.BoxGeometry(S-4, 1.6, 3),
+    new THREE.MeshStandardMaterial({ color: 0x2C3138, roughness:.4, metalness:.5 }));
+  gantry.position.set(0, 2+EH-9, 0); p.add(gantry);
+  const head = new THREE.Mesh(new THREE.BoxGeometry(4, 5, 4), panelM);
+  head.position.set(3, 2+EH-11, 0); p.add(head);
+
+  // --- black control-panel band across the TOP of the enclosure ---
+  const PB = 8;                                    // panel band height
+  mkFace(S+1, PB, S+1, 0, 2+EH+PB/2, 0, panelM);
+  // little round camera + status light on the panel front
+  const cam = new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.1,0.6,16), lightM);
+  cam.rotation.x = Math.PI/2; cam.position.set(-S/2+7, 2+EH+PB/2, S/2+0.6); p.add(cam);
+  const statusLed = new THREE.Mesh(new THREE.BoxGeometry(3,0.8,0.4),
+    new THREE.MeshStandardMaterial({ color:0x37C878, emissive:0x1C7A44, emissiveIntensity:.8 }));
+  statusLed.position.set(-S/2+13, 2+EH+PB/2, S/2+0.6); p.add(statusLed);
+  // control touchscreen on the panel, right side
+  const scr = new THREE.Mesh(new THREE.BoxGeometry(7, 4.4, 0.4),
+    new THREE.MeshStandardMaterial({ color: 0x1B9BC4, roughness:.25, emissive:0x0C5567, emissiveIntensity:.7 }));
+  scr.position.set(S/2-8, 2+EH+PB/2, S/2+0.6); p.add(scr);
+
+  // --- AMS on top, matching the reference: four spools sit side by side in a
+  //     dark base with dividers between them, turned so you see each spool's
+  //     curved tread from the front, under a snug curved translucent lid. ---
+  const amsY = 2+EH+PB;                             // sits on the panel band
+  const SP_R = 6.5, SP_T = 7.5;                     // spool radius / thickness
+  const SP_Y = amsY + 8;                            // spool centre height
+  const SP_X = [-13.5, -4.5, 4.5, 13.5];            // four positions across
+
+  // solid dark base the spools sit down into (hides their lower halves)
+  const amsBase = new THREE.Mesh(new THREE.BoxGeometry(S, 8, 16), panelM);
+  amsBase.position.y = amsY + 4; amsBase.castShadow = true; p.add(amsBase);
+
+  const spoolCols = [0x002A5C, 0x1668C2, 0xFFFFFF, 0x8B9BB0];   // UofT navy, blue, white, cool grey
+  spoolCols.forEach((col, i) => {
+    const x = SP_X[i];
+    // the filament winding: axis LEFT-RIGHT so the curved tread faces the room
+    const wind = new THREE.Mesh(new THREE.CylinderGeometry(SP_R - 0.5, SP_R - 0.5, SP_T, 30),
+      new THREE.MeshStandardMaterial({ color: col, roughness:.7 }));
+    wind.rotation.z = Math.PI/2;
+    wind.position.set(x, SP_Y, 0); wind.castShadow = true; p.add(wind);
+    // spool side flanges (clear-ish plastic discs either side of the winding)
+    for (const sx of [-1, 1]) {
+      const fl = new THREE.Mesh(new THREE.CylinderGeometry(SP_R, SP_R, 0.5, 30),
+        new THREE.MeshStandardMaterial({ color: 0x9AA3AD, roughness:.4,
+          transparent:true, opacity:.55 }));
+      fl.rotation.z = Math.PI/2;
+      fl.position.set(x + sx * SP_T/2, SP_Y, 0); p.add(fl);
+    }
+    // hub bore through the middle
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, SP_T + 0.8, 14),
+      new THREE.MeshStandardMaterial({ color: 0x1A1C20, roughness:.5 }));
+    hub.rotation.z = Math.PI/2; hub.position.set(x, SP_Y, 0); p.add(hub);
+  });
+
+  // dark dividers between and outside the spools
+  for (const dx of [-18, -9, 0, 9, 18]) {
+    const div = new THREE.Mesh(new THREE.BoxGeometry(0.8, 13, 14), panelM);
+    div.position.set(dx, SP_Y, 0); p.add(div);
+  }
+
+  // snug curved translucent lid arching over the spool tops
+  const hood = new THREE.Mesh(
+    new THREE.CylinderGeometry(SP_R + 1.4, SP_R + 1.4, S - 2, 28, 1, true, 0, Math.PI),
+    hoodM);
+  hood.rotation.z = Math.PI/2;                      // axis left-right, covers the top half
+  hood.position.set(0, SP_Y, 0); p.add(hood);
+  // lid end caps
+  for (const sx of [-1, 1]) {
+    const capH = new THREE.Mesh(new THREE.CircleGeometry(SP_R + 1.4, 28, 0, Math.PI), hoodM);
+    capH.rotation.y = Math.PI/2 * sx;
+    capH.position.set(sx*(S/2 - 1), SP_Y, 0); p.add(capH);
+  }
+  // thin rim along the front edge of the lid
+  const lidRim = new THREE.Mesh(new THREE.BoxGeometry(S - 2, 0.8, 0.8),
+    new THREE.MeshStandardMaterial({ color: 0x2A2D33, roughness:.5, metalness:.3 }));
+  lidRim.position.set(0, SP_Y, SP_R + 1.4); p.add(lidRim);
+
+  // PTFE tubes leaving each spool and dropping into the panel
+  SP_X.forEach(x => {
+    const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 7, 8),
+      new THREE.MeshStandardMaterial({ color: 0xDDE2E6, roughness:.6 }));
+    tube.position.set(x, amsY - 1.5, 5); p.add(tube);
+  });
+
+  scene.add(p);
+}
+
+/* Floor-to-ceiling bookshelves on both side walls with a glass enclosure.
+   Each book is a labelled spine (title drawn to a shared canvas texture)
+   with real STEM / aerospace / finance / robotics titles. */
+function bookSpineTexture(title, bg, fg) {
+  const W = 128, H = 512, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  // subtle top/bottom bands like a real cover
+  g.fillStyle = 'rgba(255,255,255,.14)'; g.fillRect(0, 24, W, 6); g.fillRect(0, H-30, W, 6);
+  g.save();
+  g.translate(W/2, H/2); g.rotate(-Math.PI/2);
+  g.fillStyle = fg; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.font = '600 30px Archivo, system-ui, sans-serif';
+  // wrap long titles across a couple of lines along the spine
+  const words = title.split(' '); const lines = []; let cur = '';
+  for (const w of words) { if ((cur+' '+w).length > 16) { lines.push(cur); cur = w; } else cur = cur ? cur+' '+w : w; }
+  if (cur) lines.push(cur);
+  const lh = 34, y0 = -(lines.length-1)*lh/2;
+  lines.forEach((ln,i)=> g.fillText(ln, 0, y0 + i*lh));
+  g.restore();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  return t;
+}
+
+const BOOK_TITLES = [
+  ['Introduction to Robotics','#1F3A5F','#EAF1F8'],
+  ['Modern Control Systems','#7A2E2E','#F5E7E1'],
+  ['Orbital Mechanics','#123B2E','#E4F2EA'],
+  ['Aircraft Structures','#2C3E70','#EDF0FA'],
+  ['Options Futures & Derivatives','#1D1D24','#F0C33C'],
+  ['Fluid Dynamics','#245C6E','#E7F5F8'],
+  ['Machine Learning','#4A2C63','#F1E7F7'],
+  ['Thermodynamics','#6E3A18','#FBEFE2'],
+  ['Signals & Systems','#243B55','#E9F0F7'],
+  ['Financial Engineering','#0E3B2E','#DDF0E6'],
+  ['Spacecraft Design','#33455C','#EDF1F6'],
+  ['Deep Reinforcement Learning','#5A1E2C','#F6E4E9'],
+  ['Kalman Filtering','#1C4C4C','#E4F4F1'],
+  ['The Intelligent Investor','#7A5B1E','#FBF1DC'],
+  ['Linear Algebra','#3B2C63','#ECE6F6'],
+  ['Propulsion Systems','#5C2A1E','#F8E8E1'],
+  ['Feedback & Dynamics','#233A4C','#E8F1F6'],
+  ['Quantitative Finance','#14202E','#7FC6D8'],
+];
+// share one material per title so the texture is built once
+const bookMats = BOOK_TITLES.map(([t,bg,fg]) =>
+  new THREE.MeshStandardMaterial({ map: bookSpineTexture(t,bg,fg), roughness:.82 }));
+
+for (const sx of [-1, 1]) {
+  const shelf = new THREE.Group();
+  const woodM  = new THREE.MeshStandardMaterial({ color: 0x5A4433, roughness:.55 });   // walnut
+  const backM  = new THREE.MeshStandardMaterial({ color: 0x473527, roughness:.7 });
+  const glassM = new THREE.MeshStandardMaterial({ color: 0xBFE0EA, roughness:.05, metalness:.1,
+                                                  transparent:true, opacity:.16 });
+  const DEPTH = 24;
+  const SHELF_BOTTOM = FLOOR_Y + 2;
+  const SHELF_TOP    = CEIL_Y - 4;
+  const TOTAL_H = SHELF_TOP - SHELF_BOTTOM;               // floor to ceiling
+  const LEVELS = 7;                                       // shelf boards
+  const bays = [-30, 20, 70, 120, 170];
+  const UNIT_W = 44;
+  const wallX = sx * (ROOM_HX - 1);
+  const faceX = wallX - sx * DEPTH / 2;
+  let pick = Math.floor(Math.random()*bookMats.length);
+
+  for (const bz of bays) {
+    // full-height back panel
+    const back = new THREE.Mesh(new THREE.BoxGeometry(1, TOTAL_H, UNIT_W), backM);
+    back.position.set(wallX - sx*0.5, SHELF_BOTTOM + TOTAL_H/2, bz);
+    back.receiveShadow = true; shelf.add(back);
+    // side dividers full height
+    for (const s2 of [-1, 1]) {
+      const side = new THREE.Mesh(new THREE.BoxGeometry(DEPTH, TOTAL_H, 1.4), woodM);
+      side.position.set(faceX, SHELF_BOTTOM + TOTAL_H/2, bz + s2*UNIT_W/2);
+      side.castShadow = true; shelf.add(side);
+    }
+    // shelf boards + books
+    for (let lvl = 0; lvl <= LEVELS; lvl++) {
+      const y = SHELF_BOTTOM + lvl * (TOTAL_H/LEVELS);
+      const board = new THREE.Mesh(new THREE.BoxGeometry(DEPTH, 1.4, UNIT_W), woodM);
+      board.position.set(faceX, y, bz); board.castShadow = board.receiveShadow = true; shelf.add(board);
+      if (lvl < LEVELS) {
+        let bx = bz - UNIT_W/2 + 3;
+        while (bx < bz + UNIT_W/2 - 4) {
+          const bw = 2.4 + Math.random()*1.6;          // spine thickness
+          const bh = 15 + Math.random()*5;             // book height
+          const mat = bookMats[pick % bookMats.length]; pick++;
+          const book = new THREE.Mesh(new THREE.BoxGeometry(DEPTH*0.62, bh, bw), mat);
+          book.position.set(faceX - sx*1.2, y + 0.7 + bh/2, bx + bw/2);
+          book.rotation.y = sx < 0 ? 0 : Math.PI;      // title faces into the room
+          book.castShadow = true; shelf.add(book);
+          bx += bw + 0.25;
+        }
+      }
+    }
+    // see-through glass door across the front of each bay
+    const glass = new THREE.Mesh(new THREE.BoxGeometry(0.6, TOTAL_H - 2, UNIT_W - 1), glassM);
+    glass.position.set(faceX - sx*(DEPTH/2 - 0.5), SHELF_BOTTOM + TOTAL_H/2, bz);
+    shelf.add(glass);
+    // thin frame around the glass
+    const frameM = new THREE.MeshStandardMaterial({ color: 0x2C2620, roughness:.5, metalness:.3 });
+    for (const [h,w,yy,zz] of [[TOTAL_H,2,SHELF_BOTTOM+TOTAL_H/2,bz-UNIT_W/2],
+                               [TOTAL_H,2,SHELF_BOTTOM+TOTAL_H/2,bz+UNIT_W/2]]) {
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(1.2, h, w),
+        frameM); bar.position.set(faceX - sx*(DEPTH/2-0.5), yy, zz); shelf.add(bar);
+    }
+  }
+  scene.add(shelf);
+}
+
+/* Ceiling light fixture (the source for ceilingLight above). */
+{
+  const fix = new THREE.Mesh(new THREE.BoxGeometry(46, 2, 46),
+    new THREE.MeshStandardMaterial({ color: 0xF4F1EA, roughness:.6,
+      emissive:0xFFF3DA, emissiveIntensity:.5 }));
+  fix.position.set(0, CEIL_Y - 2, 20); scene.add(fix);
+  const rim = new THREE.Mesh(new THREE.BoxGeometry(50, 1, 50),
+    new THREE.MeshStandardMaterial({ color: 0xD8D2C6, roughness:.7 }));
+  rim.position.set(0, CEIL_Y - 3, 20); scene.add(rim);
+}
+
+/* Light switch on the right wall. */
+{
+  const plateM = new THREE.MeshStandardMaterial({ color: 0xF2EFE9, roughness:.8 });
+  const sw = new THREE.Group();
+  const pl = new THREE.Mesh(new THREE.BoxGeometry(0.6, 8, 5), plateM);
+  const btn = new THREE.Mesh(new THREE.BoxGeometry(0.9, 3.4, 1.8),
+    new THREE.MeshStandardMaterial({ color: 0xE6E2DA, roughness:.6 }));
+  btn.position.x = 0.5; sw.add(pl, btn);
+  sw.position.set(ROOM_HX - 2, 20, 200); scene.add(sw);   // on clear wall past the shelves
+}
+
+/* Rollable blinds above the window (rolled up, valance + a little drop). */
+{
+  const blindM = new THREE.MeshStandardMaterial({ color: 0xE8E3D8, roughness:.9 });
+  const roll = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.6, WIN.w + 8, 20), blindM);
+  roll.rotation.z = Math.PI/2;
+  roll.position.set(WIN.cx, WIN.y1 + 5, WALL_BACK_Z + 4);
+  roll.castShadow = true; scene.add(roll);
+  const drop = new THREE.Mesh(new THREE.BoxGeometry(WIN.w + 6, 10, 0.4), blindM);
+  drop.position.set(WIN.cx, WIN.y1, WALL_BACK_Z + 4.6); scene.add(drop);
+  // pull chain
+  const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 22, 6),
+    new THREE.MeshStandardMaterial({ color: 0xBFC4CA, roughness:.5, metalness:.5 }));
+  chain.position.set(WIN.cx + WIN.w/2 + 2, WIN.y1 - 6, WALL_BACK_Z + 5); scene.add(chain);
+}
+
+/* Soundbar on the sill under the window (long, low, fabric-fronted). */
+{
+  const sb = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.BoxGeometry(90, 7, 9),
+    new THREE.MeshStandardMaterial({ color: 0x17191E, roughness:.8 }));
+  body.castShadow = true; sb.add(body);
+  // speaker-grille cloth face (slightly lighter, matte)
+  const grille = new THREE.Mesh(new THREE.BoxGeometry(86, 5, 0.6),
+    new THREE.MeshStandardMaterial({ color: 0x2A2D33, roughness:.95 }));
+  grille.position.z = 4.6; sb.add(grille);
+  // status LED strip
+  const led = new THREE.Mesh(new THREE.BoxGeometry(10, 0.5, 0.3),
+    new THREE.MeshStandardMaterial({ color: 0x2BA4C4, emissive:0x1E7E96, emissiveIntensity:.8 }));
+  led.position.set(-32, -2, 4.8); sb.add(led);
+  sb.position.set(WIN.cx, WIN.y0 + 2, WALL_BACK_Z + 8);
+  scene.add(sb);
+}
+
+/* ── Plant + lamp ──────────────────────────────────────────────────── */
+const plant = new THREE.Group();
+{
+  const pot = new THREE.Mesh(new THREE.CylinderGeometry(3.0, 2.4, 4.4, 24),
+    new THREE.MeshStandardMaterial({ color: 0xB8623E, roughness:.85 }));   // terracotta
+  pot.position.y = 2.2; pot.castShadow = true; plant.add(pot);
+  const soil = new THREE.Mesh(new THREE.CylinderGeometry(2.7, 2.7, 0.6, 20),
+    new THREE.MeshStandardMaterial({ color: 0x2E241B, roughness:1 }));
+  soil.position.y = 4.3; plant.add(soil);
+  const leafM = new THREE.MeshStandardMaterial({ color: 0x3E7C4F, roughness:.7 });
+  for (let i = 0; i < 7; i++) {
+    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.8, 7 + (i % 3), 8), leafM);
+    const a = i / 7 * Math.PI * 2;
+    leaf.position.set(Math.cos(a) * 1.0, 8, Math.sin(a) * 1.0);
+    leaf.rotation.set(Math.sin(a) * 0.4, 0, -Math.cos(a) * 0.4);
+    leaf.castShadow = true;
+    plant.add(leaf);
+  }
+}
+plant.position.set(30, 0.3, -14); scene.add(plant);   // small plant, on the desk
+
+const lamp = new THREE.Group();
+{
+  // A clamp-mounted architect lamp, built so it actually holds up: it grips the
+  // right edge of the desk with a C-clamp (which carries the load), a lower arm
+  // rises up and toward the desk, an elbow folds the upper arm BACK and down so
+  // the head hangs over the work area. Because it's clamped, the reach doesn't
+  // need a heavy base to balance it. Mechanical look: exposed pivots, bolts,
+  // brass ribs, brushed metal.
+  const metalM = new THREE.MeshStandardMaterial({ color: 0x3C4149, roughness:.35, metalness:.85 });
+  const brassM = new THREE.MeshStandardMaterial({ color: 0xB08A3E, roughness:.35, metalness:.9 });
+  const glowM  = new THREE.MeshStandardMaterial({ color: 0xFFF3DC, roughness:.3,
+                   emissive:0xFFE6B0, emissiveIntensity:1.8 });
+  const bolt = (x,y,z) => { const b=new THREE.Mesh(new THREE.CylinderGeometry(0.85,0.85,0.5,6),brassM);
+    b.rotation.x=Math.PI/2; b.position.set(x,y,z); lamp.add(b); };
+  const armBox = (x0,y0,x1,y1,w) => {   // a bar spanning two points in the x-y plane
+    const dx=x1-x0, dy=y1-y0, len=Math.hypot(dx,dy);
+    const m=new THREE.Mesh(new THREE.BoxGeometry(len, w, w), metalM);
+    m.position.set((x0+x1)/2,(y0+y1)/2,0); m.rotation.z=Math.atan2(dy,dx);
+    m.castShadow=true; lamp.add(m);
+    const rib=new THREE.Mesh(new THREE.BoxGeometry(len-4, w*0.35, w*0.35), brassM);
+    rib.position.copy(m.position); rib.rotation.z=m.rotation.z; lamp.add(rib);
+    return m;
+  };
+
+  // C-CLAMP gripping the desk edge (desk top is at y=0 in lamp-local terms after
+  // the group offset below). Jaws above and below the desk lip.
+  const clampBody = new THREE.Mesh(new THREE.BoxGeometry(3, 10, 5), metalM);
+  clampBody.position.set(0, 0, 0); clampBody.castShadow = true; lamp.add(clampBody);
+  const jawTop = new THREE.Mesh(new THREE.BoxGeometry(7, 2, 5), metalM);
+  jawTop.position.set(-2, 4.5, 0); lamp.add(jawTop);
+  const jawBot = new THREE.Mesh(new THREE.BoxGeometry(7, 2, 5), metalM);
+  jawBot.position.set(-2, -4.5, 0); lamp.add(jawBot);
+  const screw = new THREE.Mesh(new THREE.CylinderGeometry(0.8,0.8,4,10), brassM);
+  screw.position.set(-4, -4.5, 0); lamp.add(screw);
+  const knob = new THREE.Mesh(new THREE.SphereGeometry(1.4,12,10), brassM);
+  knob.position.set(-4, -7, 0); lamp.add(knob);
+
+  // base pivot on top of the clamp
+  const p0x=0, p0y=6;
+  const knuckle0 = new THREE.Mesh(new THREE.CylinderGeometry(2,2,3,18), metalM);
+  knuckle0.rotation.z=Math.PI/2; knuckle0.position.set(p0x,p0y,0); lamp.add(knuckle0);
+  bolt(p0x,p0y,1.6); bolt(p0x,p0y,-1.6);
+
+  // LOWER ARM: up and slightly toward the desk (to the left, -x)
+  const elx=-12, ely=34;                   // elbow position (raised a little)
+  armBox(p0x,p0y, elx,ely, 2.4);
+  const elbow = new THREE.Mesh(new THREE.CylinderGeometry(2.4,2.4,3.2,18), metalM);
+  elbow.rotation.z=Math.PI/2; elbow.position.set(elx,ely,0); elbow.castShadow=true; lamp.add(elbow);
+  bolt(elx,ely,1.7); bolt(elx,ely,-1.7);
+
+  // UPPER ARM: folds BACK and DOWN so the head hangs over the desk. It reaches
+  // further left and comes down to the head height above the work area.
+  const hx=-30, hy=28;                     // head joint (higher, gentler fold)
+  armBox(elx,ely, hx,hy, 2.0);
+  const headJoint = new THREE.Mesh(new THREE.CylinderGeometry(1.9,1.9,2.6,16), metalM);
+  headJoint.rotation.z=Math.PI/2; headJoint.position.set(hx,hy,0); lamp.add(headJoint);
+  bolt(hx,hy,1.3); bolt(hx,hy,-1.3);
+
+  // HEAD: a cylindrical housing pointing straight down at the desk
+  const head = new THREE.Group();
+  head.position.set(hx,hy,0); lamp.add(head);
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(3.2,4,8,24), metalM);
+  barrel.position.y=-5; barrel.castShadow=true; head.add(barrel);
+  const grip = new THREE.Mesh(new THREE.CylinderGeometry(3.4,3.4,1.8,24), brassM);
+  grip.position.y=-2.5; head.add(grip);
+  const lens = new THREE.Mesh(new THREE.CylinderGeometry(3.7,3.7,0.8,24), glowM);
+  lens.position.y=-8.6; head.add(lens);
+
+  // light cast straight down onto the desk under the head
+  const spot = new THREE.SpotLight(0xFFEAC6, 60, 120, Math.PI/4.5, 0.5, 1.3);
+  spot.position.set(hx, hy-6, 0);
+  spot.target.position.set(hx, -40, 4);
+  spot.castShadow=true; spot.shadow.mapSize.set(1024,1024);
+  lamp.add(spot, spot.target);
+}
+/* Clamp sits on the right edge of the desk (desk top y=0). The lamp-local y=0
+   is the desk surface, so place the group there. */
+lamp.position.set(70, 0, -6); scene.add(lamp);   // clamp-mounted architect lamp on the desk's right edge
+
+/* ── Camera state machine ──────────────────────────────────────────── */
+const orbit = { ...ORBIT0, target: new THREE.Vector3(0, 34, -2) };
+let mode = 'orbit';
+let anim = null;
+
+function orbitPose() {
+  // Camera height damped (0.5x) so the view can pitch up to the banner and
+  // down to the desk without the camera flying to the ceiling. Aim maps phi
+  // across its range: high phi -> desk, low phi -> banner. Tuned so the top
+  // of the drag shows the banner and a little ceiling, never straight up.
+  const s = new THREE.Spherical(orbit.radius, orbit.phi, orbit.theta);
+  const p = new THREE.Vector3().setFromSpherical(s);
+  const pos = new THREE.Vector3(
+    orbit.target.x + p.x,
+    orbit.target.y + p.y * 0.5,
+    orbit.target.z + p.z
+  );
+  const t = (PHI_MAX - orbit.phi) / (PHI_MAX - PHI_MIN);   // 0 low, 1 high
+  // Aim height still driven by phi (the up/down feel you liked). Aim x/z track
+  // the pivot so cursor-directed zoom actually closes in on the hovered item.
+  const look = new THREE.Vector3(orbit.target.x, 8 + t * 118, orbit.target.z);
+  return { pos, look };
+}
+function focusPose() {
+  const P = new THREE.Vector3();
+  screenAnchor.getWorldPosition(P);
+  const N = screenAnchor.localToWorld(new THREE.Vector3(0, 0, 1)).sub(P).normalize();
+  const dist = (SCREEN_H / 2) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.06;
+  return { pos: P.clone().addScaledVector(N, dist), look: P };
+}
+function applyPose(p) {
+  /* Hard fence: the camera cannot leave the room, and stops short of the
+     bookshelves (which protrude to x = ±146) rather than pushing into them. */
+  p.pos.x = clamp(p.pos.x, -140, 140);
+  p.pos.y = clamp(p.pos.y, FLOOR_Y + 8, CEIL_Y - 8);
+  p.pos.z = clamp(p.pos.z, WALL_BACK_Z + 8, WALL_FRONT_Z - 8);
+  camera.position.copy(p.pos); camera.lookAt(p.look);
+}
+applyPose(orbitPose());
+
+const catcher = document.getElementById('catcher');
+const exitBtn = document.getElementById('exit');
+const hint = document.getElementById('hint');
+const HINT_ORBIT = 'DRAG — LOOK AROUND · CLICK THE LAPTOP — USE IT · CLICK THE ARM — OPEN THE SIMULATOR';
+
+function goFocus() {
+  if (mode !== 'orbit') return;
+  mode = 'anim';
+  const from = orbitPose(), to = focusPose(), t0 = performance.now();
+  const DUR = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900;
+  anim = { from, to, t0, DUR, after: () => {
+    mode = 'focus';
+    document.body.classList.add('focused');
+    catcher.style.display = 'none';
+    exitBtn.style.display = 'block';
+  }};
+}
+function goOrbit() {
+  if (mode !== 'focus') return;
+  mode = 'anim';
+  const from = focusPose(), to = orbitPose(), t0 = performance.now();
+  const DUR = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 700;
+  exitBtn.style.display = 'none';
+  document.body.classList.remove('focused');
+  anim = { from, to, t0, DUR, after: () => {
+    mode = 'orbit';
+    catcher.style.display = 'block';
+    hint.textContent = HINT_ORBIT;
+  }};
+}
+exitBtn.addEventListener('click', goOrbit);
+
+/* Certificate viewer: opens the clicked certificate over the scene with a
+   clear back button, instead of a new browser tab. */
+const certView = document.getElementById('certview');
+const certImg  = document.getElementById('certimg');
+function openCert(src) { certImg.src = src; certView.classList.add('open'); }
+function closeCert() { certView.classList.remove('open'); certImg.src = ''; }
+document.getElementById('certback').addEventListener('click', closeCert);
+certView.addEventListener('click', e => { if (e.target === certView) closeCert(); });
+
+addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (certView.classList.contains('open')) closeCert();
+  else goOrbit();
+});
+
+/* ── Input ─────────────────────────────────────────────────────────── */
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+let down = null, moved = 0;
+
+const pick = e => {
+  ndc.x = (e.clientX / innerWidth) * 2 - 1;
+  ndc.y = -(e.clientY / innerHeight) * 2 + 1;
+  ray.setFromCamera(ndc, camera);
+  if (ray.intersectObjects([armGroup], true).length) return 'arm';
+  if (ray.intersectObjects([plate, plateBack], false).length) return 'plate';
+  const cHit = ray.intersectObjects(certObjs, false)[0];
+  if (cHit && cHit.object.userData.src) { pick.cert = cHit.object.userData.src; return 'cert'; }
+  if (ray.intersectObjects([laptop, standBase, hole], true).length) return 'laptop';
+  return null;
+};
+
+catcher.addEventListener('pointerdown', e => {
+  catcher.setPointerCapture(e.pointerId);
+  catcher.classList.add('grabbing');
+  down = { x: e.clientX, y: e.clientY }; moved = 0;
+});
+catcher.addEventListener('pointermove', e => {
+  if (mode !== 'orbit') return;
+  if (down) {
+    const dx = e.clientX - down.x, dy = e.clientY - down.y;
+    moved = Math.max(moved, Math.hypot(dx, dy));
+    orbit.theta = clamp(orbit.theta - dx * 0.005, THETA0 - THETA_RANGE, THETA0 + THETA_RANGE);
+    orbit.phi = clamp(orbit.phi - dy * 0.004, PHI_MIN, PHI_MAX);
+    down = { x: e.clientX, y: e.clientY };
+    applyPose(orbitPose());
+  } else {
+    const t = pick(e);
+    catcher.classList.toggle('hover', !!t);
+    hint.textContent = t === 'arm'    ? 'ROBOTIC ARM PROTOTYPE — CLICK TO OPEN THE SIMULATOR'
+                     : t === 'cert'   ? 'CERTIFICATE — CLICK TO OPEN FULL SIZE'
+                     : t === 'plate'  ? 'NAMEPLATE — CLICK TO READ ABOUT ME'
+                     : t === 'laptop' ? 'CLICK TO USE THE LAPTOP'
+                     : HINT_ORBIT;
+  }
+});
+const upHandler = e => {
+  catcher.classList.remove('grabbing');
+  if (down && moved < 5 && mode === 'orbit') {
+    const t = pick(e);
+    if (t === 'arm') { window.location.href = 'robot-sim.html'; }
+    else if (t === 'cert') { openCert(pick.cert); }
+    else if (t === 'plate') { window.location.href = 'index.html#about'; }
+    else if (t === 'laptop') goFocus();
+  }
+  down = null;
+};
+catcher.addEventListener('pointerup', upHandler);
+catcher.addEventListener('pointercancel', upHandler);
+catcher.addEventListener('wheel', e => {
+  if (mode !== 'orbit') return;
+  e.preventDefault();
+
+  const prev = orbit.radius;
+  // Wider zoom range: get right up to the window/certs/arm, or pull back to
+  // take in the room.
+  orbit.radius = clamp(orbit.radius + e.deltaY * 0.05, 55, 250);   // pull back further from the window
+  const zoomedIn = orbit.radius < prev;
+
+  // CAD-style: when zooming IN, drift the pivot toward whatever the cursor is
+  // over, so you close in on that item. When zooming OUT, ease back to centre.
+  ndc.x = (e.clientX / innerWidth) * 2 - 1;
+  ndc.y = -(e.clientY / innerHeight) * 2 + 1;
+  ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObjects(
+    [laptop, armGroup, plate, ...certObjs, deskTop, floor], true)[0];
+  if (zoomedIn && hit) {
+    // pull the pivot a fraction of the way toward the hovered point (x/z only,
+    // so the vertical look behaviour you liked is untouched)
+    orbit.target.x += (hit.point.x - orbit.target.x) * 0.12;
+    orbit.target.z += (hit.point.z - orbit.target.z) * 0.12;
+  } else if (!zoomedIn) {
+    orbit.target.x += (0 - orbit.target.x) * 0.15;
+    orbit.target.z += (-2 - orbit.target.z) * 0.15;
+  }
+  // keep the pivot from wandering too far so you can't push past the walls
+  orbit.target.x = clamp(orbit.target.x, -70, 70);
+  orbit.target.z = clamp(orbit.target.z, -30, 40);
+
+  applyPose(orbitPose());
+}, { passive: false });
+
+/* ── Resize + loop ─────────────────────────────────────────────────── */
+function resize() {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  glRenderer.setSize(innerWidth, innerHeight);
+  cssRenderer.setSize(innerWidth, innerHeight);
+}
+addEventListener('resize', resize);
+resize();
+
+function loop(now) {
+  if (anim) {
+    const u = anim.DUR ? clamp((now - anim.t0) / anim.DUR, 0, 1) : 1;
+    const e = u * u * (3 - 2 * u);
+    applyPose({
+      pos: anim.from.pos.clone().lerp(anim.to.pos, e),
+      look: anim.from.look.clone().lerp(anim.to.look, e),
+    });
+    if (u >= 1) { const after = anim.after; anim = null; after(); }
+  }
+  glRenderer.render(scene, camera);
+  cssRenderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+} catch (err) {
+  console.error('[office] scene failed:', err);
+  const f = document.getElementById('fail');
+  f.style.display = 'flex';
+  document.getElementById('failmsg').innerHTML =
+    `3D VIEW FAILED TO BUILD\n\n${err.message}\n\n` +
+    `<a href="index.html">Open the regular site instead →</a>\n\n` +
+    `(DevTools → Console has the full stack.)`;
+}
+</script>
+</body>
+</html>

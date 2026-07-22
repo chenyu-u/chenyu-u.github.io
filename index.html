@@ -799,7 +799,7 @@
     <div class="nav-mono">CL</div>
     <div class="nav-name">
       Chenyu Li
-      <small>MechEng · UofT</small>
+      <small>Mech Eng · UofT</small>
     </div>
   </a>
 
@@ -970,7 +970,7 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-intl"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>Netherlands</span></div>
           <h3>Vertical Axis Wind Turbine</h3>
-          <p>I contributed to the mechanical, manufacturing, and assembly of a custom 6-foot vertical-axis wind turbine (VAWT) with the University of Toronto Wind Turbine Design Team (UTWIND). In July of 2026, I represented the team alongside 10 other members to compete and present our turbine at the International Small Wind Turbine Competition (ISWTC) at TU Delfts and Hanze University in the Netherlands. During testing of the turbine within a wind tunnel, our team achieved a cut-in speed of 4 m/s. </p>
+          <p>I contributed to the mechanical, manufacturing, and assembly of a custom 6-foot vertical-axis wind turbine (VAWT) with the University of Toronto Wind Turbine Design Team (UTWIND). In July of 2026, I represented the team alongside 10 other members to compete and present our turbine at the International Small Wind Turbine Competition (ISWTC) at TU Delft and Hanze University in the Netherlands. During testing of the turbine within a wind tunnel, our team achieved a cut-in speed of 4 m/s. </p>
           <div class="proj-tags"><span class="ptag">SolidWorks</span><span class="ptag">FDM 3D Printing</span><span class="ptag">Machining</span><span class="ptag">ANSYS Mechanical</span><span class="ptag">UTWind</span></div>
           <a href="#" class="proj-link">Details <span class="arrow">→</span></a>
         </div>
@@ -978,12 +978,14 @@
 
       <!-- PROJ ─────────────────────────────────────────────── -->
       <div class="proj-card reveal">
-        <div class="proj-ph"><span class="e"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="18" r="2.2"/><path d="M5 15.8V11l6-3 5 2 3-3"/><circle cx="19" cy="7" r="1.6"/><path d="M11 8v3l4 2"/></svg></span><span>projects/arm.jpg</span></div>
+        <div class="proj-img-wrap" data-images='["projects/arm.jpg"]'>
+          <img src="projects/arm.jpg" alt="Robotic arm prototype concept" class="proj-img" />
+        </div>
         <div class="proj-body">
-          <div class="proj-top"><span class="badge b-act">In Development</span></div>
-          <h3>Vision-Guided Pick-and-Place Robotic Arm</h3>
-          <p>Designing and building a robotic arm for autonomous colour-based sorting, using Fusion 360 CAD with torque budgeting and FEA, closed-form inverse kinematics, an ESP32 servo control stack, and OpenCV vision integration.</p>
-          <div class="proj-tags"><span class="ptag">Fusion 360</span><span class="ptag">Inverse Kinematics</span><span class="ptag">ESP32</span><span class="ptag">OpenCV</span><span class="ptag">Three.js</span><span class="ptag">Python</span></div>
+          <div class="proj-top"><span class="badge b-act">Concept</span></div>
+          <h3>Pick-and-Place Robotic Arm</h3>
+          <p>A concept for a physical robotic arm that sorts parts by colour. I built an interactive simulation first to test the reach, the joint layout, and the way the claw closes before spending money on motors and materials. The plan is to build it for real next, sizing the hardware against an actual torque budget.</p>
+          <div class="proj-tags"><span class="ptag">Concept Design</span><span class="ptag">Kinematics</span><span class="ptag">CAD / SolidWorks</span><span class="ptag">Servo &amp; Stepper Motors</span><span class="ptag">Planned: Vision Sorting</span></div>
           <a href="robot-sim.html" class="proj-link">Launch Simulation <span class="arrow">→</span></a>
         </div>
       </div>
@@ -1878,5 +1880,50 @@ add a CSS rule like:  #YOUR-ID .sec-hd::after { content: "SYS / LABEL"; }
 
 </script>
 
+
+<!-- ═══ ENTER MY OFFICE — warp transition to the 3D landing (laptop.html) ═══ -->
+<style>
+  #office-door{position:fixed;right:22px;bottom:22px;z-index:90;display:inline-flex;
+    align-items:center;gap:10px;padding:11px 18px 11px 14px;border-radius:999px;
+    background:var(--navy,#002A5C);color:#fff;text-decoration:none;
+    font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.14em;
+    box-shadow:0 4px 18px rgba(0,42,92,.35);transition:transform .25s,box-shadow .25s}
+  #office-door:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(0,42,92,.45)}
+  #office-door svg{width:20px;height:20px;overflow:visible}
+  #office-door .lid{transform-origin:2px 13px;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+  #office-door:hover .lid{transform:rotate(-14deg)}
+  #office-door::before{content:"";position:absolute;inset:-4px;border-radius:999px;
+    border:1.5px solid rgba(22,104,194,.55);animation:door-pulse 2.6s ease-out infinite}
+  @keyframes door-pulse{0%{opacity:.8;transform:scale(.94)}70%{opacity:0;transform:scale(1.16)}100%{opacity:0}}
+  body.warp-out{animation:warp-out .5s cubic-bezier(.6,0,.9,.4) forwards}
+  @keyframes warp-out{to{transform:scale(.88);opacity:0;filter:blur(7px)}}
+  @media(prefers-reduced-motion:reduce){
+    #office-door::before{animation:none}
+    body.warp-out{animation:none}
+  }
+</style>
+<a id="office-door" href="laptop.html" aria-label="Enter the 3D office view">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+    <path class="lid" d="M2 13V6.5A1.5 1.5 0 0 1 3.5 5h13A1.5 1.5 0 0 1 18 6.5V13"/>
+    <path d="M1 16h22l-1.6 2.4a2 2 0 0 1-1.66.9H4.26a2 2 0 0 1-1.66-.9z" fill="currentColor" stroke="none"/>
+  </svg>
+  ENTER MY OFFICE
+</a>
+<script>
+  // Inside the 3D laptop's browser, the door hides — no office-inside-the-office.
+  if (window.self !== window.top) {
+    document.getElementById('office-door').style.display = 'none';
+  }
+  // Inside the 3D laptop screen? Hide the door — no office-inception.
+  if (window.top !== window.self) {
+    document.getElementById('office-door').style.display = 'none';
+  }
+  document.getElementById('office-door').addEventListener('click', function (e) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; // plain navigation
+    e.preventDefault();
+    document.body.classList.add('warp-out');
+    setTimeout(function () { window.location.href = 'laptop.html'; }, 480);
+  });
+</script>
 </body>
 </html>
