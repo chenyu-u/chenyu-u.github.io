@@ -882,7 +882,7 @@ const CONFIG = {
     inPosition: 1.5, settle: 0.12, timeout: 6.0,
   },
 
-  solver: { passes: 12, gain: 0.55 },
+  solver: { passes: 12, gain: 0.55, floorClearance: 2 },   // TCP never solved below 2mm off the floor
 
   /* ── Actuators. Mixed types, because a 360° base is not a servo. ──── */
   actuators: {
@@ -977,7 +977,143 @@ function fk(a, tlen) {
   return p;
 }
 
-function ccd(start, goal, tlen) {
+/** Enforce floor clearance on a set of joint angles, in place. Per-joint
+ *  angle limits alone don't stop chained links from folding the TCP below
+ *  the floor (shoulder low + elbow/wrist folding down compounds past y=0
+ *  even though each joint is within its own range). Used both inside the
+ *  CCD solver AND every render frame, so manual jog sliders — which write
+ *  straight into W.angles and never touch ccd() — get the same protection
+ *  as planned pick-and-place moves. */
+function enforceFloor(a, tlen) {
+  /* CRITICAL: checking only the tool tip (p[4]) missed the actual failure —
+     the elbow (p[1]) and wrist (p[2]/p[3]) joints can dip underground even
+     while the final tip swings back up above the floor. A shoulder angle of
+     just -20 deg alone puts the elbow joint at world y ≈ -1mm regardless of
+     what the wrist and elbow angles do afterward. So every joint down the
+     chain has to be checked, not just the end effector. fk()'s origin (0,0)
+     is the shoulder pivot, which sits at world y = SHOULDER_H — so local y
+     converts to world y as (local_y + SHOULDER_H), and the true floor
+     (world y = 0) is local y = -SHOULDER_H. */
+  const floorLocal = CONFIG.solver.floorClearance - SHOULDER_H;
+  const minChainY = arr => Math.min(arr[1].y, arr[2].y, arr[3].y, arr[4].y);
+  for (let guard = 0; guard < 40; guard++) {
+    if (minChainY(fk(a, tlen)) >= floorLocal) break;
+    let moved = false;
+    for (const idx of [2, 1, 0]) {
+      const before = a[idx];
+      a[idx] = clamp(a[idx] + 8, LIM[idx][0], LIM[idx][1]);
+      if (a[idx] !== before) moved = true;
+      if (minChainY(fk(a, tlen)) >= floorLocal) break;
+    }
+    if (!moved) break;   // every joint pinned at its limit; can't recover further
+  }
+  return a;
+}
+
+/** Minimum distance between two 2D line segments (standard closest-point
+ *  algorithm). Used to check whether the shoulder link and the forearm+
+ *  tool segment have folded back into each other — the elbow/wrist can
+ *  each be within their own limit and still bring these into contact. */
+function segSegDist2D(a0, a1, b0, b1) {
+  const d1x = a1.x-a0.x, d1y = a1.y-a0.y, d2x = b1.x-b0.x, d2y = b1.y-b0.y;
+  const rx = a0.x-b0.x, ry = a0.y-b0.y;
+  const A = d1x*d1x+d1y*d1y, E = d2x*d2x+d2y*d2y, F = d2x*rx+d2y*ry;
+  let s, t;
+  if (A<=1e-9 && E<=1e-9) return Math.hypot(rx, ry);
+  if (A<=1e-9) { t = clamp(F/E,0,1); s = 0; }
+  else {
+    const C = d1x*rx+d1y*ry;
+    if (E<=1e-9) { s = clamp(-C/A,0,1); t = 0; }
+    else {
+      const B = d1x*d2x+d1y*d2y, denom = A*E-B*B;
+      s = denom>1e-9 ? clamp((B*F-C*E)/denom,0,1) : 0;
+      t = (B*s+F)/E;
+      if (t<0) { t=0; s=clamp(-C/A,0,1); }
+      else if (t>1) { t=1; s=clamp((B-C)/A,0,1); }
+    }
+  }
+  const p1x=a0.x+s*d1x, p1y=a0.y+s*d1y, p2x=b0.x+t*d2x, p2y=b0.y+t*d2y;
+  return Math.hypot(p1x-p2x, p1y-p2y);
+}
+// Required clearance between the shoulder link and the forearm+tool segment:
+// their real physical half-widths (joint-boss radii from CONFIG.arm.profile)
+// plus a safety margin.
+const SELF_MIN_DIST = CONFIG.arm.profile[0].r1 + CONFIG.arm.profile[2].r1 + 6;
+const selfClearance = (a, tlen) => { const p = fk(a, tlen); return segSegDist2D(p[0], p[1], p[2], p[4]); };
+
+function enforceNoSelfCollision(a, tlen) {
+  for (let guard = 0; guard < 40; guard++) {
+    if (selfClearance(a, tlen) >= SELF_MIN_DIST) break;
+    let moved = false;
+    for (const idx of [1, 2, 0]) {
+      const before = a[idx];
+      const step = a[idx] > 0 ? -8 : 8;   // unfold rather than fold further
+      a[idx] = clamp(a[idx] + step, LIM[idx][0], LIM[idx][1]);
+      if (a[idx] !== before) moved = true;
+      if (selfClearance(a, tlen) >= SELF_MIN_DIST) break;
+    }
+    if (!moved) break;   // every joint pinned; can't unfold further
+  }
+  return a;
+}
+
+/** Minimum distance from a 3D point to an axis-aligned box. */
+function pointBoxDist(px, py, pz, box) {
+  const [x0,x1,y0,y1,z0,z1] = box;
+  const dx = Math.max(x0-px, 0, px-x1), dy = Math.max(y0-py, 0, py-y1), dz = Math.max(z0-pz, 0, pz-z1);
+  return Math.hypot(dx, dy, dz);
+}
+/** Minimum distance from a 3D segment to an axis-aligned box, sampled along
+ *  the segment — simple and robust for the thin (3mm) bin walls. */
+function segBoxMinDist(pA, pB, box, n = 16) {
+  let best = Infinity;
+  for (let i = 0; i <= n; i++) {
+    const t = i/n;
+    const d = pointBoxDist(pA.x+(pB.x-pA.x)*t, pA.y+(pB.y-pA.y)*t, pA.z+(pB.z-pA.z)*t, box);
+    if (d < best) best = d;
+  }
+  return best;
+}
+const toWorld = (localR, localY, yawDeg) => {
+  const yr = yawDeg * D2R;
+  return { x: localR*Math.cos(yr), y: localY+SHOULDER_H, z: -localR*Math.sin(yr) };
+};
+const WALL_T = 1.5;   // half-thickness of each 3mm bin wall slab, matching the actual mesh
+const BIN_WALLS = [
+  [BIN.x-BIN.halfWidth, BIN.x+BIN.halfWidth, 0, BIN.wallHeight, BIN.z-BIN.halfWidth-WALL_T, BIN.z-BIN.halfWidth+WALL_T],
+  [BIN.x-BIN.halfWidth, BIN.x+BIN.halfWidth, 0, BIN.wallHeight, BIN.z+BIN.halfWidth-WALL_T, BIN.z+BIN.halfWidth+WALL_T],
+  [BIN.x-BIN.halfWidth-WALL_T, BIN.x-BIN.halfWidth+WALL_T, 0, BIN.wallHeight, BIN.z-BIN.halfWidth, BIN.z+BIN.halfWidth],
+  [BIN.x+BIN.halfWidth-WALL_T, BIN.x+BIN.halfWidth+WALL_T, 0, BIN.wallHeight, BIN.z-BIN.halfWidth, BIN.z+BIN.halfWidth],
+];
+function binClearance(a, tlen, yawDeg) {
+  const p = fk(a, tlen).map(pt => toWorld(pt.x, pt.y, yawDeg));
+  let best = Infinity;
+  for (const wall of BIN_WALLS)
+    for (let i = 0; i < p.length - 1; i++) {
+      const d = segBoxMinDist(p[i], p[i+1], wall);
+      if (d < best) best = d;
+    }
+  return best;
+}
+const BIN_MARGIN = 12;   // clear of the bin's thin walls; well below its open top (18mm) so a real
+                          // place-into-the-bin motion is never falsely blocked
+function enforceNoBinCollision(a, tlen, yawDeg) {
+  for (let guard = 0; guard < 30; guard++) {
+    if (binClearance(a, tlen, yawDeg) >= BIN_MARGIN) break;
+    let moved = false;
+    for (const idx of [2, 1, 0]) {
+      const before = a[idx];
+      const step = a[idx] < LIM[idx][1] ? 8 : -8;
+      a[idx] = clamp(a[idx] + step, LIM[idx][0], LIM[idx][1]);
+      if (a[idx] !== before) moved = true;
+      if (binClearance(a, tlen, yawDeg) >= BIN_MARGIN) break;
+    }
+    if (!moved) break;
+  }
+  return a;
+}
+
+function ccd(start, goal, tlen, yawDeg) {
   const a = [...start];
   for (let pass = 0; pass < CONFIG.solver.passes; pass++) {
     for (let i = 2; i >= 0; i--) {
@@ -986,6 +1122,9 @@ function ccd(start, goal, tlen) {
       const want = Math.atan2(goal.y - j.y, goal.x - j.x);
       a[i] = clamp(a[i] + wrap((want - cur) * R2D) * CONFIG.solver.gain, LIM[i][0], LIM[i][1]);
     }
+    enforceFloor(a, tlen);
+    enforceNoSelfCollision(a, tlen);
+    enforceNoBinCollision(a, tlen, yawDeg);
   }
   return a;
 }
@@ -1392,6 +1531,10 @@ JOGS.forEach((_, i) => $(`js-${i}`).addEventListener('input', e => {
   if (i === 0) W.yaw = v;
   else if (i === 4) W.cmdGap = v;
   else W.angles[i - 1] = v;
+  enforceFloor(W.angles, tcpLength(W.gap));   // jog sliders bypass ccd() entirely,
+                                               // so every guard has to run here too
+  enforceNoSelfCollision(W.angles, tcpLength(W.gap));
+  enforceNoBinCollision(W.angles, tcpLength(W.gap), W.yaw);
   W.goal = null;
 }));
 
@@ -1520,7 +1663,7 @@ function stepGripper(dt) {
 function servo(dt) {
   if (!W.goal) return;
   const { yaw, plane } = decompose(W.goal);
-  const wantA = ccd(W.angles, plane, tcpLength(W.gap));
+  const wantA = ccd(W.angles, plane, tcpLength(W.gap), yaw);
 
   const yMax = CONFIG.limits.jointSpeed.yaw * dt;
   W.yaw = wrap(W.yaw + clamp(wrap(yaw - W.yaw), -yMax, yMax));
@@ -1607,7 +1750,7 @@ function exportProgram() {
   const steps = q.map((st, i) => {
     const { yaw: wy, plane } = decompose(st.p);
     yaw = wrap(wy);
-    a = ccd(a, plane, tcpLength(st.gap));
+    a = ccd(a, plane, tcpLength(st.gap), yaw);
     const th = jawAngle(st.gap);
     return {
       index: i + 1, phase: st.ph,
@@ -1662,6 +1805,12 @@ function loop(now) {
   const dt = Math.min((now - last) / 1000, .05); last = now;
   step(dt);
 
+  enforceFloor(W.angles, tcpLength(W.gap));   // last-line backstop: whatever set
+                                               // W.angles this frame, it never draws
+                                               // the tool below the floor, folded into
+                                               // itself, or through the bin's walls
+  enforceNoSelfCollision(W.angles, tcpLength(W.gap));
+  enforceNoBinCollision(W.angles, tcpLength(W.gap), W.yaw);
   yawG.rotation.y = W.yaw * D2R;
   for (let i = 0; i < 3; i++) joints[i].rotation.z = W.angles[i] * D2R;
   setClaw(W.gap);
