@@ -175,6 +175,13 @@
   .note code{font-family:var(--f-mono);font-size:.79rem;background:var(--blue-lt);
              padding:1px 5px;border-radius:2px;color:var(--navy)}
   .note strong{color:var(--ink);font-weight:600}
+  .note table.bom{border-collapse:collapse;width:100%;max-width:74ch;margin-bottom:18px;font-size:.82rem}
+  .note table.bom th{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+      color:var(--ink-faint);text-align:left;padding:6px 12px 6px 0;border-bottom:1px solid var(--navy)}
+  .note table.bom td{padding:9px 12px 9px 0;border-bottom:1px solid var(--line);color:var(--ink-soft);
+      line-height:1.55;vertical-align:top}
+  .note table.bom td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+  .note table.bom td:nth-child(2){color:var(--blue);white-space:nowrap}
   .steps{font-family:var(--f-mono);font-size:.72rem;max-width:600px;margin-top:6px}
   .steps div{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #EDF2F7}
   .steps .i{color:var(--ink-faint);width:22px}
@@ -229,42 +236,27 @@
 
       <aside>
         <div class="sect">
-          <p class="lbl">Parts on floor · <span id="floor-n">0</span></p>
-          <div id="floor-list"><p class="empty">Click anywhere inside the dashed ring to drop a part. The stepper base turns a full 360°, so the whole annulus is reachable.</p></div>
-          <div class="btn-row">
-            <button class="btn b-solid" id="btn-run" style="flex:1" disabled>RUN CYCLE</button>
-            <button class="btn b-line" id="btn-clear">CLEAR</button>
-          </div>
+          <p class="lbl">Envelope</p>
+          <div class="row"><span class="k">REACH</span><span class="v">~300 mm</span></div>
+          <div class="row"><span class="k">SHOULDER HEIGHT</span><span class="v">40 mm</span></div>
+          <div class="row"><span class="k">LINKS</span><span class="v">120 / 90 / 55 mm</span></div>
+          <div class="row"><span class="k">BASE TRAVEL</span><span class="v">360°, continuous</span></div>
         </div>
 
         <div class="sect">
-          <p class="lbl">Jog · Joint space</p>
-          <div id="jogs"></div>
+          <p class="lbl">Degrees of freedom</p>
+          <div class="row"><span class="k">01 BASE</span><span class="v">stepper, belt-driven</span></div>
+          <div class="row"><span class="k">02 SHOULDER</span><span class="v">servo</span></div>
+          <div class="row"><span class="k">03 ELBOW</span><span class="v">servo</span></div>
+          <div class="row"><span class="k">04 WRIST</span><span class="v">servo</span></div>
+          <div class="row"><span class="k">GRIPPER</span><span class="v">linear actuator</span></div>
         </div>
 
         <div class="sect">
-          <p class="lbl">Tool centre point</p>
-          <div class="row"><span class="k">X</span><span class="v" id="tcp-x">0.0 mm</span></div>
-          <div class="row"><span class="k">Y</span><span class="v" id="tcp-y">0.0 mm</span></div>
-          <div class="row"><span class="k">Z</span><span class="v" id="tcp-z">0.0 mm</span></div>
-          <div class="row"><span class="k">FOLLOW ERR</span><span class="v" id="tcp-e">0.0 mm</span></div>
-        </div>
-
-        <div class="sect">
-          <p class="lbl">Gripper linkage</p>
-          <div class="row"><span class="k">PAD GAP</span><span class="v hl" id="g-gap">30.0 mm</span></div>
-          <div class="row"><span class="k">JAW ANGLE</span><span class="v" id="g-ang">0.0°</span></div>
-          <div class="row"><span class="k">ACTUATOR</span><span class="v" id="g-rod">0.0 mm</span></div>
-          <div class="row"><span class="k">TOOL LENGTH</span><span class="v" id="g-tool">0.0 mm</span></div>
-        </div>
-
-        <div class="sect">
-          <p class="lbl">Drive output</p>
-          <div id="drives"></div>
-          <div class="btn-row">
-            <button class="btn b-line" id="btn-home" style="flex:1">HOME</button>
-            <button class="btn b-line" id="btn-export">EXPORT</button>
-          </div>
+          <p class="lbl">Status</p>
+          <div class="row"><span class="k">SIMULATION</span><span class="v hl">working</span></div>
+          <div class="row"><span class="k">CAD</span><span class="v">in progress</span></div>
+          <div class="row"><span class="k">HARDWARE</span><span class="v">not started</span></div>
         </div>
       </aside>
     </div>
@@ -346,7 +338,50 @@
         </div>
 
         <div class="note">
-          <p class="lbl">§10</p><h2>Next steps</h2>
+          <p class="lbl">§10</p><h2>Parts list for the physical build</h2>
+          <p>This is what I am planning to actually buy, sized off the link lengths and reach the simulation already settled on. Nothing here is exotic. The whole point of keeping the arm small (about 300 mm reach with the gripper) was to stay in hobby-servo territory instead of needing industrial actuators.</p>
+          <table class="bom">
+            <thead><tr><th>Part</th><th>Role</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>NEMA17 stepper</td><td>Base rotation</td><td>Driven through a 4:1 GT2 belt so the base turns slower than the motor but with more torque. Full 360°, no end stops.</td></tr>
+              <tr><td>TMC2209 driver</td><td>Base stepper driver</td><td>Quiet microstepping. Picked over an A4988 mainly for the lower noise at idle.</td></tr>
+              <tr><td>Slip ring, 6-wire</td><td>Base wiring</td><td>The base spins continuously, so power and signal wires cannot just dangle off the column. This is the part that made continuous rotation actually feasible instead of a nice idea on paper. See §11.</td></tr>
+              <tr><td>Serial bus servos, 20 to 30 kg-cm class</td><td>Shoulder, elbow</td><td>These two carry the most load, shoulder especially, since it holds the weight of everything past it at a long lever arm. Sized with the torque estimate in §12.</td></tr>
+              <tr><td>Smaller bus servo, 8 to 12 kg-cm class</td><td>Wrist</td><td>Much lower load than shoulder or elbow, mostly just orienting the gripper.</td></tr>
+              <tr><td>Micro linear actuator or a small hobby servo</td><td>Claw</td><td>Drives the crank-slider linkage the simulation already models. Only needs to open and close, not hold a static load for long.</td></tr>
+              <tr><td>Aluminium flat bar, 6mm</td><td>Link plates</td><td>Twin side plates per link, the same shape the 3D model already shows. Aluminium over 3D-printed plastic for the shoulder and elbow links specifically, since those see the highest bending load.</td></tr>
+              <tr><td>PETG or nylon</td><td>Wrist link, brackets, gripper fingers</td><td>Lower load here, so printed parts are fine and much faster to iterate on than machining more aluminium.</td></tr>
+              <tr><td>M3 socket head bolts and heat-set inserts</td><td>Fasteners</td><td>Standard for hobby-servo brackets. Heat-set inserts into the printed parts so threads do not strip after a few disassembles.</td></tr>
+              <tr><td>Radial ball bearings, sized to each joint boss</td><td>Joints</td><td>One at each rotating joint so the servo horn is not also carrying side load it was not designed for.</td></tr>
+              <tr><td>ESP32 dev board</td><td>Controller</td><td>Enough PWM-capable pins for four servos plus step and direction for the stepper, and Wi-Fi if I want to drive it from this page over the network instead of only USB.</td></tr>
+              <tr><td>Bench power supply, 6 to 7.4V for servos, separate 12V for the stepper driver</td><td>Power</td><td>Servos and steppers want different voltages, and I do not want a servo brownout resetting the whole controller mid-move.</td></tr>
+            </tbody>
+          </table>
+          <p>The one item on this list I do not have a firm number for yet is exact servo torque. I have a rough calculation in §12, but I want to model the arm in CAD first and get real mass numbers for each link before I commit to buying anything expensive.</p>
+        </div>
+
+        <div class="note">
+          <p class="lbl">§11</p><h2>Problems I ran into</h2>
+          <p>Most of these showed up while building the simulation, not the hardware, since the hardware has not started yet. But a few of them are exactly the kind of problem that would have been much more annoying to discover after cutting metal, which is the whole reason I built this first.</p>
+          <p><strong>The claw did not actually move.</strong> My first pass at the gripper linkage just slid two blocks a few millimetres apart in response to a slider. It looked fine at a glance but was not solving the actual linkage geometry, so the number on screen and the physical motion it was supposed to represent had nothing to do with each other. I redid it as a proper crank-slider, where the actuator position is solved from the finger angle the same way the real aluminium parts would constrain it. That was worth catching now instead of after machining a claw that does not close the way the drawing said it would.</p>
+          <p><strong>The tool point could go through the floor.</strong> Early on, the joint angle limits on shoulder, elbow, and wrist looked reasonable individually, but nothing checked what they added up to. A shoulder angle around minus 20 degrees combined with the elbow folding down was enough to put the fingertip about 150 mm below the floor, well past what the numbers on any single slider suggested. I added a check that runs after every move: if the tool has gone below the floor, lift the wrist, then the elbow, then the shoulder, in that order, until it clears. I tested it against thousands of joint combinations before trusting it.</p>
+          <p><strong>The arm could fold into itself.</strong> Once the floor problem was fixed, I found a second one just like it. With the elbow and wrist both bent hard, the forearm and gripper would swing back far enough to pass straight through the shoulder link, which obviously cannot happen on a real machine with real material in the way. Checking joint limits was not enough here either, since both joints were individually within range. I ended up measuring the actual distance between the two link bodies using their real physical width, from the same numbers I would use to size the aluminium, and nudging the joints apart whenever that distance got too small.</p>
+          <p><strong>The arm could pass through the bin wall.</strong> Same family of problem again, this time between the arm and the drop-off bin rather than the arm and itself. I had to be careful here, because the arm is supposed to reach into the bin from above during a normal pick and place. So the fix could not just say stay away from the bin at all times, it had to know the difference between reaching in over the top, which is fine, and clipping sideways through a wall, which is not. That took real geometry, checking the distance from each arm segment to each of the four thin bin walls, not just a blanket keep-out zone.</p>
+          <p>The pattern across all three of these is the same. A joint limit only protects that one joint. It says nothing about what happens once you chain several joints together, or add a second body like the floor or the bin into the picture. Once I saw that pattern, I built the fix the same way each time and reused it everywhere the problem could show up, not just where I first noticed it.</p>
+        </div>
+
+        <div class="note">
+          <p class="lbl">§12</p><h2>Some of the math</h2>
+          <p>I do not want to overstate this. Most of the arm is straightforward trigonometry, not anything advanced. But a few pieces are worth writing down, partly because they are the parts that would matter most if I ever swap this for a proper robotics library, and partly because working them out by hand is what caught the bugs in §11 in the first place.</p>
+          <p><strong>Splitting a 3D problem into a 2D one.</strong> The arm only really has to solve two kinds of motion: spin the base to face the target, then reach out and up in a flat vertical plane. Given a target point in 3D space, the base angle falls straight out of <code>atan2(-z, x)</code>, and once the base is facing the right way, the remaining reach is just a distance and a height, <code>r = hypot(x, z)</code>, in that plane. This is the one piece of linear algebra doing the most work in the whole file. Instead of solving three joint angles in 3D, which is genuinely harder, I am solving one angle in 3D and three angles in a 2D plane that rotates with the base. Every other calculation in the arm assumes this split already happened.</p>
+          <p><strong>Forward kinematics as chained rotations.</strong> Once you are in that 2D plane, each link just adds its own angle onto a running total and steps forward by its length at that heading: <code>angle += jointAngle; x += length * cos(angle); y += length * sin(angle)</code>, repeated down the chain. That is the planar version of composing rotation matrices and translating along the new local axis at each joint, just written directly in cos and sin instead of as matrix multiplication, since in two dimensions that is the same thing with less notation.</p>
+          <p><strong>Solving backward with CCD.</strong> Going from a target point back to the three joint angles that reach it does not have one clean answer. A three-link arm reaching a single point in a plane has one more degree of freedom than it needs, so there are infinitely many valid elbow and wrist combinations for most targets, not one correct answer to solve for algebraically. I used cyclic coordinate descent instead of a closed-form solve: starting from the wrist and working back toward the shoulder, each joint rotates a little to point the tool more directly at the target, repeated for several passes until it converges. It is not the fastest method that exists, but it is simple enough to trust, and it naturally picks a solution close to wherever the arm already was, so the motion between moves stays smooth instead of jumping between different elbow-up and elbow-down configurations.</p>
+          <p><strong>Distance between two line segments.</strong> This is what the self-collision and bin-wall checks in §11 actually run on. Given two line segments, the standard way to find the closest they ever get to each other is to project each segment's direction onto the vector between their start points, using dot products, and clamp the result so the closest point cannot slide off either segment's actual length. It looks fiddly written out, but it is the same handful of dot products used to check any two line segments in the whole scene, whether that is two arm links or an arm link and a bin wall, just with different geometry fed in.</p>
+          <p><strong>A rough torque number.</strong> To get a first sense of what to buy, I estimated the worst case load on the shoulder joint: the weight of the forearm, wrist, and gripper, acting at the horizontal distance from the shoulder to wherever the arm's centre of mass ends up when fully extended. Torque is just that weight times that horizontal distance. It is a static estimate, no acceleration or dynamic loading included, so it is a floor on what the servo needs to handle, not the full answer. I am treating it as a sanity check for now, enough to know roughly which class of servo to look at, and I plan to redo it properly once the CAD model gives me real masses instead of guesses.</p>
+        </div>
+
+        <div class="note">
+          <p class="lbl">§13</p><h2>Next steps</h2>
           <ul>
             <li>Model the arm properly in CAD and confirm the link lengths turn into parts that are actually stiff enough and reachable on a real desk.</li>
             <li>Work out a torque budget for each joint and pick motors that can hold the poses, then order them.</li>
@@ -356,133 +391,6 @@
             <li>Drive the physical arm straight from this page over a USB connection, using the same list of moves the simulation already produces.</li>
           </ul>
         </div>
-      </div>
-
-      <aside>
-        <div class="sect">
-          <p class="lbl">Parts on floor · <span id="floor-n">0</span></p>
-          <div id="floor-list"><p class="empty">Click anywhere inside the dashed ring to drop a part. The stepper base turns a full 360°, so the whole annulus is reachable.</p></div>
-          <div class="btn-row">
-            <button class="btn b-solid" id="btn-run" style="flex:1" disabled>RUN CYCLE</button>
-            <button class="btn b-line" id="btn-clear">CLEAR</button>
-          </div>
-        </div>
-
-        <div class="sect">
-          <p class="lbl">Jog · Joint space</p>
-          <div id="jogs"></div>
-        </div>
-
-        <div class="sect">
-          <p class="lbl">Tool centre point</p>
-          <div class="row"><span class="k">X</span><span class="v" id="tcp-x">0.0 mm</span></div>
-          <div class="row"><span class="k">Y</span><span class="v" id="tcp-y">0.0 mm</span></div>
-          <div class="row"><span class="k">Z</span><span class="v" id="tcp-z">0.0 mm</span></div>
-          <div class="row"><span class="k">FOLLOW ERR</span><span class="v" id="tcp-e">0.0 mm</span></div>
-        </div>
-
-        <div class="sect">
-          <p class="lbl">Gripper linkage</p>
-          <div class="row"><span class="k">PAD GAP</span><span class="v hl" id="g-gap">30.0 mm</span></div>
-          <div class="row"><span class="k">JAW ANGLE</span><span class="v" id="g-ang">0.0°</span></div>
-          <div class="row"><span class="k">ACTUATOR</span><span class="v" id="g-rod">0.0 mm</span></div>
-          <div class="row"><span class="k">TOOL LENGTH</span><span class="v" id="g-tool">0.0 mm</span></div>
-        </div>
-
-        <div class="sect">
-          <p class="lbl">Drive output</p>
-          <div id="drives"></div>
-          <div class="btn-row">
-            <button class="btn b-line" id="btn-home" style="flex:1">HOME</button>
-            <button class="btn b-line" id="btn-export">EXPORT</button>
-          </div>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <section id="panel-notes" role="tabpanel" hidden>
-    <div class="notes">
-      <div>
-        <div class="note">
-          <p class="lbl">§1</p><h2>What this is</h2>
-          <p>A 4-degree-of-freedom manipulator running entirely in the browser. You click the floor to place a part; the cell reads its world coordinates off the click, plans a waypoint sequence, and executes a pick-and-place into the bin. No physics engine, no robotics library — the kinematics and the gripper linkage are about a hundred and fifty lines of trigonometry.</p>
-          <p>It's written as the software half of a physical arm rather than as an animation. That constraint shaped most of the decisions below: a visual sim can cheat in ways that quietly become wrong the moment you wire up a motor.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§2</p><h2>Kinematic model</h2>
-          <p>The arm is a yaw joint at the base carrying a three-link chain. That decomposition is the whole trick. Any reachable point in 3D is a rotation about the vertical axis plus a position in the plane that rotation sweeps — so base yaw falls straight out of <code>atan2(-z, x)</code> in closed form, and the remaining three joints only ever solve a 2D problem in <code>(r, height)</code> where <code>r = hypot(x, z)</code>.</p>
-          <p><strong>The chain has four segments, not three.</strong> The gripper is a rigid 34&nbsp;mm segment on the end of the wrist, so the solver targets the point between the <em>fingertips</em> rather than the wrist flange. This sounds pedantic and isn't: solve to the flange and every grasp is off by the length of the gripper. In simulation you'd never notice — the part snaps to the tool anyway. On hardware the arm drives its palm into the part and stalls.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§3</p><h2>The inverse kinematics solver</h2>
-          <p>Inverse kinematics is solved with <strong>cyclic coordinate descent</strong>. Starting at the wrist and working back to the shoulder, each joint rotates part of the way toward aligning the tool with the goal; the sweep repeats. Twelve passes per frame converges well inside a millimetre.</p>
-          <p>A three-link planar arm <em>does</em> have a closed-form solution, so CCD is a deliberate trade-off. It buys two things: joint limits become a one-line <code>clamp()</code> instead of case analysis across solution branches, and the same solver works unchanged if I add a link. It costs optimality — CCD converges to <em>a</em> configuration, not the best one, and it favours moving distal joints first, which is why the wrist does most of the work on small corrections.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§4</p><h2>Why the base is a stepper</h2>
-          <p>A full 360° workspace isn't a rendering choice, it's an actuator choice. A hobby servo sweeps 180° and stops, which would cut the reachable area to a half disc. So the base is a <strong>NEMA 17 stepper through a 4:1 belt</strong>: 200 full steps × 16 microsteps × 4 = <strong>12,800 steps per revolution</strong>, or 35.6 steps per degree. That's the resolution the base actually commands, and the panel reports CH0 in steps rather than microseconds because steps are what the driver consumes.</p>
-          <p>Continuous rotation brings two problems a servo never has. The first is in software: <strong>yaw must take the short way around.</strong> Going from 179° to −179° is a 2° move, but naive subtraction says −358° and the arm spins almost all the way round to arrive at the same place. Every angle difference is wrapped into ±180° before it reaches the slew limiter.</p>
-          <p>The second is physical and this sim can't solve it for you: <strong>cables don't rotate forever.</strong> A genuinely continuous base needs a slip ring at the column, or the controller needs unwind logic that spends an idle moment turning the base back through 360° once it has accumulated too much twist. Ignore this and you will discover it by tearing out your own wiring harness.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§5</p><h2>The gripper is a linkage, not an animation</h2>
-          <p>The fingers pivot on <strong>hinge pins</strong> and are driven by a <strong>crank-slider</strong>: a linear actuator rod running down the palm, with a coupler link from the rod end to a pin on each finger. Push the rod, the couplers swing the fingers open; pull it, they close. One actuator, two symmetric jaws — the standard arrangement, and the reason grippers like this can be built from flat plate and three dowel pins.</p>
-          <p>The important part is that the rod position is <em>solved</em>, not faked. Given a finger angle θ, the coupler pin sits at a known point, and the rod must be wherever keeps the coupler exactly its own length: <code>rodX = Px − √(Lc² − Pz²)</code>. So the mechanism on screen obeys the same constraint the aluminium would. Change <code>couplerLength</code> in CONFIG and the stroke changes correctly, including going stiff near the toggle point — which is exactly the feedback you want when picking linkage dimensions.</p>
-          <p>State is the <strong>pad-face gap in millimetres</strong> — what you'd measure with callipers around a part — and everything else derives from it: jaw angle by <code>asin</code>, rod travel by the constraint above, drive pulse from the rod travel. The fingers swing about 55°, which is finally visible. An earlier version slid two blocks 5&nbsp;mm apart with no mechanism at all, which was both invisible and a lie about the hardware.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§6</p><h2>Motion: rates, not durations</h2>
-          <p>The first version gave each phase a fixed duration — "descend takes 0.8&nbsp;s" — regardless of how far the arm had to travel. That's backwards from how a machine works and it bites immediately: a motor has a top speed, so a move needing 140° in 0.8&nbsp;s from a joint that manages 90°/s puts the simulation and the bench on different trajectories from cycle one.</p>
-          <p>So durations are <em>derived</em>. Each waypoint declares a Cartesian feed rate — <code>rapid</code>, <code>approach</code> or <code>precision</code>, the same idea as G0 versus G1 — and time comes from path length ÷ feed rate. On top of that every axis is independently slew-limited to its own max rate. If a commanded path outruns the joints, the tool lags the goal and the <strong>FOLLOW ERR</strong> readout shows how far. That number is the same following error a real controller reports.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§7</p><h2>Moves end on arrival, not on a clock</h2>
-          <p>A waypoint completes when the tool is within the in-position tolerance <em>and</em> the jaws have reached their commanded gap — with a settle dwell after, and a timeout as a backstop. Advancing on a timer lets the sequence move on while the arm is still travelling. Every real motion controller has an in-position check for exactly this reason, and structuring the state machine around arrival rather than elapsed time is what lets the same waypoint list drive hardware.</p>
-          <div class="steps">
-            <div><span class="i">01</span><span class="p">APPROACH</span><span class="s">rapid</span><span class="d">Rise to clearance above the part, jaws open</span></div>
-            <div><span class="i">02</span><span class="p">DESCEND</span><span class="s">precision</span><span class="d">Straight-line drop onto the part</span></div>
-            <div><span class="i">03</span><span class="p">GRASP</span><span class="s">—</span><span class="d">Close jaws to part width; reparent to the tool</span></div>
-            <div><span class="i">04</span><span class="p">LIFT</span><span class="s">approach</span><span class="d">Raise to transit height</span></div>
-            <div><span class="i">05</span><span class="p">TRANSFER</span><span class="s">rapid</span><span class="d">Traverse to above the assigned bin slot</span></div>
-            <div><span class="i">06</span><span class="p">LOWER</span><span class="s">precision</span><span class="d">Descend onto the slot</span></div>
-            <div><span class="i">07</span><span class="p">RELEASE</span><span class="s">—</span><span class="d">Open jaws; reparent to the world</span></div>
-            <div><span class="i">08</span><span class="p">RETRACT</span><span class="s">approach</span><span class="d">Clear the bin, then home</span></div>
-          </div>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§8</p><h2>Drive output and program export</h2>
-          <p>Joint angles in degrees are not what hardware consumes. The stepper base wants <strong>step counts</strong>; the servos want <strong>pulse widths</strong>; the gripper actuator wants pulses derived from <em>rod travel</em>, not from the pad gap, because the rod is the thing that physically moves. Each axis carries a calibration — range, direction flag for motors mounted backwards, trim offset for the fact that no horn ever lines up on the spline where you wanted. The panel shows live values per channel, which makes a mis-set direction obvious before you power the arm and hear it hit a hard stop.</p>
-          <p><strong>EXPORT</strong> re-solves the planned cycle offline and downloads it as JSON: every waypoint with its Cartesian target, joint angles, jaw gap, jaw angle, rod travel, and the drive command per channel — plus the full calibration and kinematics used to generate it. That file is the actual handoff to an Arduino or ESP32. The browser is the teach pendant; the JSON is the program.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§9</p><h2>Two bugs worth recording</h2>
-          <p><strong>Parts vanishing.</strong> An early version dropped parts using a bin counter only reset when the cell was cleared, so the release height climbed a pitch each cycle until parts were released above the bin walls and out of frame. The plan captured the counter at plan time while execution read it live, so the two disagreed mid-cycle.</p>
-          <p><strong>Parts floating.</strong> Every part then went to the bin centre with random horizontal jitter, stacked one pitch higher each time — a one-dimensional tower with its blocks nudged sideways, visibly perched on nothing by the sixth part.</p>
-          <p>Same root cause both times: the resting position was invented in two places and checked against nothing. Now <code>slotPosition(slot)</code> is the single source of truth — parts pack a 3×3 grid per layer and only start a new layer once the one below is full — and each part carries an explicit <code>FLOOR → HELD → BINNED</code> state. Derived state recomputed in two places will eventually be recomputed two ways.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§10</p><h2>What this still doesn't model</h2>
-          <p>Worth being blunt, because these are the gaps between a green cycle here and a working arm on the bench:</p>
-          <ul>
-            <li><strong>No gravity or torque.</strong> The biggest one. A shoulder servo holding a 90&nbsp;mm moment arm may stall or brown out under a load this sim carries for free. Budget torque before you trust a cycle.</li>
-            <li><strong>No grasp force.</strong> Closing to part width assumes a rigid part and a perfectly calibrated linkage. Real fingers need compliance or a current limit.</li>
-            <li><strong>No backlash.</strong> Belt reduction and hinge pins both have slop; the TCP here is exact.</li>
-            <li><strong>Slew rates are constants.</strong> Real motor speed varies with load and supply voltage — a rate measured unloaded is optimistic. Steppers also lose steps silently when accelerated too hard.</li>
-            <li><strong>No collision checking.</strong> The transfer path can pass through the bin walls, and nothing stops the arm folding into itself.</li>
-            <li><strong>No cable model.</strong> See §4 — the 360° base assumes a slip ring you have to actually buy.</li>
-            <li><strong>Open loop.</strong> Neither hobby servos nor bare steppers report position, so the arm can't know it failed. The follow error here is the sim's own, not feedback.</li>
-          </ul>
-        </div>
 
       </div>
 
@@ -529,260 +437,7 @@
     </div>
   </section>
 
-  <section id="panel-notes" role="tabpanel" hidden>
-    <div class="notes">
-      <div>
-        <div class="note">
-          <p class="lbl">§1</p><h2>What this is</h2>
-          <p>This is a concept for a physical robotic arm I want to build. Before ordering motors and cutting material, I wanted to know whether the arm I had in mind could actually reach the parts, sort them into a bin, and close its claw the way I pictured. So I built this simulation to test all of that on screen first. You click the floor to drop a part, and the arm plans a path and runs a pick and place into the bin.</p>
-          <p>I put the code together quickly with the help of AI tools. What I spent my own time on is the part I care about as a mechanical engineer: the geometry of the arm, the joint layout, the reach, and the claw mechanism. The goal was never to write clever software. It was to check that the machine makes sense before I build it.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§2</p><h2>How I came up with the dimensions</h2>
-          <p>I started from the job. The arm has to pick small cubes off a desk and drop them into a bin about a hand's width away. That set the reach. I picked link lengths of 120, 90, and 55 mm for the shoulder, forearm, and wrist, which gives a total reach a bit over 300 mm once the gripper is added. That covers the desk area I want without the arm being so long that the motors can't hold it up.</p>
-          <p>The shoulder sits 40 mm above the base plate so the arm clears the surface at full fold. The claw adds a fixed 34 mm from the wrist to the point between the fingertips. I kept every number in one place at the top of the code so I could change one length, watch the reachable area update, and settle on proportions that felt buildable. These are the same dimensions I would take into CAD and then into real parts.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§3</p><h2>How the arm moves</h2>
-          <p>The base spins the whole arm left and right. The other three joints all work in a single flat plane, so the hard part of the math only ever deals with two numbers: how far out the target is, and how high. To point the arm at a spot, I turn the base to face it, then solve the three planar joints to reach it.</p>
-          <p>One detail that matters more than it sounds: the arm aims the fingertips at the part, not the wrist. The gripper is a real length of the arm, so if you aim the wrist instead, every grab lands short by the length of the claw. In the simulation you would not notice because the part just snaps to the tool. On a real arm it would drive the palm into the part and stall the motor. So I treat the gripper as the last segment of the arm.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§4</p><h2>Why the base is a stepper, not a servo</h2>
-          <p>I wanted the arm to reach all the way around, a full circle, so it can pick from one side and place on the other. A normal hobby servo only turns 180 degrees and stops, which would cut the working area in half. So the base uses a stepper motor driving a belt instead. That gives continuous rotation and fine control over the angle.</p>
-          <p>This choice created a problem I had to handle in the design. Cables cannot twist forever. A base that truly spins without limit needs a slip ring at the column, or the controller has to unwind itself now and then. It is the kind of thing that is easy to forget on paper and expensive to find out on the bench, so I am noting it now as something the physical build has to account for.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§5</p><h2>The claw, and a problem I ran into</h2>
-          <p>The two fingers pivot on pins and are pushed open and closed by a single actuator through a linkage. One motor, two jaws that move together. It is the kind of gripper you can build from flat plate and a few dowel pins, which is why I chose it.</p>
-          <p>The problem I ran into was that my first version of the claw did not really move. It just slid two blocks a few millimetres apart, which was both invisible on screen and not honest about how the real thing works. So I reworked it into a proper linkage where the actuator position is solved from the finger angle, the same constraint the real aluminium parts would follow. Now the fingers swing through about 55 degrees and you can actually see them open and close. It also goes stiff near the end of its travel, the same way a real linkage does, which is useful feedback when picking the link lengths.</p>
-          <p>I track the claw by the gap between the pads in millimetres, because that is what you would measure with callipers around a part. Everything else follows from that number.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§6</p><h2>Making the motion honest</h2>
-          <p>My first version timed each step by hand, saying a move takes so many seconds no matter how far the arm has to travel. That is backwards from how a real machine works, and it fell apart fast. A motor has a top speed, so if I ask a joint to move further than it can in the time I gave it, the simulation and the real arm stop agreeing.</p>
-          <p>I changed it so each move has a speed, not a duration, and the time comes from how far the arm actually travels. Every joint is also capped at its own top speed. If a path asks for more than the joints can deliver, the tool falls behind and a follow error reading shows how far. That is the same kind of error a real controller reports, so it keeps the simulation honest about what the hardware could do.</p>
-          <p>A move also only finishes when the arm has actually arrived and the jaws have reached their gap, not when a timer runs out. This is how a real controller works, and it is what would let the same list of moves drive the physical arm.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§7</p><h2>The pick and place cycle</h2>
-          <p>Each part runs through the same eight steps.</p>
-          <div class="steps">
-            <div><span class="i">01</span><span class="p">APPROACH</span><span class="s">rapid</span><span class="d">Rise to clearance above the part, jaws open</span></div>
-            <div><span class="i">02</span><span class="p">DESCEND</span><span class="s">precision</span><span class="d">Straight-line drop onto the part</span></div>
-            <div><span class="i">03</span><span class="p">GRASP</span><span class="s">hold</span><span class="d">Close jaws to part width, then hold it</span></div>
-            <div><span class="i">04</span><span class="p">LIFT</span><span class="s">approach</span><span class="d">Raise to transit height</span></div>
-            <div><span class="i">05</span><span class="p">TRANSFER</span><span class="s">rapid</span><span class="d">Traverse to above the assigned bin slot</span></div>
-            <div><span class="i">06</span><span class="p">LOWER</span><span class="s">precision</span><span class="d">Descend onto the slot</span></div>
-            <div><span class="i">07</span><span class="p">RELEASE</span><span class="s">open</span><span class="d">Open jaws, let the part rest in the bin</span></div>
-            <div><span class="i">08</span><span class="p">RETRACT</span><span class="s">approach</span><span class="d">Clear the bin, then return home</span></div>
-          </div>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§8</p><h2>How this connects to a real arm</h2>
-          <p>Motors do not take angles in degrees. The stepper base wants step counts, the servos want pulse widths, and the claw actuator wants a command based on how far its rod moves. So each joint in the simulation carries a calibration: its range, a flag for whether the motor is mounted backwards, and a small offset for the fact that a motor horn never lines up perfectly. The panel shows these live values while the arm moves, which is exactly what you would check before powering a real arm so it does not drive into a hard stop.</p>
-          <p>The EXPORT button solves the whole cycle and downloads it as a file listing every move with its target, joint angles, claw gap, and the actual command for each motor. That file is the real handoff to an Arduino or ESP32. The idea is that the browser is the teach pendant and the exported file is the program the physical arm runs.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§9</p><h2>What this does not model yet</h2>
-          <p>Being clear about the gaps, because these are the things standing between a clean run here and a working arm on the bench.</p>
-          <ul>
-            <li>No gravity or torque. This is the big one. A real shoulder motor holding the arm out at full reach might stall or brown out under a load this simulation carries for free. I need to budget torque before I trust any of this on hardware.</li>
-            <li>No grasp force. Closing to the part width assumes a rigid part and a perfectly built claw. Real fingers need some give or a current limit so they do not crush or drop things.</li>
-            <li>No flex or backlash. Real links bend a little and real joints have play. The tool here is perfectly rigid.</li>
-            <li>Motor speeds are fixed numbers. In reality they change with load and battery voltage, and steppers can quietly skip steps if pushed too hard.</li>
-            <li>No collision checking. Nothing stops the arm from passing through the bin wall or folding into itself.</li>
-            <li>Open loop. Hobby motors do not report their real position, so the arm cannot tell when it has failed.</li>
-          </ul>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§10</p><h2>Next steps</h2>
-          <ul>
-            <li>Model the arm properly in CAD and confirm the link lengths turn into parts that are actually stiff enough and reachable on a real desk.</li>
-            <li>Work out a torque budget for each joint and pick motors that can hold the poses, then order them.</li>
-            <li>Build and test one joint first, with a real load on the end, before committing to the whole arm.</li>
-            <li>Get the claw gripping a real object reliably.</li>
-            <li>Add the colour sorting with a camera once the mechanism itself is trustworthy.</li>
-            <li>Drive the physical arm straight from this page over a USB connection, using the same list of moves the simulation already produces.</li>
-          </ul>
-        </div>
-      </div>
-
-      <aside>
-        <div class="sect">
-          <p class="lbl">Parts on floor · <span id="floor-n">0</span></p>
-          <div id="floor-list"><p class="empty">Click anywhere inside the dashed ring to drop a part. The stepper base turns a full 360°, so the whole annulus is reachable.</p></div>
-          <div class="btn-row">
-            <button class="btn b-solid" id="btn-run" style="flex:1" disabled>RUN CYCLE</button>
-            <button class="btn b-line" id="btn-clear">CLEAR</button>
-          </div>
-        </div>
-
-        <div class="sect">
-          <p class="lbl">Jog · Joint space</p>
-          <div id="jogs"></div>
-        </div>
-
-        <div class="sect">
-          <p class="lbl">Tool centre point</p>
-          <div class="row"><span class="k">X</span><span class="v" id="tcp-x">0.0 mm</span></div>
-          <div class="row"><span class="k">Y</span><span class="v" id="tcp-y">0.0 mm</span></div>
-          <div class="row"><span class="k">Z</span><span class="v" id="tcp-z">0.0 mm</span></div>
-          <div class="row"><span class="k">FOLLOW ERR</span><span class="v" id="tcp-e">0.0 mm</span></div>
-        </div>
-
-        <div class="sect">
-          <p class="lbl">Gripper linkage</p>
-          <div class="row"><span class="k">PAD GAP</span><span class="v hl" id="g-gap">30.0 mm</span></div>
-          <div class="row"><span class="k">JAW ANGLE</span><span class="v" id="g-ang">0.0°</span></div>
-          <div class="row"><span class="k">ACTUATOR</span><span class="v" id="g-rod">0.0 mm</span></div>
-          <div class="row"><span class="k">TOOL LENGTH</span><span class="v" id="g-tool">0.0 mm</span></div>
-        </div>
-
-        <div class="sect">
-          <p class="lbl">Drive output</p>
-          <div id="drives"></div>
-          <div class="btn-row">
-            <button class="btn b-line" id="btn-home" style="flex:1">HOME</button>
-            <button class="btn b-line" id="btn-export">EXPORT</button>
-          </div>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <section id="panel-notes" role="tabpanel" hidden>
-    <div class="notes">
-      <div>
-        <div class="note">
-          <p class="lbl">§1</p><h2>What this is</h2>
-          <p>A 4-degree-of-freedom manipulator running entirely in the browser. You click the floor to place a part; the cell reads its world coordinates off the click, plans a waypoint sequence, and executes a pick-and-place into the bin. No physics engine, no robotics library — the kinematics and the gripper linkage are about a hundred and fifty lines of trigonometry.</p>
-          <p>It's written as the software half of a physical arm rather than as an animation. That constraint shaped most of the decisions below: a visual sim can cheat in ways that quietly become wrong the moment you wire up a motor.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§2</p><h2>Kinematic model</h2>
-          <p>The arm is a yaw joint at the base carrying a three-link chain. That decomposition is the whole trick. Any reachable point in 3D is a rotation about the vertical axis plus a position in the plane that rotation sweeps — so base yaw falls straight out of <code>atan2(-z, x)</code> in closed form, and the remaining three joints only ever solve a 2D problem in <code>(r, height)</code> where <code>r = hypot(x, z)</code>.</p>
-          <p><strong>The chain has four segments, not three.</strong> The gripper is a rigid 34&nbsp;mm segment on the end of the wrist, so the solver targets the point between the <em>fingertips</em> rather than the wrist flange. This sounds pedantic and isn't: solve to the flange and every grasp is off by the length of the gripper. In simulation you'd never notice — the part snaps to the tool anyway. On hardware the arm drives its palm into the part and stalls.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§3</p><h2>The inverse kinematics solver</h2>
-          <p>Inverse kinematics is solved with <strong>cyclic coordinate descent</strong>. Starting at the wrist and working back to the shoulder, each joint rotates part of the way toward aligning the tool with the goal; the sweep repeats. Twelve passes per frame converges well inside a millimetre.</p>
-          <p>A three-link planar arm <em>does</em> have a closed-form solution, so CCD is a deliberate trade-off. It buys two things: joint limits become a one-line <code>clamp()</code> instead of case analysis across solution branches, and the same solver works unchanged if I add a link. It costs optimality — CCD converges to <em>a</em> configuration, not the best one, and it favours moving distal joints first, which is why the wrist does most of the work on small corrections.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§4</p><h2>Why the base is a stepper</h2>
-          <p>A full 360° workspace isn't a rendering choice, it's an actuator choice. A hobby servo sweeps 180° and stops, which would cut the reachable area to a half disc. So the base is a <strong>NEMA 17 stepper through a 4:1 belt</strong>: 200 full steps × 16 microsteps × 4 = <strong>12,800 steps per revolution</strong>, or 35.6 steps per degree. That's the resolution the base actually commands, and the panel reports CH0 in steps rather than microseconds because steps are what the driver consumes.</p>
-          <p>Continuous rotation brings two problems a servo never has. The first is in software: <strong>yaw must take the short way around.</strong> Going from 179° to −179° is a 2° move, but naive subtraction says −358° and the arm spins almost all the way round to arrive at the same place. Every angle difference is wrapped into ±180° before it reaches the slew limiter.</p>
-          <p>The second is physical and this sim can't solve it for you: <strong>cables don't rotate forever.</strong> A genuinely continuous base needs a slip ring at the column, or the controller needs unwind logic that spends an idle moment turning the base back through 360° once it has accumulated too much twist. Ignore this and you will discover it by tearing out your own wiring harness.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§5</p><h2>The gripper is a linkage, not an animation</h2>
-          <p>The fingers pivot on <strong>hinge pins</strong> and are driven by a <strong>crank-slider</strong>: a linear actuator rod running down the palm, with a coupler link from the rod end to a pin on each finger. Push the rod, the couplers swing the fingers open; pull it, they close. One actuator, two symmetric jaws — the standard arrangement, and the reason grippers like this can be built from flat plate and three dowel pins.</p>
-          <p>The important part is that the rod position is <em>solved</em>, not faked. Given a finger angle θ, the coupler pin sits at a known point, and the rod must be wherever keeps the coupler exactly its own length: <code>rodX = Px − √(Lc² − Pz²)</code>. So the mechanism on screen obeys the same constraint the aluminium would. Change <code>couplerLength</code> in CONFIG and the stroke changes correctly, including going stiff near the toggle point — which is exactly the feedback you want when picking linkage dimensions.</p>
-          <p>State is the <strong>pad-face gap in millimetres</strong> — what you'd measure with callipers around a part — and everything else derives from it: jaw angle by <code>asin</code>, rod travel by the constraint above, drive pulse from the rod travel. The fingers swing about 55°, which is finally visible. An earlier version slid two blocks 5&nbsp;mm apart with no mechanism at all, which was both invisible and a lie about the hardware.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§6</p><h2>Motion: rates, not durations</h2>
-          <p>The first version gave each phase a fixed duration — "descend takes 0.8&nbsp;s" — regardless of how far the arm had to travel. That's backwards from how a machine works and it bites immediately: a motor has a top speed, so a move needing 140° in 0.8&nbsp;s from a joint that manages 90°/s puts the simulation and the bench on different trajectories from cycle one.</p>
-          <p>So durations are <em>derived</em>. Each waypoint declares a Cartesian feed rate — <code>rapid</code>, <code>approach</code> or <code>precision</code>, the same idea as G0 versus G1 — and time comes from path length ÷ feed rate. On top of that every axis is independently slew-limited to its own max rate. If a commanded path outruns the joints, the tool lags the goal and the <strong>FOLLOW ERR</strong> readout shows how far. That number is the same following error a real controller reports.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§7</p><h2>Moves end on arrival, not on a clock</h2>
-          <p>A waypoint completes when the tool is within the in-position tolerance <em>and</em> the jaws have reached their commanded gap — with a settle dwell after, and a timeout as a backstop. Advancing on a timer lets the sequence move on while the arm is still travelling. Every real motion controller has an in-position check for exactly this reason, and structuring the state machine around arrival rather than elapsed time is what lets the same waypoint list drive hardware.</p>
-          <div class="steps">
-            <div><span class="i">01</span><span class="p">APPROACH</span><span class="s">rapid</span><span class="d">Rise to clearance above the part, jaws open</span></div>
-            <div><span class="i">02</span><span class="p">DESCEND</span><span class="s">precision</span><span class="d">Straight-line drop onto the part</span></div>
-            <div><span class="i">03</span><span class="p">GRASP</span><span class="s">—</span><span class="d">Close jaws to part width; reparent to the tool</span></div>
-            <div><span class="i">04</span><span class="p">LIFT</span><span class="s">approach</span><span class="d">Raise to transit height</span></div>
-            <div><span class="i">05</span><span class="p">TRANSFER</span><span class="s">rapid</span><span class="d">Traverse to above the assigned bin slot</span></div>
-            <div><span class="i">06</span><span class="p">LOWER</span><span class="s">precision</span><span class="d">Descend onto the slot</span></div>
-            <div><span class="i">07</span><span class="p">RELEASE</span><span class="s">—</span><span class="d">Open jaws; reparent to the world</span></div>
-            <div><span class="i">08</span><span class="p">RETRACT</span><span class="s">approach</span><span class="d">Clear the bin, then home</span></div>
-          </div>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§8</p><h2>Drive output and program export</h2>
-          <p>Joint angles in degrees are not what hardware consumes. The stepper base wants <strong>step counts</strong>; the servos want <strong>pulse widths</strong>; the gripper actuator wants pulses derived from <em>rod travel</em>, not from the pad gap, because the rod is the thing that physically moves. Each axis carries a calibration — range, direction flag for motors mounted backwards, trim offset for the fact that no horn ever lines up on the spline where you wanted. The panel shows live values per channel, which makes a mis-set direction obvious before you power the arm and hear it hit a hard stop.</p>
-          <p><strong>EXPORT</strong> re-solves the planned cycle offline and downloads it as JSON: every waypoint with its Cartesian target, joint angles, jaw gap, jaw angle, rod travel, and the drive command per channel — plus the full calibration and kinematics used to generate it. That file is the actual handoff to an Arduino or ESP32. The browser is the teach pendant; the JSON is the program.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§9</p><h2>Two bugs worth recording</h2>
-          <p><strong>Parts vanishing.</strong> An early version dropped parts using a bin counter only reset when the cell was cleared, so the release height climbed a pitch each cycle until parts were released above the bin walls and out of frame. The plan captured the counter at plan time while execution read it live, so the two disagreed mid-cycle.</p>
-          <p><strong>Parts floating.</strong> Every part then went to the bin centre with random horizontal jitter, stacked one pitch higher each time — a one-dimensional tower with its blocks nudged sideways, visibly perched on nothing by the sixth part.</p>
-          <p>Same root cause both times: the resting position was invented in two places and checked against nothing. Now <code>slotPosition(slot)</code> is the single source of truth — parts pack a 3×3 grid per layer and only start a new layer once the one below is full — and each part carries an explicit <code>FLOOR → HELD → BINNED</code> state. Derived state recomputed in two places will eventually be recomputed two ways.</p>
-        </div>
-
-        <div class="note">
-          <p class="lbl">§10</p><h2>What this still doesn't model</h2>
-          <p>Worth being blunt, because these are the gaps between a green cycle here and a working arm on the bench:</p>
-          <ul>
-            <li><strong>No gravity or torque.</strong> The biggest one. A shoulder servo holding a 90&nbsp;mm moment arm may stall or brown out under a load this sim carries for free. Budget torque before you trust a cycle.</li>
-            <li><strong>No grasp force.</strong> Closing to part width assumes a rigid part and a perfectly calibrated linkage. Real fingers need compliance or a current limit.</li>
-            <li><strong>No backlash.</strong> Belt reduction and hinge pins both have slop; the TCP here is exact.</li>
-            <li><strong>Slew rates are constants.</strong> Real motor speed varies with load and supply voltage — a rate measured unloaded is optimistic. Steppers also lose steps silently when accelerated too hard.</li>
-            <li><strong>No collision checking.</strong> The transfer path can pass through the bin walls, and nothing stops the arm folding into itself.</li>
-            <li><strong>No cable model.</strong> See §4 — the 360° base assumes a slip ring you have to actually buy.</li>
-            <li><strong>Open loop.</strong> Neither hobby servos nor bare steppers report position, so the arm can't know it failed. The follow error here is the sim's own, not feedback.</li>
-          </ul>
-        </div>
-
-
-      </div>
-
-      <aside>
-        <div class="sect">
-          <p class="lbl">Colophon</p>
-          <div class="row"><span class="k">AUTHOR</span><span class="v">Chenyu Li</span></div>
-          <div class="row"><span class="k">VERSION</span><span class="v">0.6.0</span></div>
-          <div class="row"><span class="k">LICENSE</span><span class="v"><a href="LICENSE">MIT</a></span></div>
-          <div class="row"><span class="k">SOURCE</span><span class="v"><a href="https://github.com/chenyu-u/chenyu-u.github.io/blob/main/robot-sim.html">GitHub</a></span></div>
-          <div class="row"><span class="k">RENDERER</span><span class="v">three.js r160</span></div>
-          <div class="row"><span class="k">BUILD STEP</span><span class="v">none</span></div>
-          <div class="row"><span class="k">BASE</span><span class="v">stepper, 360°</span></div>
-          <div class="row"><span class="k">GRIPPER</span><span class="v">crank-slider</span></div>
-          <div class="row"><span class="k">DOF</span><span class="v">4 + claw</span></div>
-          <div class="row"><span class="k">CAD</span><span class="v"><a href="cad/pick-place-arm.step">STEP</a></span></div>
-          <div class="row"><span class="k">PARAMS</span><span class="v"><a href="cad/arm_params.json">JSON</a></span></div>
-        </div>
-        <div class="sect">
-          <p class="lbl">Credits &amp; attribution</p>
-          <p class="empty" style="padding-bottom:10px">
-            All simulation code, kinematics and written text on this page are original work by
-            Chenyu Li, released under the MIT License. Third-party libraries and typefaces load
-            from their public CDNs and remain under their own licences:
-          </p>
-          <div class="row"><span class="k">three.js r160</span>
-            <span class="v"><a href="https://github.com/mrdoob/three.js/blob/dev/LICENSE">MIT</a></span></div>
-          <div class="row"><span class="k">IBM Plex</span>
-            <span class="v"><a href="https://github.com/IBM/plex/blob/master/LICENSE.txt">OFL 1.1</a></span></div>
-          <div class="row"><span class="k">Archivo</span>
-            <span class="v"><a href="https://github.com/Omnibus-Type/Archivo/blob/master/OFL.txt">OFL 1.1</a></span></div>
-          <p class="empty" style="margin-top:12px">
-            three.js © 2010–2026 three.js authors. IBM Plex © IBM Corp.
-            Archivo © Omnibus-Type. Cell drawn in University of Toronto blue.
-          </p>
-        </div>
-      </aside>
-    </div>
-  </section>
-
+  
   <footer>
     <span class="lbl">© 2026 Chenyu Li · <a href="LICENSE">MIT License</a> · v0.6.0</span>
     <span class="lbl">Built with <a href="https://threejs.org">three.js</a> ·
