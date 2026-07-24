@@ -236,27 +236,42 @@
 
       <aside>
         <div class="sect">
-          <p class="lbl">Envelope</p>
-          <div class="row"><span class="k">REACH</span><span class="v">~300 mm</span></div>
-          <div class="row"><span class="k">SHOULDER HEIGHT</span><span class="v">40 mm</span></div>
-          <div class="row"><span class="k">LINKS</span><span class="v">120 / 90 / 55 mm</span></div>
-          <div class="row"><span class="k">BASE TRAVEL</span><span class="v">360°, continuous</span></div>
+          <p class="lbl">Parts on floor · <span id="floor-n">0</span></p>
+          <div id="floor-list"><p class="empty">Click anywhere inside the dashed ring to drop a part. The stepper base turns a full 360°, so the whole annulus is reachable.</p></div>
+          <div class="btn-row">
+            <button class="btn b-solid" id="btn-run" style="flex:1" disabled>RUN CYCLE</button>
+            <button class="btn b-line" id="btn-clear">CLEAR</button>
+          </div>
         </div>
 
         <div class="sect">
-          <p class="lbl">Degrees of freedom</p>
-          <div class="row"><span class="k">01 BASE</span><span class="v">stepper, belt-driven</span></div>
-          <div class="row"><span class="k">02 SHOULDER</span><span class="v">servo</span></div>
-          <div class="row"><span class="k">03 ELBOW</span><span class="v">servo</span></div>
-          <div class="row"><span class="k">04 WRIST</span><span class="v">servo</span></div>
-          <div class="row"><span class="k">GRIPPER</span><span class="v">linear actuator</span></div>
+          <p class="lbl">Jog · Joint space</p>
+          <div id="jogs"></div>
         </div>
 
         <div class="sect">
-          <p class="lbl">Status</p>
-          <div class="row"><span class="k">SIMULATION</span><span class="v hl">working</span></div>
-          <div class="row"><span class="k">CAD</span><span class="v">in progress</span></div>
-          <div class="row"><span class="k">HARDWARE</span><span class="v">not started</span></div>
+          <p class="lbl">Tool centre point</p>
+          <div class="row"><span class="k">X</span><span class="v" id="tcp-x">0.0 mm</span></div>
+          <div class="row"><span class="k">Y</span><span class="v" id="tcp-y">0.0 mm</span></div>
+          <div class="row"><span class="k">Z</span><span class="v" id="tcp-z">0.0 mm</span></div>
+          <div class="row"><span class="k">FOLLOW ERR</span><span class="v" id="tcp-e">0.0 mm</span></div>
+        </div>
+
+        <div class="sect">
+          <p class="lbl">Gripper linkage</p>
+          <div class="row"><span class="k">PAD GAP</span><span class="v hl" id="g-gap">30.0 mm</span></div>
+          <div class="row"><span class="k">JAW ANGLE</span><span class="v" id="g-ang">0.0°</span></div>
+          <div class="row"><span class="k">ACTUATOR</span><span class="v" id="g-rod">0.0 mm</span></div>
+          <div class="row"><span class="k">TOOL LENGTH</span><span class="v" id="g-tool">0.0 mm</span></div>
+        </div>
+
+        <div class="sect">
+          <p class="lbl">Drive output</p>
+          <div id="drives"></div>
+          <div class="btn-row">
+            <button class="btn b-line" id="btn-home" style="flex:1">HOME</button>
+            <button class="btn b-line" id="btn-export">EXPORT</button>
+          </div>
         </div>
       </aside>
     </div>
@@ -396,42 +411,27 @@
 
       <aside>
         <div class="sect">
-          <p class="lbl">Parts on floor · <span id="floor-n">0</span></p>
-          <div id="floor-list"><p class="empty">Click anywhere inside the dashed ring to drop a part. The stepper base turns a full 360°, so the whole annulus is reachable.</p></div>
-          <div class="btn-row">
-            <button class="btn b-solid" id="btn-run" style="flex:1" disabled>RUN CYCLE</button>
-            <button class="btn b-line" id="btn-clear">CLEAR</button>
-          </div>
+          <p class="lbl">Envelope</p>
+          <div class="row"><span class="k">REACH</span><span class="v">~300 mm</span></div>
+          <div class="row"><span class="k">SHOULDER HEIGHT</span><span class="v">40 mm</span></div>
+          <div class="row"><span class="k">LINKS</span><span class="v">120 / 90 / 55 mm</span></div>
+          <div class="row"><span class="k">BASE TRAVEL</span><span class="v">360°, continuous</span></div>
         </div>
 
         <div class="sect">
-          <p class="lbl">Jog · Joint space</p>
-          <div id="jogs"></div>
+          <p class="lbl">Degrees of freedom</p>
+          <div class="row"><span class="k">01 BASE</span><span class="v">stepper, belt-driven</span></div>
+          <div class="row"><span class="k">02 SHOULDER</span><span class="v">servo</span></div>
+          <div class="row"><span class="k">03 ELBOW</span><span class="v">servo</span></div>
+          <div class="row"><span class="k">04 WRIST</span><span class="v">servo</span></div>
+          <div class="row"><span class="k">GRIPPER</span><span class="v">linear actuator</span></div>
         </div>
 
         <div class="sect">
-          <p class="lbl">Tool centre point</p>
-          <div class="row"><span class="k">X</span><span class="v" id="tcp-x">0.0 mm</span></div>
-          <div class="row"><span class="k">Y</span><span class="v" id="tcp-y">0.0 mm</span></div>
-          <div class="row"><span class="k">Z</span><span class="v" id="tcp-z">0.0 mm</span></div>
-          <div class="row"><span class="k">FOLLOW ERR</span><span class="v" id="tcp-e">0.0 mm</span></div>
-        </div>
-
-        <div class="sect">
-          <p class="lbl">Gripper linkage</p>
-          <div class="row"><span class="k">PAD GAP</span><span class="v hl" id="g-gap">30.0 mm</span></div>
-          <div class="row"><span class="k">JAW ANGLE</span><span class="v" id="g-ang">0.0°</span></div>
-          <div class="row"><span class="k">ACTUATOR</span><span class="v" id="g-rod">0.0 mm</span></div>
-          <div class="row"><span class="k">TOOL LENGTH</span><span class="v" id="g-tool">0.0 mm</span></div>
-        </div>
-
-        <div class="sect">
-          <p class="lbl">Drive output</p>
-          <div id="drives"></div>
-          <div class="btn-row">
-            <button class="btn b-line" id="btn-home" style="flex:1">HOME</button>
-            <button class="btn b-line" id="btn-export">EXPORT</button>
-          </div>
+          <p class="lbl">Status</p>
+          <div class="row"><span class="k">SIMULATION</span><span class="v hl">working</span></div>
+          <div class="row"><span class="k">CAD</span><span class="v">in progress</span></div>
+          <div class="row"><span class="k">HARDWARE</span><span class="v">not started</span></div>
         </div>
       </aside>
     </div>
