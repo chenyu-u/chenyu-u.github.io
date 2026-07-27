@@ -33,6 +33,7 @@ CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET")
 REFRESH_TOKEN = os.environ.get("STRAVA_REFRESH_TOKEN")
 
 TOKEN_URL      = "https://www.strava.com/oauth/token"
+ATHLETE_URL    = "https://www.strava.com/api/v3/athlete"
 ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
 STATS_URL_TMPL = "https://www.strava.com/api/v3/athletes/{id}/stats"
 
@@ -46,6 +47,16 @@ def fail(msg):
 
 
 def get_access_token():
+    """Exchange the refresh token for a short-lived access token.
+
+    NOTE: Strava only includes an "athlete" summary object in this
+    response on the very first authorization_code exchange (the manual
+    one-time step in the setup guide). Every later refresh_token call —
+    which is what actually happens every night in the scheduled job —
+    returns only the token fields, no athlete object. So the athlete id
+    has to be fetched separately (see get_athlete_id below), not pulled
+    out of this response.
+    """
     if not (CLIENT_ID and CLIENT_SECRET and REFRESH_TOKEN):
         fail("Missing one or more required env vars: "
              "STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN")
@@ -60,7 +71,24 @@ def get_access_token():
         fail(f"Token refresh failed ({resp.status_code}): {resp.text}")
 
     data = resp.json()
-    return data["access_token"], data["athlete"]["id"]
+    if "access_token" not in data:
+        fail(f"Token refresh response missing access_token: {data}")
+    return data["access_token"]
+
+
+def get_athlete_id(access_token):
+    """Fetch the authenticated athlete's id. Works on every call, unlike
+    relying on the token refresh response to carry it."""
+    resp = requests.get(
+        ATHLETE_URL,
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    if resp.status_code != 200:
+        fail(f"Fetching athlete profile failed ({resp.status_code}): {resp.text}")
+    data = resp.json()
+    if "id" not in data:
+        fail(f"Athlete profile response missing id: {data}")
+    return data["id"]
 
 
 def get_activities(access_token):
@@ -96,7 +124,8 @@ def get_run_stats(access_token, athlete_id):
 
 
 def main():
-    access_token, athlete_id = get_access_token()
+    access_token = get_access_token()
+    athlete_id = get_athlete_id(access_token)
 
     raw_activities = get_activities(access_token)
     runs = [a for a in raw_activities if a.get("type") == "Run"]
