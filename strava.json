@@ -1,6 +1,57 @@
 {
-  "generated_at": null,
-  "ytd": { "distance": 0, "count": 0, "moving_time": 0 },
-  "all": { "distance": 0, "count": 0, "moving_time": 0 },
-  "activities": []
+  "generated_at": "2026-07-27T16:58:50.371579+00:00",
+  "ytd": {
+    "distance": 64239,
+    "count": 14,
+    "moving_time": 22692.0
+  },
+  "all": {
+    "distance": 72398.69999999998,
+    "count": 16,
+    "moving_time": 25065
+  },
+  "activities": [
+    {
+      "type": "Run",
+      "name": "Foodies Run",
+      "distance": 5042.5,
+      "moving_time": 1572,
+      "start_date": "2026-07-26T14:21:33Z"
+    },
+    {
+      "type": "Run",
+      "name": "Night Run in Delfts \ud83c\uddf3\ud83c\uddf1\ud83c\udfc3\ud83c\uddf3\ud83c\uddf1",
+      "distance": 5723.2,
+      "moving_time": 1550,
+      "start_date": "2026-07-06T20:23:41Z"
+    },
+    {
+      "type": "Run",
+      "name": "Foodies Run \ud83e\udd5c",
+      "distance": 4386.3,
+      "moving_time": 1456,
+      "start_date": "2026-07-05T14:17:38Z"
+    },
+    {
+      "type": "Run",
+      "name": "Foodies Run",
+      "distance": 3795.9,
+      "moving_time": 1445,
+      "start_date": "2026-06-28T14:17:27Z"
+    },
+    {
+      "type": "Run",
+      "name": "UTRC Run",
+      "distance": 4978.3,
+      "moving_time": 1903,
+      "start_date": "2026-06-24T23:07:59Z"
+    },
+    {
+      "type": "Run",
+      "name": "Foodie Run",
+      "distance": 3531.7,
+      "moving_time": 1298,
+      "start_date": "2026-06-21T14:18:16Z"
+    }
+  ]
 }
