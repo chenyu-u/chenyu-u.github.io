@@ -185,6 +185,32 @@
   @media (max-width: 1080px) { .nav-status { display: none; } }
   @media (max-width: 640px)  { .nav-name small { display: none; } }
 
+  /* ═══ Mobile/tablet nav: tap the UofT logo to open the section list.
+     Desktop layout above is completely untouched — this only kicks in
+     at 900px and below, which covers phones and iPads (the horizontal
+     scrolling nav-links strip was unusable at these widths, showing
+     just one cut-off word with no hint that it scrolled). ═══ */
+  @media (max-width: 900px) {
+    .nav-brand { cursor: pointer; }
+    .nav-brand::after {
+      content: "▾"; margin-left: .3rem; font-size: .75rem;
+      color: var(--ink-faint); transition: transform .2s ease, color .2s ease;
+    }
+    .nav-brand[aria-expanded="true"]::after { transform: rotate(180deg); color: var(--navy); }
+
+    .nav-links {
+      display: none; flex-direction: column; gap: .2rem;
+      position: absolute; top: 100%; left: 0; right: 0;
+      margin-left: 0; overflow: visible;
+      background: #fff; border-bottom: 2px solid var(--navy);
+      padding: .6rem clamp(1rem, 3vw, 2.2rem) .9rem;
+      box-shadow: 0 14px 28px rgba(0,42,92,.14);
+      max-height: calc(100vh - var(--nav-h)); overflow-y: auto;
+    }
+    .nav-links.nav-open { display: flex; }
+    .nav-links a { width: 100%; padding: .8rem .85rem; }
+  }
+
   /* ═══ SHARED SECTION SHELL ════════════════════════════════════ */
   .sec { padding: clamp(4.5rem, 9vw, 7.5rem) 0; position: relative; }
   .wrap { width: min(1160px, calc(100% - 3rem)); margin: 0 auto; }
@@ -1633,6 +1659,33 @@ add a CSS rule like:  #YOUR-ID .sec-hd::after { content: "SYS / LABEL"; }
     }
     requestAnimationFrame(tick);
   }
+
+  /* Mobile/tablet nav toggle — tapping the UofT logo opens the section
+     list instead of navigating, only at 900px and below. Desktop keeps
+     its normal "logo scrolls to top" behaviour, completely untouched. */
+  const navBrand = document.querySelector('.nav-brand');
+  const navLinksList = document.querySelector('.nav-links');
+  const mobileNavQuery = window.matchMedia('(max-width: 900px)');
+
+  function closeMobileNav() {
+    navLinksList.classList.remove('nav-open');
+    navBrand.setAttribute('aria-expanded', 'false');
+  }
+
+  navBrand.addEventListener('click', e => {
+    if (!mobileNavQuery.matches) return;   // desktop: normal anchor scroll, untouched
+    e.preventDefault();
+    const isOpen = navLinksList.classList.toggle('nav-open');
+    navBrand.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  navLinksList.addEventListener('click', e => {
+    if (e.target.tagName === 'A') closeMobileNav();   // tapping a section closes the menu
+  });
+
+  document.addEventListener('click', e => {
+    if (mobileNavQuery.matches && !e.target.closest('nav')) closeMobileNav();
+  });
 
   /* Nav scroll-spy — active console tab follows the viewport */
   const navLinks = document.querySelectorAll('.nav-links a');
