@@ -467,6 +467,10 @@
   .proj-img-wrap, .proj-ph { position: relative; min-height: 300px; cursor: pointer; overflow: hidden; }
   .proj-img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; transition: transform .7s var(--ease); }
   .proj-card:hover .proj-img { transform: scale(1.06); }
+  /* wide CAD renders get letterboxed instead of cropped to a sliver */
+  .proj-img-wrap.img-contain { background: #fff; }
+  .proj-img-wrap.img-contain .proj-img { object-fit: contain; padding: 1.1rem; }
+  .proj-card:hover .img-contain .proj-img { transform: scale(1.03); }
   .proj-ph {
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem;
     background:
@@ -792,6 +796,15 @@
     width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer;
     background: #fff; color: var(--navy); font-size: .9rem; font-weight: 700;
   }
+  .lb-main[hidden] { display: none; }
+  .lb-video { display: block; width: 100%; background: #000; }
+  /* small "video" flag on a project thumbnail that has a clip in its gallery */
+  .vid-flag {
+    position: absolute; left: 12px; bottom: 12px; z-index: 3; cursor: pointer;
+    font-family: var(--f-mono); font-size: .62rem; letter-spacing: .08em;
+    background: rgba(0,42,92,.85); color: #fff; padding: .3rem .55rem; border-radius: var(--r);
+    display: inline-flex; align-items: center; gap: .3rem;
+  }
   .lb-dots { display: flex; gap: .4rem; justify-content: center; margin-top: .9rem; }
   .lb-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.3); border: none; cursor: pointer; }
   .lb-dot.active { background: #fff; }
@@ -891,6 +904,11 @@
       <span class="chip">Arduino</span>
       <span class="chip">EV Systems</span>
       <span class="chip">MATLAB</span>
+      <span class="chip">Financial Modelling</span>
+      <span class="chip">Management Consulting</span>
+      <span class="chip">Market Research</span>
+      <span class="chip">Product Strategy</span>
+      <span class="chip">Corporate Finance</span>
     </div>
     <div class="hero-ctas boot-item">
       <a href="#projects" class="btn-blue">See My Work</a>
@@ -903,7 +921,7 @@
     <img src="photo.png" alt="Chenyu Li" class="ri hero-img" />
     <div class="hero-stats">
       <div class="hs"><div class="hs-n">2026</div><div class="hs-l">University of Toronto Engineering Kompetitions Junior Design Win</div></div>
-      <div class="hs"><div class="hs-n">3</div><div class="hs-l">Minors</div></div>
+      <div class="hs"><div class="hs-n">3</div><div class="hs-l">Engineering Minors</div></div>
       <div class="hs"><div class="hs-n">3</div><div class="hs-l">Languages</div></div>
     </div>
   </div>
@@ -922,7 +940,7 @@
     <div class="about-grid">
       <div class="reveal">
         <div class="about-bio">
-          <p>I'm <strong>Chenyu Li</strong>, a second-year <strong>Mechanical Engineering student at the University of Toronto</strong> in the BASc + PEY Co-op program, pursuing a triple minor in <strong>Mechatronics &amp; Robotics</strong>, <strong>Business</strong>, and <strong>Advanced Manufacturing</strong>.</p>
+          <p>I'm <strong>Chenyu Li</strong>, a second-year <strong>Mechanical Engineering student at the University of Toronto</strong> in the Bachelor of Applied Science (BASc) and Professional Experience Year (PEY) Co-op program, pursuing a triple minor in <strong>Mechatronics &amp; Robotics</strong>, <strong>Business</strong>, and <strong>Advanced Manufacturing</strong>.</p>
           <p>I like making things that actually work: modelling in SolidWorks, validating in ANSYS, printing prototypes, and then seeing how they hold up in the real world. That process took me from Calgary to <strong>the Netherlands this past year</strong> to compete at the International Small Wind Turbine Competition.</p>
           <p>Before university I ran a landscaping business from age 14, which was a better lesson on project management and leadership than most things I've learned from a textbook. I speak <strong>English and Mandarin</strong> natively and get by in <strong>German</strong>.</p>
         </div>
@@ -1000,6 +1018,34 @@
           <h3>Vertical Axis Wind Turbine</h3>
           <p>I contributed to the mechanical, manufacturing, and assembly of a custom 6-foot vertical-axis wind turbine (VAWT) with the University of Toronto Wind Turbine Design Team (UTWIND). In July of 2026, I represented the team alongside 10 other members to compete and present our turbine at the International Small Wind Turbine Competition (ISWTC) at TU Delft and Hanze University in the Netherlands. During testing of the turbine within a wind tunnel, our team achieved a cut-in speed of 4 m/s. </p>
           <div class="proj-tags"><span class="ptag">SolidWorks</span><span class="ptag">FDM 3D Printing</span><span class="ptag">Machining</span><span class="ptag">ANSYS Mechanical</span><span class="ptag">UTWind</span></div>
+          <a href="#" class="proj-link">Details <span class="arrow">→</span></a>
+        </div>
+      </div>
+
+      <!-- PROJ ──────────────────────────────────────────────────
+           📷 3 photos + 1 video clip wired into the lightbox.
+           Drop your three photos into the "projects" folder as:
+             projects/ski-assist-1.jpg
+             projects/ski-assist-2.jpg
+             projects/ski-assist-3.jpg
+           The video (already converted to web-playable MP4) lives at:
+             projects/ski-assist-cad.mp4
+           Until ski-assist-1.jpg exists the card falls back to the
+           poster frame pulled out of the video.
+      ─────────────────────────────────────────────────────────── -->
+      <div class="proj-card reveal">
+        <div class="proj-img-wrap img-contain" data-images='["projects/ski-assist-1.jpg","projects/ski-assist-2.jpg","projects/ski-assist-3.jpg","projects/ski-assist-cad.mp4"]'>
+          <img src="projects/ski-assist-1.jpg" alt="Motorized ski-assist device" class="proj-img"
+               onerror="this.onerror=null;this.src='projects/ski-assist-poster.jpg';" />
+          <span class="img-count"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h5L15 6h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><circle cx="12" cy="13" r="3.2"/></svg>4</span>
+          <span class="vid-flag"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5Z"/></svg>Video</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-top"><span class="badge b-act">Design Project · 2026</span></div>
+          <h3>Motorized Cross-Country Ski-Assist Device</h3>
+          <p>A powered attachment for children's cross-country skis, designed with a six-person team for a real external client in <strong>Engineering Strategies and Practice 2 (APS112)</strong>, a first-year design course at the University of Toronto. The goal was to let young kids keep pace with their parents on family cross-country outings instead of tiring out and falling behind. We scoped the problem around groomed trails and temperatures down to -20 degrees Celsius, generated 80 full solutions, then narrowed them through a feasibility screen, multi-voting, and graphical decision charts before a Pugh chart picked the winner.</p>
+          <p>I developed the CAD and manufacturing drawings for two of the three shortlisted concepts, modelling in both <strong>Autodesk Fusion and SolidWorks</strong>. The first was a <strong>belt-assisted attachment</strong>, a pair of sprockets driven by a rear motor hub running a continuous tread along the ski to add traction with the snow. The second was a <strong>motorized paddle wheel attachment</strong>, a brushless DC motor turning sprocket-shaped rotors that push against the snow, held on by adjustable suction cups so it fits youth cross-country skis from 110 cm to 170 cm without drilling into them. Both enclose every moving part to meet the toy-safety and IP66 requirements we set for children as young as three, and the paddle wheel came out ahead on the Pugh chart.</p>
+          <div class="proj-tags"><span class="ptag">Autodesk Fusion</span><span class="ptag">SolidWorks</span><span class="ptag">Technical Drawings</span><span class="ptag">GD&amp;T</span><span class="ptag">Design Process</span><span class="ptag">Pugh Chart</span><span class="ptag">Brushless DC Motors</span><span class="ptag">Client Consulting</span></div>
           <a href="#" class="proj-link">Details <span class="arrow">→</span></a>
         </div>
       </div>
@@ -1137,8 +1183,9 @@
           <ul class="exp-pts">
             <li>Developed Python scripts to process and visualise research data quantifying outdoor air delivery and interzonal airflow across multiple high-rise units, analysing doped tracer-gas concentration and differential-pressure data.</li>
             <li>Developed a custom <strong>Fitbit OS clock-face and companion app</strong> using JavaScript and HTML/CSS to automate survey data collection and CSV export for a multi-summer heat-exposure research study.</li>
+            <li>Built an automated <strong>hyperparameter sweep pipeline</strong> in Python that trained and ranked <strong>Proximal Policy Optimization reinforcement learning agents</strong> for building cooling control on a Slurm-managed high-performance computing cluster, identifying the optimal configuration for each chiller and room thermal model combination.</li>
           </ul>
-          <div class="exp-chips"><span class="ec">Python</span><span class="ec">JavaScript</span><span class="ec">Fitbit OS</span><span class="ec">Data Analysis</span><span class="ec">Openpyxl</span><span class="ec">Matplotlib</span><span class="ec">Pandas</span><span class="ec">NumPy</span><span class="ec">HOBOware</span><span class="ec">Analog Logger</span><span class="ec">Differential Pressure Transmitter</span><span class="ec">Mass Flow Controller</span><span class="ec">Duct Blaster</span><span class="ec">Research Paper Writing</span><span class="ec">Technical Communication</span><span class="ec">LaTeX</span><span class="ec">Microsoft Excel</span></div>
+          <div class="exp-chips"><span class="ec">Python</span><span class="ec">JavaScript</span><span class="ec">Fitbit OS</span><span class="ec">Reinforcement Learning</span><span class="ec">Proximal Policy Optimization</span><span class="ec">Slurm</span><span class="ec">High-Performance Computing</span><span class="ec">Data Analysis</span><span class="ec">Openpyxl</span><span class="ec">Matplotlib</span><span class="ec">Pandas</span><span class="ec">NumPy</span><span class="ec">HOBOware</span><span class="ec">Analog Logger</span><span class="ec">Differential Pressure Transmitter</span><span class="ec">Mass Flow Controller</span><span class="ec">Duct Blaster</span><span class="ec">Research Paper Writing</span><span class="ec">Technical Communication</span><span class="ec">LaTeX</span><span class="ec">Microsoft Excel</span></div>
         </div>
       </div>
 
@@ -1588,6 +1635,7 @@ add a CSS rule like:  #YOUR-ID .sec-hd::after { content: "SYS / LABEL"; }
   <div class="lb-box">
     <button class="lb-close" id="lbClose" aria-label="Close">&#x2715;</button>
     <img class="lb-main" id="lbImg" src="" alt="" />
+    <video class="lb-main lb-video" id="lbVid" controls playsinline preload="metadata" hidden></video>
     <div class="lb-dots" id="lbDots"></div>
     <div class="lb-counter" id="lbCounter"></div>
   </div>
@@ -1712,6 +1760,7 @@ add a CSS rule like:  #YOUR-ID .sec-hd::after { content: "SYS / LABEL"; }
   /* Lightbox */
   const lb      = document.getElementById('lb');
   const lbImg   = document.getElementById('lbImg');
+  const lbVid   = document.getElementById('lbVid');
   const lbPrev  = document.getElementById('lbPrev');
   const lbNext  = document.getElementById('lbNext');
   const lbClose = document.getElementById('lbClose');
@@ -1727,17 +1776,46 @@ add a CSS rule like:  #YOUR-ID .sec-hd::after { content: "SYS / LABEL"; }
     document.body.style.overflow = 'hidden';
   }
   function closeLb() {
+    stopVideo();
     lb.classList.remove('lb-open');
     document.body.style.overflow = '';
   }
+  /* a gallery slot can be a photo or a video clip; decide by extension */
+  function isVideo(src) { return /\.(mp4|webm|ogv|m4v)(\?.*)?$/i.test(src); }
+  function stopVideo() {
+    lbVid.pause();
+    lbVid.removeAttribute('src');
+    lbVid.load();
+    lbVid.hidden = true;
+  }
   function render() {
-    lbImg.src = images[current];
-    lbImg.alt = 'Photo ' + (current + 1);
+    const src = images[current];
     const deg = rotations[current] || 0;
-    lbImg.style.transform = deg ? `rotate(${deg}deg)` : '';
-    /* shrink the box when rotated so image fits viewport */
-    lbImg.style.maxWidth  = deg ? '80vh' : '88vw';
-    lbImg.style.maxHeight = deg ? '88vw' : '80vh';
+
+    if (isVideo(src)) {
+      /* video slide */
+      lbImg.hidden = true;
+      lbImg.removeAttribute('src');
+      lbVid.hidden = false;
+      if (lbVid.getAttribute('src') !== src) {
+        lbVid.setAttribute('src', src);
+        lbVid.load();
+      }
+      lbVid.style.maxWidth  = '88vw';
+      lbVid.style.maxHeight = '80vh';
+      lbVid.play().catch(() => {});   /* autoplay may be blocked; controls still work */
+    } else {
+      /* photo slide */
+      stopVideo();
+      lbImg.hidden = false;
+      lbImg.src = src;
+      lbImg.alt = 'Photo ' + (current + 1);
+      lbImg.style.transform = deg ? `rotate(${deg}deg)` : '';
+      /* shrink the box when rotated so image fits viewport */
+      lbImg.style.maxWidth  = deg ? '80vh' : '88vw';
+      lbImg.style.maxHeight = deg ? '88vw' : '80vh';
+    }
+
     lbPrev.hidden = images.length < 2;
     lbNext.hidden = images.length < 2;
     lbCount.textContent = images.length > 1 ? (current + 1) + ' / ' + images.length : '';
@@ -1768,11 +1846,19 @@ add a CSS rule like:  #YOUR-ID .sec-hd::after { content: "SYS / LABEL"; }
 
   /* Wire up ALL clickable gallery triggers (projects + hobbies) */
   document.querySelectorAll('[data-images]').forEach(wrap => {
-    wrap.addEventListener('click', () => {
-      const imgs = JSON.parse(wrap.dataset.images);
-      const rots = wrap.dataset.rotate ? JSON.parse(wrap.dataset.rotate) : imgs.map(() => 0);
-      openLb(imgs, rots, 0);
-    });
+    const imgs = JSON.parse(wrap.dataset.images);
+    const rots = wrap.dataset.rotate ? JSON.parse(wrap.dataset.rotate) : imgs.map(() => 0);
+    wrap.addEventListener('click', () => openLb(imgs, rots, 0));
+
+    /* the "Video" flag skips the photos and opens the clip directly */
+    const flag = wrap.querySelector('.vid-flag');
+    const vidIdx = imgs.findIndex(isVideo);
+    if (flag && vidIdx > -1) {
+      flag.addEventListener('click', e => {
+        e.stopPropagation();
+        openLb(imgs, rots, vidIdx);
+      });
+    }
   });
 
   /* ── Strava data loader ─────────────────────────────────────
