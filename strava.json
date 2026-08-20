@@ -1,16 +1,23 @@
 {
-  "generated_at": "2026-08-19T03:03:14.048121+00:00",
+  "generated_at": "2026-08-20T03:02:25.170860+00:00",
   "ytd": {
-    "distance": 64239,
-    "count": 14,
-    "moving_time": 22692.0
+    "distance": 69268,
+    "count": 15,
+    "moving_time": 24595.0
   },
   "all": {
-    "distance": 72398.69999999998,
-    "count": 16,
-    "moving_time": 25065
+    "distance": 77427.49999999999,
+    "count": 17,
+    "moving_time": 26968
   },
   "activities": [
+    {
+      "type": "Run",
+      "name": "UTRC Run",
+      "distance": 5028.8,
+      "moving_time": 1903,
+      "start_date": "2026-08-19T23:14:12Z"
+    },
     {
       "type": "Run",
       "name": "Foodies Run Club Sunday Run",
@@ -45,13 +52,6 @@
       "distance": 4978.3,
       "moving_time": 1903,
       "start_date": "2026-06-24T23:07:59Z"
-    },
-    {
-      "type": "Run",
-      "name": "Foodies Run Club Sunday Run",
-      "distance": 3531.7,
-      "moving_time": 1298,
-      "start_date": "2026-06-21T14:18:16Z"
     }
   ]
 }
