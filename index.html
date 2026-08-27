@@ -1889,7 +1889,18 @@ add a CSS rule like:  #YOUR-ID .sec-hd::after { content: "SYS / LABEL"; }
   document.querySelectorAll('[data-images]').forEach(wrap => {
     const imgs = JSON.parse(wrap.dataset.images);
     const rots = wrap.dataset.rotate ? JSON.parse(wrap.dataset.rotate) : imgs.map(() => 0);
-    wrap.addEventListener('click', () => openLb(imgs, rots, 0));
+    /* open the slide that was actually clicked, not always the first */
+    wrap.addEventListener('click', (e) => {
+      const el = e.target.closest('img, video');
+      let idx = 0;
+      if (el) {
+        const abs = (u) => { try { return new URL(u, document.baseURI).href; } catch (_) { return u; } };
+        const src = el.currentSrc || el.getAttribute('src') || '';
+        idx = imgs.findIndex(s => abs(s) === abs(src));
+        if (idx < 0) idx = Math.max(0, [...wrap.querySelectorAll('img, video')].indexOf(el));
+      }
+      openLb(imgs, rots, idx);
+    });
 
     /* the "Video" flag skips the photos and opens the clip directly */
     const flag = wrap.querySelector('.vid-flag');
@@ -1995,6 +2006,7 @@ add a CSS rule like:  #YOUR-ID .sec-hd::after { content: "SYS / LABEL"; }
       ['calgary',   'Calgary, Canada',        51.0447, -114.0719, 'Where I grew up, Stampede every summer, and the city where I first started building things.'],
       ['banff',     'Banff, Canada',          51.1784, -115.5708, 'Skiing and hiking in the Rockies, the mountains I grew up travelling to all the time for some peace in nature.'],
       ['toronto',   'Toronto, Canada',        43.6532,  -79.3832, 'Home for university, where the engineering degree, the research, and most of this website happen.'],
+      ['ottawa',    'Ottawa, Canada',         45.4215,  -75.6972, 'Spent a weekend here representing the University of Toronto for the 2026 Ontario Engineering Competition after winning the Junior Design category at the University of Toronto Engineering Kompetitions. Parliament Hill and the Gothic Revival stonework there is the best architecture I\u2019ve seen in Canada.'],
       ['london',    'London, UK',             51.5074,   -0.1278, 'Classic engineering on display. Tower Bridge\u2019s bascules and Big Ben\u2019s clockwork are Victorian machines still running every day.'],
       ['barcelona', 'Barcelona, Spain',       41.3874,    2.1686, 'The Sagrada Fam\u00edlia is structural engineering as art, the port infrastructure is massive, and the Montju\u00efc communications tower looked so much like a wind turbine it fooled me at first glance.'],
       ['madrid',    'Madrid, Spain',          40.4168,   -3.7038, 'The Royal Palace\u2019s artwork is lit almost entirely with natural light. Architects were solving illumination problems centuries before the light bulb.'],
@@ -2028,7 +2040,7 @@ add a CSS rule like:  #YOUR-ID .sec-hd::after { content: "SYS / LABEL"; }
 
     const map = L.map(el, { scrollWheelZoom: false, worldCopyJump: true })
       .setView([38, 25], 2);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_2dqx_1_dbd717915a7343be2d12132d', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
       subdomains: 'abcd', maxZoom: 19,
     }).addTo(map);
@@ -2041,8 +2053,10 @@ add a CSS rule like:  #YOUR-ID .sec-hd::after { content: "SYS / LABEL"; }
 
     CITIES.forEach(([slug, name, lat, lng, note]) => {
       const imgSrc = `travel/map/${slug}.jpg`;
+      // some photos are saved with an uppercase .JPG extension; retry once before giving up
+      const onErr = "if(this.dataset.alt){this.src=this.dataset.alt;this.removeAttribute('data-alt')}else{this.remove()}";
       const html =
-        `<img class="mp-img" src="${imgSrc}" alt="${name}" onerror="this.remove()">` +
+        `<img class="mp-img" src="${imgSrc}" alt="${name}" data-alt="travel/map/${slug}.JPG" onerror="${onErr}">` +
         `<div class="mp-body"><p class="mp-city">Field Note</p>` +
         `<p class="mp-title">${name}</p>` +
         `<p class="mp-desc">${note}</p></div>`;
@@ -2055,7 +2069,7 @@ add a CSS rule like:  #YOUR-ID .sec-hd::after { content: "SYS / LABEL"; }
         const img = e.popup.getElement().querySelector('.mp-img');
         if (img && img.isConnected) {
           img.style.cursor = 'zoom-in';
-          img.addEventListener('click', () => openLb([imgSrc], [0], 0));
+          img.addEventListener('click', () => openLb([img.currentSrc || img.src], [0], 0));
         }
       });
     });
