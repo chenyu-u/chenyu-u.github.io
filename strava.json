@@ -1,19 +1,26 @@
 {
-  "generated_at": "2026-08-26T03:11:32.546731+00:00",
+  "generated_at": "2026-08-27T12:40:27.289949+00:00",
   "ytd": {
-    "distance": 69886,
-    "count": 15,
-    "moving_time": 24595.0
+    "distance": 75358,
+    "count": 16,
+    "moving_time": 26397.0
   },
   "all": {
-    "distance": 78045.79999999999,
-    "count": 17,
-    "moving_time": 26968
+    "distance": 83517.59999999999,
+    "count": 18,
+    "moving_time": 28770
   },
   "activities": [
     {
       "type": "Run",
-      "name": "UTRC Run",
+      "name": "University of Toronto Run Club Run",
+      "distance": 5471.8,
+      "moving_time": 1802,
+      "start_date": "2026-08-26T23:09:29Z"
+    },
+    {
+      "type": "Run",
+      "name": "University of Toronto Run Club Run",
       "distance": 5647.1,
       "moving_time": 1903,
       "start_date": "2026-08-19T23:14:12Z"
@@ -45,13 +52,6 @@
       "distance": 3795.9,
       "moving_time": 1445,
       "start_date": "2026-06-28T14:17:27Z"
-    },
-    {
-      "type": "Run",
-      "name": "University of Toronto Run Club Run",
-      "distance": 4978.3,
-      "moving_time": 1903,
-      "start_date": "2026-06-24T23:07:59Z"
     }
   ]
 }
