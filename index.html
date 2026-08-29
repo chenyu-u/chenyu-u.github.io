@@ -553,6 +553,13 @@
   .exp-logo-mono { font-family: var(--f-mono); font-weight: 700; font-size: .6rem; color: var(--navy); }
   .exp-co { font-family: var(--f-disp); font-weight: 700; color: var(--navy); font-size: 1.02rem; }
   .exp-loc { font-family: var(--f-mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); margin-top: .5rem; }
+  .exp-tag {
+    display: inline-block; font-family: var(--f-mono); font-size: .55rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--navy); background: var(--pale);
+    border: 1px solid var(--line-strong); border-radius: var(--r);
+    padding: .16rem .42rem; margin-top: .4rem; white-space: nowrap;
+  }
+  .exp-subdate .exp-tag { margin-top: 0; margin-left: .45rem; vertical-align: middle; }
   .exp-role { font-family: var(--f-disp); font-weight: 700; font-size: 1.12rem; color: var(--ink); margin-bottom: .5rem; }
   .exp-pts { list-style: none; }
   .exp-pts li { position: relative; padding-left: 1.1rem; color: var(--ink-soft); font-size: .94rem; margin-bottom: .45rem; }
@@ -1178,6 +1185,7 @@
             <p class="exp-co">UofT Wind Turbine Design Team</p>
           </div>
           <p class="exp-loc">Toronto · Netherlands</p>
+          <p class="exp-tag">Design Team</p>
         </div>
         <div>
           <p class="exp-role">President</p>
@@ -1219,6 +1227,7 @@
             <p class="exp-co">University of Toronto Consulting Association</p>
           </div>
           <p class="exp-loc">Toronto, Ontario</p>
+          <p class="exp-tag">Club</p>
         </div>
         <div>
           <p class="exp-role">Associate Consultant</p>
@@ -1233,21 +1242,27 @@
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
         <div>
-          <p class="exp-date">May 2026 – Present</p>
+          <p class="exp-date">Sep 2026 – Present</p>
           <div class="exp-org-row">
             <span class="exp-logo"><img src="logos/uoft.jpg" alt="University of Toronto" /></span>
             <p class="exp-co">University of Toronto</p>
           </div>
           <p class="exp-loc">Toronto, Ontario</p>
+          <p class="exp-tag">Part-Time</p>
         </div>
         <div>
           <p class="exp-role">Undergraduate Researcher, Hub for Advancing Buildings (HAB)</p>
-          <ul class="exp-pts">
-            <li>Developed Python scripts to process and visualise research data quantifying outdoor air delivery and interzonal airflow across multiple high-rise units, analysing doped tracer-gas concentration and differential-pressure data.</li>
-            <li>Developed a custom <strong>Fitbit OS clock-face and companion app</strong> using JavaScript and HTML/CSS to automate survey data collection and CSV export for a multi-summer heat-exposure research study.</li>
-            <li>Built an automated <strong>hyperparameter sweep pipeline</strong> in Python that trained and ranked <strong>Proximal Policy Optimization reinforcement learning agents</strong> for building cooling control on a Slurm-managed high-performance computing cluster, identifying the optimal configuration for each chiller and room thermal model combination.</li>
-          </ul>
-          <div class="exp-chips"><span class="ec">Python</span><span class="ec">JavaScript</span><span class="ec">Fitbit OS</span><span class="ec">Reinforcement Learning</span><span class="ec">Proximal Policy Optimization</span><span class="ec">Slurm</span><span class="ec">High-Performance Computing</span><span class="ec">Data Analysis</span><span class="ec">Openpyxl</span><span class="ec">Matplotlib</span><span class="ec">Pandas</span><span class="ec">NumPy</span><span class="ec">HOBOware</span><span class="ec">Analog Logger</span><span class="ec">Differential Pressure Transmitter</span><span class="ec">Mass Flow Controller</span><span class="ec">Duct Blaster</span><span class="ec">Research Paper Writing</span><span class="ec">Technical Communication</span><span class="ec">LaTeX</span><span class="ec">Microsoft Excel</span></div>
+
+          <div class="exp-subrole">
+            <p class="exp-subdate">May 2026 – Aug 2026 <span class="exp-tag">Full-Time Internship</span></p>
+            <p class="exp-role">Undergraduate Researcher, Hub for Advancing Buildings (HAB)</p>
+            <ul class="exp-pts">
+              <li>Developed Python scripts to process and visualise research data quantifying outdoor air delivery and interzonal airflow across multiple high-rise units, analysing doped tracer-gas concentration and differential-pressure data.</li>
+              <li>Developed a custom <strong>Fitbit OS clock-face and companion app</strong> using JavaScript and HTML/CSS to automate survey data collection and CSV export for a multi-summer heat-exposure research study.</li>
+              <li>Built an automated <strong>hyperparameter sweep pipeline</strong> in Python that trained and ranked <strong>Proximal Policy Optimization reinforcement learning agents</strong> for building cooling control on a Slurm-managed high-performance computing cluster, identifying the optimal configuration for each chiller and room thermal model combination.</li>
+            </ul>
+            <div class="exp-chips"><span class="ec">Python</span><span class="ec">JavaScript</span><span class="ec">Fitbit OS</span><span class="ec">Reinforcement Learning</span><span class="ec">Proximal Policy Optimization</span><span class="ec">Slurm</span><span class="ec">High-Performance Computing</span><span class="ec">Data Analysis</span><span class="ec">Openpyxl</span><span class="ec">Matplotlib</span><span class="ec">Pandas</span><span class="ec">NumPy</span><span class="ec">HOBOware</span><span class="ec">Analog Logger</span><span class="ec">Differential Pressure Transmitter</span><span class="ec">Mass Flow Controller</span><span class="ec">Duct Blaster</span><span class="ec">Research Paper Writing</span><span class="ec">Technical Communication</span><span class="ec">LaTeX</span><span class="ec">Microsoft Excel</span></div>
+          </div>
         </div>
       </div>
 
@@ -1260,6 +1275,7 @@
             <p class="exp-co">Engineering Student Societies' Council of Ontario</p>
           </div>
           <p class="exp-loc">Toronto, Ontario</p>
+          <p class="exp-tag">Club</p>
         </div>
         <div>
           <p class="exp-role">VP Competitions, Ontario Engineering Competition 2028</p>
@@ -1288,6 +1304,7 @@
             <p class="exp-co">University of Toronto Engineering Kompetitions</p>
           </div>
           <p class="exp-loc">Toronto, Ontario</p>
+          <p class="exp-tag">Club</p>
         </div>
         <div>
           <p class="exp-role">Junior Design Director</p>
@@ -1308,6 +1325,7 @@
             <p class="exp-co">UofT Eng. Students Consulting Assoc.</p>
           </div>
           <p class="exp-loc">Toronto, Ontario</p>
+          <p class="exp-tag">Club</p>
         </div>
         <div>
           <p class="exp-role">Consulting Engineering Projects Director</p>
@@ -1337,9 +1355,10 @@
             <p class="exp-co">SnowScape Landscaping</p>
           </div>
           <p class="exp-loc">Calgary, Alberta</p>
+          <p class="exp-tag">Self-Employed</p>
         </div>
         <div>
-          <p class="exp-role">Founder &amp; Owner, Self-Employed</p>
+          <p class="exp-role">Founder &amp; Owner</p>
           <ul class="exp-pts">
             <li>Generated <strong>$28,000+ in net profit</strong> and executed projects for <strong>100+ clients</strong> through effective resource optimization.</li>
             <li>Achieved a client repeat rate of <strong>39% within 3 years</strong> by leading a cross-functional team of <strong>10+</strong> to build effective landscaping solutions for diverse client needs while ensuring strict quality control standards.</li>
