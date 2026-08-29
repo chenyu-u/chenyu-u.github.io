@@ -542,24 +542,19 @@
     width: 12px; height: 12px; border-radius: 50%;
     background: var(--accent); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--navy);
   }
-  .exp-date { font-family: var(--f-mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: .6rem; }
+  .exp-date, .exp-subdate { font-family: var(--f-mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: .5rem; }
   .exp-org-row { display: flex; align-items: center; gap: .6rem; }
   .exp-logo {
-    width: 44px; height: 44px; flex-shrink: 0; display: grid; place-items: center;
+    width: 76px; height: 76px; flex-shrink: 0; display: grid; place-items: center;
     background: #fff; border: 1px solid var(--line-strong); border-radius: var(--r);
     overflow: hidden; box-shadow: var(--shadow);
   }
-  .exp-logo img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
-  .exp-logo-mono { font-family: var(--f-mono); font-weight: 700; font-size: .6rem; color: var(--navy); }
+  .exp-logo img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+  .exp-logo-mono { font-family: var(--f-mono); font-weight: 700; font-size: .78rem; color: var(--navy); }
   .exp-co { font-family: var(--f-disp); font-weight: 700; color: var(--navy); font-size: 1.02rem; }
   .exp-loc { font-family: var(--f-mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); margin-top: .5rem; }
-  .exp-tag {
-    display: inline-block; font-family: var(--f-mono); font-size: .55rem; letter-spacing: .1em;
-    text-transform: uppercase; color: var(--navy); background: var(--pale);
-    border: 1px solid var(--line-strong); border-radius: var(--r);
-    padding: .16rem .42rem; margin-top: .4rem; white-space: nowrap;
-  }
-  .exp-subdate .exp-tag { margin-top: 0; margin-left: .45rem; vertical-align: middle; }
+  .exp-sep { color: var(--line-strong); margin: 0 .45rem; }
+  .exp-type { color: var(--navy); font-weight: 700; }
   .exp-role { font-family: var(--f-disp); font-weight: 700; font-size: 1.12rem; color: var(--ink); margin-bottom: .5rem; }
   .exp-pts { list-style: none; }
   .exp-pts li { position: relative; padding-left: 1.1rem; color: var(--ink-soft); font-size: .94rem; margin-bottom: .45rem; }
@@ -567,7 +562,6 @@
   .exp-pts strong { color: var(--navy); }
   .exp-chips { display: flex; flex-wrap: wrap; gap: .32rem; margin-top: .7rem; }
   .exp-subrole { margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px dashed var(--line); }
-  .exp-subdate { font-family: var(--f-mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: .5rem; }
   .ec {
     font-family: var(--f-mono); font-size: .56rem; letter-spacing: .05em;
     color: var(--ink-soft); background: var(--pale); border: 1px solid var(--line);
@@ -1179,15 +1173,14 @@
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
         <div>
-          <p class="exp-date">Aug 2026 – Present</p>
           <div class="exp-org-row">
             <span class="exp-logo"><img src="logos/utwind.jpg" alt="UofT Wind Turbine Design Team" /></span>
             <p class="exp-co">UofT Wind Turbine Design Team</p>
           </div>
-          <p class="exp-loc">Toronto · Netherlands</p>
-          <p class="exp-tag">Design Team</p>
+          <p class="exp-loc">Toronto · Netherlands<span class="exp-sep">·</span><span class="exp-type">Design Team</span></p>
         </div>
         <div>
+          <p class="exp-date">Aug 2026 – Present</p>
           <p class="exp-role">President</p>
           <ul class="exp-pts">
             <li>Led the team's technical, operational, and outreach direction, overseeing subteam leads through the full design, manufacturing, and competition cycle.</li>
@@ -1221,15 +1214,14 @@
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
         <div>
-          <p class="exp-date">Aug 2026 – Present</p>
           <div class="exp-org-row">
             <span class="exp-logo"><img src="logos/utca.png" alt="University of Toronto Consulting Association" /></span>
             <p class="exp-co">University of Toronto Consulting Association</p>
           </div>
-          <p class="exp-loc">Toronto, Ontario</p>
-          <p class="exp-tag">Club</p>
+          <p class="exp-loc">Toronto, Ontario<span class="exp-sep">·</span><span class="exp-type">Club</span></p>
         </div>
         <div>
+          <p class="exp-date">Aug 2026 – Present</p>
           <p class="exp-role">Associate Consultant</p>
           <ul class="exp-pts">
             <li>Worked within a small consulting team on a semester-long client engagement, conducting market and competitor research to support strategic recommendations.</li>
@@ -1242,19 +1234,18 @@
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
         <div>
-          <p class="exp-date">Sep 2026 – Present</p>
           <div class="exp-org-row">
             <span class="exp-logo"><img src="logos/uoft.jpg" alt="University of Toronto" /></span>
             <p class="exp-co">University of Toronto</p>
           </div>
           <p class="exp-loc">Toronto, Ontario</p>
-          <p class="exp-tag">Part-Time</p>
         </div>
         <div>
+          <p class="exp-date">Sep 2026 – Present<span class="exp-sep">·</span><span class="exp-type">Part-Time</span></p>
           <p class="exp-role">Undergraduate Researcher, Hub for Advancing Buildings (HAB)</p>
 
           <div class="exp-subrole">
-            <p class="exp-subdate">May 2026 – Aug 2026 <span class="exp-tag">Full-Time Internship</span></p>
+            <p class="exp-subdate">May 2026 – Aug 2026<span class="exp-sep">·</span><span class="exp-type">Full-Time Internship</span></p>
             <p class="exp-role">Undergraduate Researcher, Hub for Advancing Buildings (HAB)</p>
             <ul class="exp-pts">
               <li>Developed Python scripts to process and visualise research data quantifying outdoor air delivery and interzonal airflow across multiple high-rise units, analysing doped tracer-gas concentration and differential-pressure data.</li>
@@ -1269,15 +1260,14 @@
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
         <div>
-          <p class="exp-date">May 2026 – Present</p>
           <div class="exp-org-row">
             <span class="exp-logo"><img src="logos/essco.png" alt="Engineering Student Societies' Council of Ontario" /></span>
             <p class="exp-co">Engineering Student Societies' Council of Ontario</p>
           </div>
-          <p class="exp-loc">Toronto, Ontario</p>
-          <p class="exp-tag">Club</p>
+          <p class="exp-loc">Toronto, Ontario<span class="exp-sep">·</span><span class="exp-type">Club</span></p>
         </div>
         <div>
+          <p class="exp-date">May 2026 – Present</p>
           <p class="exp-role">VP Competitions, Ontario Engineering Competition 2028</p>
           <ul class="exp-pts">
             <li>Led a team of <strong>18 competition directors</strong> alongside <strong>2 co-VPs</strong> to plan and develop <strong>9 engineering competitions</strong>, anticipating an attendance of <strong>350+ undergraduate engineering students</strong> from <strong>16+ Ontario universities</strong>.</li>
@@ -1298,15 +1288,14 @@
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
         <div>
-          <p class="exp-date">Mar 2026 – Present</p>
           <div class="exp-org-row">
             <span class="exp-logo"><img src="logos/utek.png" alt="University of Toronto Engineering Kompetitions" /></span>
             <p class="exp-co">University of Toronto Engineering Kompetitions</p>
           </div>
-          <p class="exp-loc">Toronto, Ontario</p>
-          <p class="exp-tag">Club</p>
+          <p class="exp-loc">Toronto, Ontario<span class="exp-sep">·</span><span class="exp-type">Club</span></p>
         </div>
         <div>
+          <p class="exp-date">Mar 2026 – Present</p>
           <p class="exp-role">Junior Design Director</p>
           <ul class="exp-pts">
             <li>Collaborated with <strong>3 co-directors</strong> to design a comprehensive <strong>engineering competition</strong>, tailored to challenge <strong>250+ first- and second-year engineering students</strong> at the University of Toronto.</li>
@@ -1319,15 +1308,14 @@
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
         <div>
-          <p class="exp-date">Jul 2026 – Present</p>
           <div class="exp-org-row">
             <span class="exp-logo"><img src="logos/utesca.png" alt="UTESCA" /></span>
             <p class="exp-co">UofT Eng. Students Consulting Assoc.</p>
           </div>
-          <p class="exp-loc">Toronto, Ontario</p>
-          <p class="exp-tag">Club</p>
+          <p class="exp-loc">Toronto, Ontario<span class="exp-sep">·</span><span class="exp-type">Club</span></p>
         </div>
         <div>
+          <p class="exp-date">Jul 2026 – Present</p>
           <p class="exp-role">Consulting Engineering Projects Director</p>
           <ul class="exp-pts">
             <li>Led a team of engineering consultants to deliver a solution for the client through a semester-long, engineering design-focused project.</li>
@@ -1349,15 +1337,14 @@
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
         <div>
-          <p class="exp-date">Jun 2022 – May 2025</p>
           <div class="exp-org-row">
             <span class="exp-logo"><img src="logos/snowscape.jpg" alt="SnowScape Landscaping" /></span>
             <p class="exp-co">SnowScape Landscaping</p>
           </div>
-          <p class="exp-loc">Calgary, Alberta</p>
-          <p class="exp-tag">Self-Employed</p>
+          <p class="exp-loc">Calgary, Alberta<span class="exp-sep">·</span><span class="exp-type">Self-Employed</span></p>
         </div>
         <div>
+          <p class="exp-date">Jun 2022 – May 2025</p>
           <p class="exp-role">Founder &amp; Owner</p>
           <ul class="exp-pts">
             <li>Generated <strong>$28,000+ in net profit</strong> and executed projects for <strong>100+ clients</strong> through effective resource optimization.</li>
