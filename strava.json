@@ -1,16 +1,23 @@
 {
-  "generated_at": "2026-09-06T07:01:47.135836+00:00",
+  "generated_at": "2026-09-07T07:12:58.176983+00:00",
   "ytd": {
-    "distance": 88939,
-    "count": 18,
-    "moving_time": 30196.0
+    "distance": 94038,
+    "count": 19,
+    "moving_time": 31744.0
   },
   "all": {
-    "distance": 97098.4,
-    "count": 20,
-    "moving_time": 32569
+    "distance": 102197.0,
+    "count": 21,
+    "moving_time": 34117
   },
   "activities": [
+    {
+      "type": "Run",
+      "name": "Foodies Run Club Sunday Run",
+      "distance": 5098.6,
+      "moving_time": 1548,
+      "start_date": "2026-09-06T14:23:19Z"
+    },
     {
       "type": "Run",
       "name": "Evening Run Around Kings College Circle",
@@ -45,13 +52,6 @@
       "distance": 5042.5,
       "moving_time": 1572,
       "start_date": "2026-07-26T14:21:33Z"
-    },
-    {
-      "type": "Run",
-      "name": "Night Run in Delfts \ud83c\uddf3\ud83c\uddf1\ud83c\udfc3\ud83c\uddf3\ud83c\uddf1",
-      "distance": 5723.2,
-      "moving_time": 1550,
-      "start_date": "2026-07-06T20:23:41Z"
     }
   ]
 }
