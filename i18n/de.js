@@ -943,5 +943,11 @@ window.CL_I18N.de = {
  "Parts List": "Teileliste",
  "Problems Found During Simulation": "Probleme, die in der Simulation auftraten",
  "Kinematics and Torque Math": "Kinematik und Drehmomentberechnung",
- "Next Steps": "Nächste Schritte"
+ "Next Steps": "Nächste Schritte",
+ "Add &nbsp;window-view.jpg&nbsp; next to laptop.html<br><span style=\"font-size:26px;font-weight:400\">(Windows hides extensions — the file may really be window-view.jpg.jpg)</span>": "Fügen Sie die Datei „window-view.jpg“ neben „laptop.html“ ein <br><span style=\"font-size:26px;font-weight:400\">(unter Windows werden Dateiendungen ausgeblendet – die Datei könnte tatsächlich „window-view.jpg.jpg“ heißen).</span>",
+ "Certificate 1<br><span style=\"font-size:21px;font-weight:400\">add certificate-1.jpg</span>": "Zertifikat 1<br>– <span style=\"font-size:21px;font-weight:400\">„certificate-1.jpg“ hinzufügen</span>",
+ "Certificate 2<br><span style=\"font-size:21px;font-weight:400\">add certificate-2.jpg</span>": "Zertifikat 2<br>– <span style=\"font-size:21px;font-weight:400\">„certificate-2.jpg“ hinzufügen</span>",
+ "Certificate 3<br><span style=\"font-size:21px;font-weight:400\">add certificate-3.jpg</span>": "Zertifikat 3<br>– <span style=\"font-size:21px;font-weight:400\">„certificate-3.jpg“ hinzufügen</span>",
+ "Certificate 4<br><span style=\"font-size:21px;font-weight:400\">add certificate-4.jpg</span>": "Zertifikat 4<br>– <span style=\"font-size:21px;font-weight:400\">„certificate-4.jpg“ hinzufügen</span>",
+ "Chrome": "Chrom"
 };
