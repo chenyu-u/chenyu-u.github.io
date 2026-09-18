@@ -46,13 +46,38 @@
     text-transform:uppercase;color:var(--blue)}
   .mp-title{font-family:var(--f-disp);font-weight:700;font-size:.98rem;color:var(--navy);margin:.2rem 0 .35rem}
   .mp-desc{font-size:.8rem;line-height:1.5;color:var(--ink-soft)}
+  .leaflet-top.leaflet-left{top:52px}
+  .topbar-right{display:flex;align-items:center;gap:8px;pointer-events:auto}
+  .topbar .sp-btn{height:36px;background:rgba(255,255,255,.92)}
+  @media(max-width:560px){.topbar{flex-wrap:wrap;gap:8px}.topbar .count{display:none}}
+  /* ═══ DARK MODE — switched on by the theme menu (site-prefs.js) ═══ */
+  html[data-theme="dark"]{ --navy:#1F4F8C; --blue:#74ADF2; --line:#23364F; --ink:#E7EEF6; --ink-soft:#B7C5D6;
+    --ink-faint:#8093AA; --card:#13223A; --blue-lt:#182C45; --line-strong:#354C6B }
+  html[data-theme="dark"] body{background:#0C1624}
+  html[data-theme="dark"] #map{background:#0C1624}
+  html[data-theme="dark"] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.88) saturate(.6)}
+  html[data-theme="dark"] .topbar a, html[data-theme="dark"] .topbar .count,
+  html[data-theme="dark"] .topbar .sp-btn{background:rgba(19,34,58,.92);color:#DCE8F7;border-color:var(--line)}
+  html[data-theme="dark"] .topbar a:hover{background:var(--navy);color:#fff}
+  html[data-theme="dark"] .leaflet-popup-content-wrapper, html[data-theme="dark"] .leaflet-popup-tip{background:var(--card);color:var(--ink)}
+  html[data-theme="dark"] .mp-title{color:#DCE8F7}
+  html[data-theme="dark"] .cl-pin{border-color:#13223A;box-shadow:0 0 0 2px var(--blue),0 2px 6px rgba(0,0,0,.5)}
+  html[data-theme="dark"] .leaflet-bar a{background:var(--card);color:var(--ink);border-bottom-color:var(--line)}
+  html[data-theme="dark"] .leaflet-control-attribution{background:rgba(12,22,36,.8)!important;color:var(--ink-faint)}
+  html[data-theme="dark"] .leaflet-control-attribution a{color:var(--blue)}
 </style>
+  <!-- Theme (light/dark) + language (EN / 中文 / DE) menus — shared by every page -->
+  <link rel="stylesheet" href="site-prefs.css" />
+  <script src="site-prefs.js"></script>
 </head>
 <body>
 <div class="topbar">
   <a href="laptop.html">← BACK TO THE OFFICE</a>
   <span class="count" id="map-count"></span>
-  <a href="index.html#hobbies">SEE IT ON THE SITE →</a>
+  <div class="topbar-right">
+    <div data-prefs-slot></div>
+    <a href="index.html#hobbies">SEE IT ON THE SITE →</a>
+  </div>
 </div>
 <div id="map" role="application" aria-label="Travel map"></div>
 <script>

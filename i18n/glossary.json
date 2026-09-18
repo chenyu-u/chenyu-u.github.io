@@ -1,0 +1,91 @@
+{
+  "_readme": "Used by tools/i18n-sync.mjs when it machine-translates NEW English text. 'names' = fixed translations for each language; 'keep' = words that must never be translated. Longer entries win over shorter ones. Existing translations in zh.js / de.js are never overwritten, so a hand-edited translation always stays.",
+  "names": {
+    "Chenyu Li": {
+      "zh": "李辰宇",
+      "de": "Chenyu Li"
+    },
+    "CHENYU.LI": {
+      "zh": "李辰宇",
+      "de": "CHENYU.LI"
+    },
+    "Chenyu": {
+      "zh": "辰宇",
+      "de": "Chenyu"
+    },
+    "University of Toronto": {
+      "zh": "多伦多大学",
+      "de": "University of Toronto"
+    },
+    "UofT": {
+      "zh": "多伦多大学",
+      "de": "UofT"
+    }
+  },
+  "keep": [
+    "UTWind",
+    "UTESCA",
+    "UTEK",
+    "ESSCO",
+    "HAB",
+    "BEIE",
+    "CANstruction",
+    "Fluor",
+    "Knights Hockey",
+    "SnowScape",
+    "Finliti",
+    "Strava",
+    "GitHub",
+    "GitHub Actions",
+    "LinkedIn",
+    "SolidWorks",
+    "Autodesk Fusion",
+    "ANSYS",
+    "ANSYS Fluent",
+    "ANSYS Mechanical",
+    "MATLAB",
+    "Python",
+    "JavaScript",
+    "Arduino",
+    "Arduino Uno",
+    "ESP32",
+    "Fitbit",
+    "Fitbit OS",
+    "Versa 2",
+    "Dabble",
+    "ROS 2",
+    "LaTeX",
+    "Tableau",
+    "Canva",
+    "Slurm",
+    "NumPy",
+    "Pandas",
+    "Matplotlib",
+    "Openpyxl",
+    "HOBOware",
+    "JSONBin",
+    "Node.js",
+    "three.js",
+    "Leaflet",
+    "OpenStreetMap",
+    "CARTO",
+    "HC-SR04",
+    "L298N",
+    "TB6612FNG",
+    "NEMA17",
+    "TMC2209",
+    "A4988",
+    "ATtiny",
+    "Pro Mini",
+    "Git",
+    "Microsoft Excel",
+    "Microsoft Visio",
+    "Microsoft PowerPoint",
+    "CL",
+    "SQL",
+    "CAD",
+    "REST API",
+    "Bluetooth TXD",
+    "Bluetooth RXD"
+  ]
+}

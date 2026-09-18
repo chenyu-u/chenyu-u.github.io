@@ -192,15 +192,40 @@
          display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
   footer a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--line)}
   footer a:hover{color:var(--navy)}
+  .nav-right{display:flex;align-items:center;gap:14px}
+  @media(max-width:420px){.nav-name{display:none}}
+  /* ═══ DARK MODE — switched on by the theme menu (site-prefs.js) ═══ */
+  html[data-theme="dark"]{
+    --navy:#1F4F8C; --blue:#74ADF2; --blue-lt:#182C45; --accent:#5C9CEB;
+    --paper:#0C1624; --pale:#0F1B2C; --ink:#E7EEF6; --ink-soft:#B7C5D6; --ink-faint:#8093AA;
+    --line:#23364F; --line-strong:#354C6B; --warn:#F07B72; --card:#13223A;
+  }
+  html[data-theme="dark"] .nav{background:rgba(12,22,36,.9)}
+  html[data-theme="dark"] .nav-name, html[data-theme="dark"] .h1, html[data-theme="dark"] .byline a,
+  html[data-theme="dark"] .tab:hover, html[data-theme="dark"] .tab[aria-selected="true"],
+  html[data-theme="dark"] .row a, html[data-theme="dark"] .note h2, html[data-theme="dark"] .note code,
+  html[data-theme="dark"] footer a:hover, html[data-theme="dark"] .back:hover,
+  html[data-theme="dark"] .b-line:not(:disabled):hover{color:#DCE8F7}
+  html[data-theme="dark"] .tab[aria-selected="true"]{border-bottom-color:var(--accent)}
+  html[data-theme="dark"] .masthead{border-top-color:var(--accent)}
+  html[data-theme="dark"] .row, html[data-theme="dark"] .steps div{border-bottom-color:#1B2C42}
+  html[data-theme="dark"] input[type=range]::-webkit-slider-thumb{background:var(--blue)}
+  html[data-theme="dark"] input[type=range]::-moz-range-thumb{background:var(--blue)}
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+  <!-- Theme (light/dark) + language (EN / 中文 / DE) menus — shared by every page -->
+  <link rel="stylesheet" href="site-prefs.css" />
+  <script src="site-prefs.js"></script>
 </head>
 <body>
 
 <nav class="nav">
   <div class="nav-in">
     <a class="back" href="index.html#projects"><span class="ar">←</span> BACK TO PORTFOLIO</a>
-    <a class="nav-name" href="index.html">Chenyu Li</a>
+    <div class="nav-right">
+      <div data-prefs-slot></div>
+      <a class="nav-name" href="index.html">Chenyu Li</a>
+    </div>
   </div>
 </nav>
 
@@ -865,10 +890,36 @@ const ground = new THREE.Mesh(new THREE.PlaneGeometry(3000, 3000),
 ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
 scene.add(ground);
 
+let sceneGrid = null;
 if (CONFIG.scene.showGrid) {
   const grid = new THREE.GridHelper(1400, 56, C.gridMajor, C.gridMinor);
   grid.position.y = 0.2; scene.add(grid);
+  sceneGrid = grid;
 }
+
+/* Dark mode (theme menu in the nav, see site-prefs.js): swap the floor,
+   backdrop and grid to a night palette; the arm itself keeps its colours. */
+function applySceneTheme() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const bg = dark ? 0x0F1B2C : C.background;
+  scene.background.set(bg);
+  scene.fog.color.set(bg);
+  ground.material.color.set(dark ? 0x13223A : C.floor);
+  if (sceneGrid) {
+    const [maj, min] = dark ? [0x3A5374, 0x22354D] : [C.gridMajor, C.gridMinor];
+    const cols = sceneGrid.geometry.attributes.color;
+    const cMaj = new THREE.Color(maj), cMin = new THREE.Color(min);
+    // GridHelper stores 4 vertices per line; the centre lines use the major colour
+    const n = cols.count / 4, centre = Math.floor(n / 2);
+    for (let i = 0; i < n; i++) {
+      const c = (i === centre) ? cMaj : cMin;
+      for (let k = 0; k < 4; k++) cols.setXYZ(i * 4 + k, c.r, c.g, c.b);
+    }
+    cols.needsUpdate = true;
+  }
+}
+applySceneTheme();
+window.addEventListener('cl-themechange', applySceneTheme);
 
 /* Envelope: a FULL annulus — the base turns 360°. */
 if (CONFIG.scene.showEnvelope) {

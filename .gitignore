@@ -15,3 +15,5 @@ sim_module.js
 .DS_Store
 Thumbs.db
 .vscode/
+# tools/i18n-sync.mjs installs its headless browser here
+node_modules/

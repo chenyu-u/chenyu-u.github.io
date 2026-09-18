@@ -165,7 +165,36 @@
   .win .tray{margin-left:auto;display:flex;align-items:center;gap:12px;color:#25313E}
   .win .tray svg{width:17px;height:17px}
   .win .clock{text-align:right;font-size:12.5px;line-height:1.35;color:#25313E}
+
+  /* Theme + language menus (site-prefs.js), under the "regular site" link */
+  #prefs-hud{top:72px;right:30px;pointer-events:auto}
+  #prefs-hud .sp-btn{height:34px;background:rgba(255,255,255,.78);backdrop-filter:blur(8px);
+                     border-color:rgba(0,42,92,.14);color:var(--navy)}
+  #prefs-hud .sp-btn:hover,#prefs-hud .sp-dd.open .sp-btn{background:var(--navy);color:#fff}
+  body.focused #prefs-hud{pointer-events:none}
+  @media(max-width:719px){#prefs-hud{top:auto;bottom:60px;right:16px}#prefs-hud .sp-menu{top:auto;bottom:calc(100% + 8px)}}
+
+  /* ═══ DARK MODE — HUD panels and the laptop's desktop go dark ═══ */
+  html[data-theme="dark"] body{background:#0C1624}
+  html[data-theme="dark"] #masthead, html[data-theme="dark"] #hint, html[data-theme="dark"] #skip,
+  html[data-theme="dark"] #prefs-hud .sp-btn{background:rgba(12,22,36,.82);border-color:rgba(143,192,255,.18);color:#DCE8F7}
+  html[data-theme="dark"] #masthead h1{color:#DCE8F7}
+  html[data-theme="dark"] #masthead .over{color:#A6B9CF}
+  html[data-theme="dark"] #skip:hover{color:#74ADF2}
+  html[data-theme="dark"] #prefs-hud .sp-btn:hover, html[data-theme="dark"] #prefs-hud .sp-dd.open .sp-btn{background:#1F4F8C;color:#fff}
+  html[data-theme="dark"] #prefs-hud{--card:#13223A;--ink:#E7EEF6;--blue:#74ADF2;--blue-lt:#182C45;--line-strong:#354C6B;--navy:#1F4F8C}
+  html[data-theme="dark"] #fail{background:#0C1624}
+  html[data-theme="dark"] .win .bar{background:rgba(24,32,44,.88);box-shadow:0 -1px 0 rgba(255,255,255,.06)}
+  html[data-theme="dark"] .win .tbtn:hover{background:rgba(255,255,255,.08)}
+  html[data-theme="dark"] .win .search{background:#2A3441;border-color:rgba(255,255,255,.1);color:#B7C5D6}
+  html[data-theme="dark"] .win .tray, html[data-theme="dark"] .win .clock{color:#DCE3EC}
+  html[data-theme="dark"] .win .browser{background:#0C1624}
+  html[data-theme="dark"] .win .b-top{background:#1C2533}
+  html[data-theme="dark"] .win .b-url{background:#2A3441;border-color:rgba(255,255,255,.1);color:#E7EEF6}
 </style>
+  <!-- Theme (light/dark) + language (EN / 中文 / DE) menus — shared by every page -->
+  <link rel="stylesheet" href="site-prefs.css" />
+  <script src="site-prefs.js"></script>
 </head>
 <body>
 
@@ -178,6 +207,7 @@
   <h1>Chenyu Li</h1>
 </div>
 <div class="hud" id="hint">DRAG — LOOK AROUND · CLICK THE LAPTOP — USE IT · CLICK THE ARM — OPEN THE SIMULATOR</div>
+<div class="hud" id="prefs-hud"><div data-prefs-slot></div></div>
 <a class="hud" id="skip" href="index.html">PREFER THE REGULAR SITE? OPEN IT DIRECTLY →</a>
 <button id="exit">← BACK TO THE DESK &nbsp;(ESC)</button>
 
