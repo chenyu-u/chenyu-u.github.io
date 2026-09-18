@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ultrasonic Light-Up Drawer | Chenyu Li</title>
+  <meta name="description" content="A 3D printed drawer that lights itself when opened, using an Arduino and an ultrasonic distance sensor. Includes schematic, design process and commented code." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="project.css" />
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="pp-nav">
+  <div class="wrap">
+    <a href="index.html" class="pp-brand" aria-label="Chenyu Li, home">
+      <span class="pp-mono">CL</span>
+      <span class="pp-name">Chenyu Li<small>Mech Eng · UofT</small></span>
+    </a>
+    <a href="index.html#projects" class="pp-back"><span class="arrow">&larr;</span> All projects</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="pp-hero">
+  <div class="wrap">
+    <div class="pp-hero-grid">
+      <div>
+        <p class="lbl">Project file · High school</p>
+        <h1>Ultrasonic Light&#8209;Up Drawer</h1>
+        <p class="pp-lede">A 3D printed drawer that switches on its own light when it is pulled open. An Arduino measures the drawer position with an ultrasonic sensor and fades an LED on and off.</p>
+        <div class="pp-tags"><span class="ptag">Arduino</span><span class="ptag">C++</span><span class="ptag">HC-SR04 Ultrasonic Sensor</span><span class="ptag">Circuit Design</span><span class="ptag">Autodesk Fusion</span><span class="ptag">FDM 3D Printing</span><span class="ptag">Embedded Systems</span></div>
+      </div>
+      <figure class="pp-hero-img" style="margin:0">
+        <img src="projects/ultrasonic-drawer.jpg" alt="Black 3D printed drawer in a white printed sleeve with an Arduino mounted on the back" />
+        <figcaption>The printed drawer and sleeve, with the Arduino mounted at the rear.</figcaption>
+      </figure>
+    </div>
+    <dl class="pp-spec"><div><dt>Type</dt><dd>Personal project</dd></div><div><dt>Role</dt><dd>Sole designer and builder</dd></div><div><dt>Sensor</dt><dd>HC-SR04 ultrasonic</dd></div><div><dt>Power</dt><dd>9 V battery</dd></div></dl>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="wrap pp-body">
+  <nav class="pp-toc" aria-label="On this page"><p>On this page</p><ol><li><a href="#overview">Overview</a></li><li><a href="#purpose">Purpose and uses</a></li><li><a href="#process">Design process</a></li><li><a href="#code">The code, explained</a></li><li><a href="#learned">What I learned</a></li></ol></nav>
+  <article>
+
+<section id="overview">
+  <h2>Overview</h2>
+  <div class="short"><span class="k">The short version</span><p>Deep drawers are dark, and small things hide at the back. So I made a drawer that turns its own light on when you pull it open and turns it off when you push it shut. It works the way a bat finds its way in the dark. A sensor sends out a sound too high to hear, listens for the echo, and uses the delay to work out how far away the drawer is.</p></div>
+  <p style="margin-top:1rem">This was a personal project in high school, and it was my first complete embedded system: a sensor, a decision and an output, all packaged inside a part I designed myself. The drawer and its housing are my own CAD from Autodesk Fusion, 3D printed in two colours. The electronics are an Arduino, an HC-SR04 ultrasonic distance sensor, a single LED and a 9 V battery.</p>
+</section>
+
+<section id="purpose">
+  <h2>Purpose, and where else the idea applies</h2>
+  <p>The drawer is a small example of one of the most common patterns in engineering: measure something, compare it with a limit, and act on the result. Here the measurement is distance, the limit is "further than 8 cm", and the action is a light. Swap any one of those three and the same circuit, with almost the same code, solves a completely different problem.</p>
+  <div class="cards">
+    <div class="card"><h4>Cabinets, closets, toolboxes</h4><p>Any enclosed storage that gets opened in poor light. There is no switch to find and nothing to remember to turn off.</p></div>
+    <div class="card"><h4>Parking and docking aids</h4><p>Mount the sensor on a garage wall and the light comes on when the bumper is close enough.</p></div>
+    <div class="card"><h4>Tank and bin level</h4><p>Point the sensor down into a container. The distance to the surface tells you how full it is, without touching the contents.</p></div>
+    <div class="card"><h4>Touch-free triggers</h4><p>A hand in front of the sensor can start a soap dispenser, a tap or a door, which matters in kitchens, labs and washrooms.</p></div>
+  </div>
+</section>
+
+<section id="process">
+  <h2>Engineering design process</h2>
+  <ol class="steps">
+<li class="step"><h3>Define the problem</h3><span class="phase">Step 1 · Problem definition</span><div class="plain"><span class="k">In plain words</span><p>It is hard to find things in a dark drawer. I wanted the drawer to light itself.</p></div><p>The need is simple: see what is inside a drawer without holding a flashlight or fitting a switch. The light should need no action from the user at all. Opening the drawer is the only input.</p></li>
+<li class="step"><h3>Set requirements and constraints</h3><span class="phase">Step 2 · Requirements</span><div class="plain"><span class="k">In plain words</span><p>I listed what the drawer had to do before choosing any parts.</p></div><p>The light had to come on automatically when the drawer opened and go off when it closed. Nothing could rub, click or need lining up each time the drawer moved. The whole thing had to be self-contained and battery powered, with no wiring to the furniture or the wall. It could not flicker if the drawer was left partly open. And the trigger distance had to be easy to change, so the same design could be dropped into a different drawer.</p></li>
+<li class="step"><h3>Choose how to sense the drawer</h3><span class="phase">Step 3 · Concept selection</span><div class="plain"><span class="k">In plain words</span><p>There are many ways to tell if a drawer is open. I picked the one that measures how far it has moved, not just whether it has moved.</p></div><div class="tbl-wrap"><table>
+  <thead><tr><th>Option</th><th>How it works</th><th>Trade-off</th></tr></thead>
+  <tbody>
+   <tr><td>Limit switch</td><td>The drawer presses a button when shut.</td><td>Cheap, but it is a wearing mechanical contact and it must line up precisely.</td></tr>
+   <tr><td>Magnet and reed switch</td><td>A magnet on the drawer closes a switch in the housing.</td><td>Very low power, but it only reports open or closed.</td></tr>
+   <tr><td>Light sensor</td><td>Detects room light entering the drawer.</td><td>Fails in a dark room, which is exactly when the light is needed.</td></tr>
+   <tr><td>Ultrasonic distance sensor</td><td>Times an echo off the back of the drawer.</td><td>No contact, and it gives a real distance. Uses more power than a switch.</td></tr>
+  </tbody></table></div>
+<p>I chose the ultrasonic sensor. It meets the no-contact requirement, the trigger point becomes a number in code instead of a bracket position, and a real distance reading makes the design reusable for all of the applications listed above. The honest cost is battery life, and I come back to that in Step 7.</p></li>
+<li class="step"><h3>Design the housing and the circuit</h3><span class="phase">Step 4 · Detailed design</span><div class="plain"><span class="k">In plain words</span><p>I drew the drawer and its sleeve on the computer, and I drew the wiring on paper before plugging anything in.</p></div><p>The drawer and the outer sleeve were modelled in Autodesk Fusion and printed separately, with a sliding clearance between them and a finger hole in the front face. The Arduino mounts on the back of the sleeve, and the sensor looks forward at the rear wall of the drawer.</p>
+<p>One detail mattered more than it first appeared. The HC-SR04 cannot measure anything closer than about 2 cm, because the transmitter is still ringing when the echo returns. So the sensor is set back far enough that the closed drawer sits about 3 cm away, safely inside the range where readings are valid.</p><figure><p class="dia-hint">Swipe sideways to see the full diagram &rarr;</p><div class="dia-scroll" style="--dia-min:620px" tabindex="0" role="group" aria-label="Section view of sensing geometry"><svg class="dia" viewBox="0 0 800 415" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Section view of the drawer. When closed, the sensor on the rear wall measures about 3 centimetres to the drawer and the LED is off. When the drawer is pulled out the range grows to about 15 centimetres and the LED turns on."><defs><marker id="ah" viewBox="0 0 10 10" refX="9.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0 1.2 L10 5 L0 8.8 z" fill="#1B2430"/></marker><pattern id="hatch" width="4.5" height="4.5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0 V6" stroke="#1B2430" stroke-width="1"/></pattern></defs><text x="40" y="36" font-size="9.5" text-anchor="start" class="" font-weight="700">A.  DRAWER CLOSED</text><path d="M60 50 H420 V62 H72 V142 H420 V154 H60 Z" style="fill:url(#hatch)" class="sym"/><rect x="72" y="86" width="18" height="32" class="part-em"/><text x="80" y="132" font-size="8.5" text-anchor="middle" class="sub">U2</text><path d="M124 70 V140 H394 V70 h-4 V136 H128 V70 Z" class="part"/><path d="M90 102 H124" class="wire cl"/><path d="M90 120 V183 M124 142 V183" class="wire w-dim"/><path d="M90 178 H124" class="wire w-dim" marker-start="url(#ah)" marker-end="url(#ah)"/><text x="107.0" y="173" font-size="9.5" text-anchor="middle" class="" font-weight="600">3 cm</text><circle cx="330" cy="67" r="5" class="part"/><path d="M330 46 L330 34 L344 34" class="wire w-dim"/><text x="348" y="37" font-size="8.5" text-anchor="start" class="sub">D1</text><text x="560" y="94" font-size="11" text-anchor="start" class="" font-weight="700">D1 OFF</text><text x="560" y="110" font-size="9.5" text-anchor="start" class="sub">Turns off when range is below 5 cm</text><text x="40" y="221" font-size="9.5" text-anchor="start" class="" font-weight="700">B.  DRAWER OPEN</text><path d="M60 235 H420 V247 H72 V327 H420 V339 H60 Z" style="fill:url(#hatch)" class="sym"/><rect x="72" y="271" width="18" height="32" class="part-em"/><text x="80" y="317" font-size="8.5" text-anchor="middle" class="sub">U2</text><path d="M244 255 V325 H514 V255 h-4 V321 H248 V255 Z" class="part"/><path d="M90 287 H244" class="wire cl"/><path d="M90 305 V368 M244 327 V368" class="wire w-dim"/><path d="M90 363 H244" class="wire w-dim" marker-start="url(#ah)" marker-end="url(#ah)"/><text x="167.0" y="358" font-size="9.5" text-anchor="middle" class="" font-weight="600">15 cm</text><circle cx="330" cy="252" r="5" class="junc"/><path d="M330 231 L330 219 L344 219" class="wire w-dim"/><text x="348" y="222" font-size="8.5" text-anchor="start" class="sub">D1</text><text x="560" y="279" font-size="11" text-anchor="start" class="" font-weight="700">D1 ON</text><text x="560" y="295" font-size="9.5" text-anchor="start" class="sub">Turns on when range exceeds 8 cm</text><text x="40" y="400" font-size="8.5" text-anchor="start" class="sub">SECTION VIEW, NOT TO SCALE.  HATCHED AREA IS THE FIXED HOUSING.  CHAIN LINE IS THE SENSOR BEAM AXIS.</text></svg></div><figcaption>Fig. 1. How the drawer position is sensed. The gap between the two thresholds is deliberate and is explained in the code section.</figcaption></figure>
+<p>On the electrical side, the sensor needs four wires: 5 V, ground, a trigger input and an echo output. The LED runs from a PWM pin through a 220 Ω resistor, which limits the current to about 14 mA, comfortably under the 20 mA an Arduino pin can supply. The 9 V battery feeds the Arduino's barrel jack, and the on-board regulator produces the 5 V that the sensor uses.</p><figure><p class="dia-hint">Swipe sideways to see the full diagram &rarr;</p><div class="dia-scroll" style="--dia-min:700px" tabindex="0" role="group" aria-label="Circuit schematic"><svg class="dia" viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Circuit schematic of the light-up drawer: a 9 volt battery powers an Arduino Uno, which connects to an HC-SR04 ultrasonic sensor on pins 9 and 10 and an LED with a 220 ohm resistor on pin 6."><defs><marker id="ah" viewBox="0 0 10 10" refX="9.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0 1.2 L10 5 L0 8.8 z" fill="#1B2430"/></marker><pattern id="hatch" width="4.5" height="4.5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0 V6" stroke="#1B2430" stroke-width="1"/></pattern></defs><path d="M90 140 L90 186.0" class="wire "/><path d="M90 204.0 L90 250" class="wire "/><path d="M77 186.0 h26 M84 192.0 h12 M77 198.0 h26 M84 204.0 h12" class="sym"/><text x="72" y="187.0" font-size="12" text-anchor="end" class="">+</text><text x="109" y="193.0" font-size="10.5" text-anchor="start" class="" font-weight="600">BT1</text><text x="109" y="206.0" font-size="10" text-anchor="start" class="sub">9 V</text><rect x="270" y="90" width="190" height="270" class="part"/><text x="365.0" y="222.0" font-size="12.5" text-anchor="middle" class="" font-weight="700">U1</text><text x="365.0" y="237.0" font-size="10.5" text-anchor="middle" class="">ARDUINO UNO R3</text><text x="276" y="143.5" font-size="10" text-anchor="start" class="">VIN</text><text x="276" y="183.5" font-size="10" text-anchor="start" class="">GND</text><path d="M90 140 L270 140" class="wire "/><path d="M90 250 L180 250 L180 180 L270 180" class="wire "/><text x="180" y="136" font-size="9.5" text-anchor="middle" class="sub" font-style="italic">+9V (BARREL JACK)</text><text x="454" y="123.5" font-size="10" text-anchor="end" class="">+5V</text><text x="454" y="163.5" font-size="10" text-anchor="end" class="">D9</text><text x="454" y="203.5" font-size="10" text-anchor="end" class="">D10</text><text x="454" y="243.5" font-size="10" text-anchor="end" class="">GND</text><text x="454" y="313.5" font-size="10" text-anchor="end" class="">~D6</text><rect x="640" y="90" width="190" height="180" class="part"/><text x="763.0" y="177.0" font-size="12.5" text-anchor="middle" class="" font-weight="700">U2</text><text x="763.0" y="192.0" font-size="10.5" text-anchor="middle" class="">HC-SR04</text><text x="763.0" y="205.0" font-size="9.5" text-anchor="middle" class="sub">ULTRASONIC RANGER</text><text x="646" y="123.5" font-size="10" text-anchor="start" class="">VCC</text><path d="M460 120 L640 120" class="wire "/><text x="646" y="163.5" font-size="10" text-anchor="start" class="">TRIG</text><path d="M460 160 L640 160" class="wire "/><text x="646" y="203.5" font-size="10" text-anchor="start" class="">ECHO</text><path d="M460 200 L640 200" class="wire "/><text x="646" y="243.5" font-size="10" text-anchor="start" class="">GND</text><path d="M460 240 L640 240" class="wire "/><text x="550" y="116" font-size="9.5" text-anchor="middle" class="sub" font-style="italic">+5V</text><text x="550" y="156" font-size="9.5" text-anchor="middle" class="sub" font-style="italic">TRIG</text><text x="550" y="196" font-size="9.5" text-anchor="middle" class="sub" font-style="italic">ECHO</text><path d="M460 310 L510 310" class="wire "/><path d="M510 310 l5 -7 l10 14 l10 -14 l10 14 l10 -14 l10 14 l5 -7" class="sym"/><text x="540" y="297" font-size="10.5" text-anchor="middle" class="" font-weight="600">R1</text><text x="540" y="332" font-size="10" text-anchor="middle" class="sub">220 Ω</text><path d="M570 310 L620 310" class="wire "/><path d="M620 298 V322 L642 310 Z" class="part"/><path d="M642 298 V322" class="sym"/><path d="M630 294 l8 -9 m-5.5 .8 l5.5 -.8 l-.8 5.5 M641 294 l8 -9 m-5.5 .8 l5.5 -.8 l-.8 5.5" class="wire" stroke-width="1"/><text x="631" y="338" font-size="10.5" text-anchor="middle" class="" font-weight="600">D1</text><path d="M642 310 L720 310 L720 400 L365 400 L365 360" class="wire "/><text x="365" y="354" font-size="10" text-anchor="middle" class="">GND</text><text x="485" y="306" font-size="9.5" text-anchor="middle" class="sub" font-style="italic">LED</text><rect x="6" y="6" width="888" height="508" class="frame"/><rect x="564" y="462" width="330" height="52" class="frame" fill="#fff"/><path d="M564 488 h330 M714 488 v26 M779 488 v26 M829 488 v26" class="hair"/><text x="572" y="472" font-size="6.5" text-anchor="start" class="sub">TITLE</text><text x="572" y="483" font-size="10" text-anchor="start" class="" font-weight="700">LIGHT-UP DRAWER, MAIN SCHEMATIC</text><text x="572" y="498" font-size="6.5" text-anchor="start" class="sub">DRAWN BY</text><text x="572" y="509" font-size="9" text-anchor="start" class="" font-weight="600">C. LI</text><text x="722" y="498" font-size="6.5" text-anchor="start" class="sub">DWG NO.</text><text x="722" y="509" font-size="9" text-anchor="start" class="" font-weight="600">LD-001</text><text x="787" y="498" font-size="6.5" text-anchor="start" class="sub">REV</text><text x="787" y="509" font-size="9" text-anchor="start" class="" font-weight="600">A</text><text x="837" y="498" font-size="6.5" text-anchor="start" class="sub">SHEET</text><text x="837" y="509" font-size="9" text-anchor="start" class="" font-weight="600">1 OF 1</text><text x="20" y="450" font-size="9.5" text-anchor="start" class="" font-weight="700">NOTES</text><text x="20" y="464" font-size="9.5" text-anchor="start" class="sub">1.  BT1 FEEDS U1 THROUGH THE BARREL JACK. U1 REGULATOR SUPPLIES +5V TO U2.</text><text x="20" y="477" font-size="9.5" text-anchor="start" class="sub">2.  R1 LIMITS D1 CURRENT TO ABOUT 14 mA.</text><text x="20" y="490" font-size="9.5" text-anchor="start" class="sub">3.  U2 MINIMUM RANGE 2 cm. MOUNT SO THE CLOSED DRAWER SITS AT 3 cm OR MORE.</text><text x="20" y="503" font-size="9.5" text-anchor="start" class="sub">4.  UNUSED U1 PINS NOT SHOWN.</text></svg></div><figcaption>Fig. 2. Circuit schematic.</figcaption></figure>
+<div class="tbl-wrap"><table>
+   <thead><tr><th>Arduino pin</th><th>Goes to</th><th>Purpose</th></tr></thead>
+   <tbody>
+    <tr><td class="mono">5V, GND</td><td>HC-SR04 VCC, GND</td><td>Sensor power</td></tr>
+    <tr><td class="mono">D9</td><td>HC-SR04 TRIG</td><td>Arduino asks for a measurement</td></tr>
+    <tr><td class="mono">D10</td><td>HC-SR04 ECHO</td><td>Sensor reports the echo time</td></tr>
+    <tr><td class="mono">D6 (PWM)</td><td>220 Ω resistor, then LED</td><td>Light output, dimmable</td></tr>
+    <tr><td class="mono">VIN (barrel jack)</td><td>9 V battery</td><td>Supply</td></tr>
+   </tbody></table></div></li>
+<li class="step"><h3>Write the firmware</h3><span class="phase">Step 5 · Software</span><div class="plain"><span class="k">In plain words</span><p>The program asks "how far away is the drawer?" about sixteen times a second and switches the light to match.</p></div><p>The logic is four steps in a loop: measure, filter, decide, fade. The full code is explained block by block in the <a href="#code">next section</a>.</p></li>
+<li class="step"><h3>Test and tune</h3><span class="phase">Step 6 · Verification</span><div class="plain"><span class="k">In plain words</span><p>I watched the numbers the sensor was reporting, then picked the trigger distances from what I saw.</p></div><p>Calibration came first. I printed the distance to the serial monitor with the drawer closed and then open, and set the two thresholds between those readings. That also showed me how noisy an ultrasonic sensor can be. Every so often it returns a wild value when an echo is missed or bounces off a side wall, so I added a median of the last three readings, which removes a single bad sample without slowing the response.</p>
+<p>The last test was to hold the drawer right at the trigger point. With one threshold the light chattered on and off. With two thresholds and a gap between them it stayed steady.</p></li>
+<li class="step"><h3>Review the result</h3><span class="phase">Step 7 · Evaluation</span><div class="plain"><span class="k">In plain words</span><p>It works. The light comes on when the drawer opens. The battery is the weak point.</p></div><p>The drawer meets every requirement in Step 2, and its main limitation is power. An Arduino Uno draws around 50 mA even when idle, and a 9 V battery holds roughly 500 mAh, so the battery lasts on the order of ten hours of continuous running. That is fine for a demonstration and not acceptable for a product.</p>
+<p>If I built it again, the microcontroller would sleep most of the time. A reed switch would wake it when the drawer moved, it would take the ultrasonic reading only then, and it would sleep again once the drawer closed, dropping the standby current from milliamps to microamps. A smaller board such as a 3.3 V Pro Mini or a bare ATtiny would also help, because it has no USB chip or power LED wasting current. And for a brighter drawer, a short LED strip driven through a MOSFET would replace the single LED on a pin.</p></li>
+
+  </ol>
+</section>
+
+<section id="code">
+  <h2>The code, explained</h2>
+  <p class="code-note">Arduino C++ · no libraries needed · this is a cleaned-up and commented version of the sketch</p>
+<div class="walk"><pre tabindex="0" aria-label="Code: Pins and tuning numbers"><code><span class="c">// ---- Pin map -------------------------------------------------------------</span>
+<span class="k">const</span> <span class="k">uint8_t</span> TRIG_PIN = <span class="n">9</span>;
+<span class="k">const</span> <span class="k">uint8_t</span> ECHO_PIN = <span class="n">10</span>;
+<span class="k">const</span> <span class="k">uint8_t</span> LED_PIN  = <span class="n">6</span>;      <span class="c">// PWM pin so the light can fade</span>
+
+<span class="c">// ---- Tuning --------------------------------------------------------------</span>
+<span class="k">const</span> <span class="k">float</span> OPEN_CM   = <span class="n">8.0</span>;     <span class="c">// Farther than this = drawer is open</span>
+<span class="k">const</span> <span class="k">float</span> CLOSED_CM = <span class="n">5.0</span>;     <span class="c">// Closer than this  = drawer is closed</span>
+<span class="k">const</span> <span class="k">unsigned</span> <span class="k">long</span> SAMPLE_MS   = <span class="n">60</span>;        <span class="c">// Time between sensor pings</span>
+<span class="k">const</span> <span class="k">unsigned</span> <span class="k">long</span> ECHO_WAIT_US = <span class="n">12000</span>;    <span class="c">// Give up on an echo after 12 ms (about 2 m)</span>
+<span class="k">const</span> <span class="k">unsigned</span> <span class="k">long</span> AUTO_OFF_MS = <span class="n">120000</span>;    <span class="c">// Light off after 2 min if drawer is left open</span>
+<span class="k">const</span> <span class="k">uint8_t</span> FADE_STEP = <span class="n">15</span>;                <span class="c">// Brightness change per sample</span></code></pre><div class="say"><span class="tag">Part 1 of 5</span><h4>Pins and tuning numbers</h4><p>Everything that might need changing is named at the top. To fit a deeper drawer, only <code>OPEN_CM</code> and <code>CLOSED_CM</code> change.</p><p><code>ECHO_WAIT_US</code> is a timeout. If no echo arrives within 12 milliseconds the code stops waiting. Without it, one lost echo would freeze the program for a full second.</p></div></div>
+<div class="walk"><pre tabindex="0" aria-label="Code: Measuring distance with sound"><code><span class="c">// Fire one ultrasonic ping and return the distance in centimetres.</span>
+<span class="c">// Returns -1 if no echo came back in time.</span>
+<span class="k">float</span> readDistanceCm() {
+  digitalWrite(TRIG_PIN, <span class="k">LOW</span>);
+  delayMicroseconds(<span class="n">2</span>);
+  digitalWrite(TRIG_PIN, <span class="k">HIGH</span>);
+  delayMicroseconds(<span class="n">10</span>);
+  digitalWrite(TRIG_PIN, <span class="k">LOW</span>);
+
+  <span class="k">unsigned</span> <span class="k">long</span> echoUs = pulseIn(ECHO_PIN, <span class="k">HIGH</span>, ECHO_WAIT_US);
+  <span class="k">if</span> (echoUs == <span class="n">0</span>) <span class="k">return</span> -<span class="n">1</span>;
+
+  <span class="c">// Sound travels about 0.0343 cm per microsecond. The ping goes out and</span>
+  <span class="c">// comes back, so the one-way distance is half the round trip.</span>
+  <span class="k">return</span> echoUs * <span class="n">0.0343</span> / <span class="n">2.0</span>;
+}</code></pre><div class="say"><span class="tag">Part 2 of 5</span><h4>Measuring distance with sound</h4><p>A 10 microsecond pulse on TRIG tells the sensor to send a burst of 40 kHz sound. The sensor then holds ECHO high for exactly as long as the sound takes to go out and come back, and <code>pulseIn()</code> measures that time.</p><p>Sound travels about 343 metres per second, or 0.0343 cm per microsecond. Because the sound makes a round trip, the distance to the drawer is half of the time multiplied by the speed.</p></div></div>
+<div class="walk"><pre tabindex="0" aria-label="Code: Median filter"><code><span class="c">// Middle value of three numbers. One bad reading cannot move the result.</span>
+<span class="k">float</span> median3(<span class="k">float</span> a, <span class="k">float</span> b, <span class="k">float</span> c) {
+  <span class="k">if</span> ((a &gt;= b &amp;&amp; a &lt;= c) || (a &lt;= b &amp;&amp; a &gt;= c)) <span class="k">return</span> a;
+  <span class="k">if</span> ((b &gt;= a &amp;&amp; b &lt;= c) || (b &lt;= a &amp;&amp; b &gt;= c)) <span class="k">return</span> b;
+  <span class="k">return</span> c;
+}</code></pre><div class="say"><span class="tag">Part 3 of 5</span><h4>Median filter</h4><p>Take the last three readings and keep the middle one. If the readings are 3, 3 and 140, the answer is 3, so one bad echo is ignored. An average of the same numbers would give 49 and turn the light on by mistake.</p></div></div>
+<div class="walk"><pre tabindex="0" aria-label="Code: Setup, and the timing of the loop"><code><span class="k">void</span> setup() {
+  pinMode(TRIG_PIN, <span class="k">OUTPUT</span>);
+  pinMode(ECHO_PIN, <span class="k">INPUT</span>);
+  pinMode(LED_PIN, <span class="k">OUTPUT</span>);
+  analogWrite(LED_PIN, <span class="n">0</span>);
+}
+
+<span class="k">void</span> loop() {
+  <span class="k">unsigned</span> <span class="k">long</span> nowMs = millis();
+  <span class="k">if</span> (nowMs - lastSample &lt; SAMPLE_MS) <span class="k">return</span>;
+  lastSample = nowMs;</code></pre><div class="say"><span class="tag">Part 4 of 5</span><h4>Setup, and the timing of the loop</h4><p>The loop takes a reading every 60 ms. That spacing gives the previous ping time to die away, so the sensor does not hear its own old echo. The timing uses <code>millis()</code> instead of <code>delay()</code>, which keeps the processor free if more features are added later.</p></div></div>
+<div class="walk"><pre tabindex="0" aria-label="Code: Measure, decide, fade"><code>  <span class="c">// 1. Measure, and ignore pings that got no echo.</span>
+  <span class="k">float</span> cm = readDistanceCm();
+  <span class="k">if</span> (cm &gt; <span class="n">0</span>) {
+    history[historyIndex] = cm;
+    historyIndex = (historyIndex + <span class="n">1</span>) % <span class="n">3</span>;
+  }
+  <span class="k">float</span> distance = median3(history[<span class="n">0</span>], history[<span class="n">1</span>], history[<span class="n">2</span>]);
+
+  <span class="c">// 2. Decide open or closed. Two thresholds with a gap between them</span>
+  <span class="c">//    (hysteresis) stop the light from flickering when the drawer sits</span>
+  <span class="c">//    right at the edge.</span>
+  <span class="k">if</span> (!drawerOpen &amp;&amp; distance &gt; OPEN_CM) {
+    drawerOpen = <span class="k">true</span>;
+    openedAt = nowMs;
+  } <span class="k">else</span> <span class="k">if</span> (drawerOpen &amp;&amp; distance &gt; <span class="n">0</span> &amp;&amp; distance &lt; CLOSED_CM) {
+    drawerOpen = <span class="k">false</span>;
+  }
+
+  <span class="c">// 3. Light on while open, unless it has been open for too long.</span>
+  <span class="k">bool</span> wantLight = drawerOpen &amp;&amp; (nowMs - openedAt &lt; AUTO_OFF_MS);
+
+  <span class="c">// 4. Fade toward the wanted state instead of snapping.</span>
+  <span class="k">if</span> (wantLight &amp;&amp; brightness &lt; <span class="n">255</span>) {
+    brightness = (brightness &gt; <span class="n">255</span> - FADE_STEP) ? <span class="n">255</span> : brightness + FADE_STEP;
+  } <span class="k">else</span> <span class="k">if</span> (!wantLight &amp;&amp; brightness &gt; <span class="n">0</span>) {
+    brightness = (brightness &lt; FADE_STEP) ? <span class="n">0</span> : brightness - FADE_STEP;
+  }
+  analogWrite(LED_PIN, brightness);
+}</code></pre><div class="say"><span class="tag">Part 5 of 5</span><h4>Measure, decide, fade</h4><p>The light turns on above 8 cm but only turns off below 5 cm. That 3 cm gap is called hysteresis, and it is the same trick a home thermostat uses so the furnace does not switch on and off every few seconds.</p><p>If the drawer is left open for two minutes, the light goes out to save the battery.</p><p>Brightness moves 15 steps per reading, so the LED takes about one second to come up. It is a small touch, but it makes the drawer feel finished.</p></div></div>
+
+  <a class="dl" href="code/light-drawer.ino" download>Download light-drawer.ino &darr;</a>
+</section>
+
+<section id="learned">
+  <h2>What this project taught me</h2>
+  <div class="cards">
+    <div class="card"><h4>Real sensors are noisy</h4><p>The first version trusted every reading. Filtering and hysteresis were the difference between a demo that mostly worked and one that always worked.</p></div>
+    <div class="card"><h4>Know the sensor's limits</h4><p>The 2 cm blind zone of the HC-SR04 decided where the sensor had to be mounted. That was a mechanical decision driven by an electrical datasheet.</p></div>
+    <div class="card"><h4>Power is a design requirement</h4><p>I treated the battery as an afterthought. Working out the current draw first would have pointed me to a lower-power design from the start.</p></div>
+  </div>
+</section>
+
+  </article>
+</div>
+
+<div class="pp-next"><div class="wrap"><a href="project-rc-car.html"><small>Next project</small><b>Custom Bluetooth RC Car</b></a><a href="project-ema-survey.html"><small>Also</small><b>Fitbit EMA Survey App</b></a><a href="index.html#projects"><small>Back to</small><b>All projects</b></a></div></div>
+<footer><div class="wrap"><span>Chenyu Li · Mechanical Engineering · University of Toronto</span><a href="index.html#contact">Get in touch &rarr;</a></div></footer>
+
+<script>
+  /* highlight the current section in the contents rail */
+  (function () {
+    var links = document.querySelectorAll('.pp-toc a');
+    if (!links.length || !('IntersectionObserver' in window)) return;
+    var map = {};
+    links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        links.forEach(function (a) { a.classList.remove('on'); });
+        if (map[e.target.id]) map[e.target.id].classList.add('on');
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('article > section[id]').forEach(function (s) { io.observe(s); });
+  })();
+</script>
+</body>
+</html>

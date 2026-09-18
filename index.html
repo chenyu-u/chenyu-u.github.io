@@ -107,6 +107,9 @@
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
+  /* clip (not hidden) keeps sideways overflow cut off WITHOUT turning <body> into a
+     scroll container, which is what lets position: sticky work (About card, Experience) */
+  @supports (overflow: clip) { body { overflow-x: clip; } }
   ::selection { background: var(--navy); color: #fff; }
   img { display: block; max-width: 100%; }
   a { color: var(--blue); }
@@ -522,52 +525,120 @@
     .proj-img-wrap, .proj-ph { min-height: 220px; }
   }
 
-  /* ═══ EXPERIENCE — timeline rail with logo nodes ══════════════ */
+  /* ═══ EXPERIENCE — timeline rail with logo nodes ══════════════
+     Each card = .exp-org (logo · name · location · website link)
+                 + role column (dates, roles, bullets, skill chips).
+     Layouts:  > 900px  two columns, org block sticks while you scroll
+               ≤ 900px  org block becomes a header bar across the card
+               ≤ 560px  phone: compact logo, full-width website button */
   .exp-list { position: relative; padding-left: clamp(1.4rem, 4vw, 2.4rem); }
   .exp-list::before {
     content: ""; position: absolute; left: 8px; top: 6px; bottom: 6px;
     width: 2px; background: linear-gradient(var(--navy), var(--blue));
   }
   .exp-row {
-    display: grid; grid-template-columns: minmax(0, .38fr) minmax(0, 1fr);
+    display: grid; grid-template-columns: minmax(0, .4fr) minmax(0, 1fr);
     gap: clamp(1.2rem, 3vw, 2.4rem);
     padding: 1.6rem 1.6rem 1.6rem 1.8rem; margin-bottom: 1.2rem;
     background: #fff; border: 1px solid var(--line); border-radius: var(--r);
     box-shadow: var(--shadow); position: relative;
     transition: transform .4s var(--ease), box-shadow .4s var(--ease), border-color .4s var(--ease);
   }
-  .exp-row:hover { transform: translateX(4px); box-shadow: var(--shadow-hover); border-color: var(--line-strong); }
   .exp-row::before {
     content: ""; position: absolute; left: calc(-1 * clamp(1.4rem, 4vw, 2.4rem) + 3px); top: 2rem;
     width: 12px; height: 12px; border-radius: 50%;
     background: var(--accent); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--navy);
   }
-  .exp-date, .exp-subdate { font-family: var(--f-mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: .5rem; }
-  .exp-org-row { display: flex; align-items: center; gap: .6rem; }
+  /* accent bar that draws in along the card's left edge */
+  .exp-row::after {
+    content: ""; position: absolute; left: -1px; top: -1px; bottom: -1px; width: 3px;
+    background: linear-gradient(var(--navy), var(--blue)); border-radius: var(--r) 0 0 var(--r);
+    transform: scaleY(0); transform-origin: top; transition: transform .45s var(--ease);
+  }
+  @media (hover: hover) {
+    .exp-row:hover { transform: translateX(4px); box-shadow: var(--shadow-hover); border-color: var(--line-strong); }
+    .exp-row:hover::after { transform: scaleY(1); }
+  }
+  .exp-row:focus-within::after { transform: scaleY(1); }
+
+  /* — organisation block — */
+  .exp-org {
+    display: grid; grid-template-columns: auto minmax(0, 1fr);
+    column-gap: .85rem; row-gap: .95rem; align-items: center; align-self: start;
+    position: sticky; top: calc(var(--nav-h) + 20px);
+  }
   .exp-logo {
-    width: 76px; height: 76px; flex-shrink: 0; display: grid; place-items: center;
+    width: 72px; height: 72px; flex-shrink: 0; display: grid; place-items: center;
     background: #fff; border: 1px solid var(--line-strong); border-radius: var(--r);
-    overflow: hidden; box-shadow: var(--shadow);
+    overflow: hidden; box-shadow: var(--shadow); text-decoration: none;
+    transition: border-color .25s var(--ease-soft), box-shadow .25s var(--ease-soft), transform .25s var(--ease-soft);
   }
   .exp-logo img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+  a.exp-logo:hover { border-color: var(--blue); box-shadow: var(--shadow-lg); transform: translateY(-2px); }
   .exp-logo-mono { font-family: var(--f-mono); font-weight: 700; font-size: .78rem; color: var(--navy); }
-  .exp-co { font-family: var(--f-disp); font-weight: 700; color: var(--navy); font-size: 1.02rem; }
-  .exp-loc { font-family: var(--f-mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); margin-top: .5rem; }
+  .exp-org-txt { min-width: 0; }
+  .exp-co { font-family: var(--f-disp); font-weight: 700; color: var(--navy); font-size: 1.02rem; line-height: 1.3; text-wrap: balance; }
+  .exp-co a { color: inherit; text-decoration: none; background: linear-gradient(var(--blue), var(--blue)) 0 100% / 0 2px no-repeat; transition: background-size .35s var(--ease), color .2s; }
+  .exp-co a:hover, .exp-co a:focus-visible { color: var(--blue); background-size: 100% 2px; }
+  .exp-loc { font-family: var(--f-mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); margin-top: .4rem; line-height: 1.6; }
   .exp-sep { color: var(--line-strong); margin: 0 .45rem; }
-  .exp-type { color: var(--navy); font-weight: 700; }
-  .exp-role { font-family: var(--f-disp); font-weight: 700; font-size: 1.12rem; color: var(--ink); margin-bottom: .5rem; }
+  .exp-type { color: var(--navy); font-weight: 700; white-space: nowrap; }
+
+  /* — website link button — */
+  .exp-site {
+    grid-column: 1 / -1; justify-self: start; max-width: 100%;
+    display: inline-flex; align-items: center; gap: .5rem; min-height: 38px;
+    padding: .45rem .75rem; border: 1px solid var(--line-strong); border-radius: var(--r);
+    background: var(--blue-lt); color: var(--navy); text-decoration: none;
+    font-family: var(--f-mono); font-size: .66rem; font-weight: 600; letter-spacing: .06em;
+    transition: background .25s var(--ease-soft), color .25s var(--ease-soft), border-color .25s var(--ease-soft);
+  }
+  .exp-site svg { width: 14px; height: 14px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .exp-site .exp-site-url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .exp-site .exp-site-arrow { transition: transform .25s var(--ease); }
+  .exp-site:hover, .exp-site:focus-visible { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .exp-site:hover .exp-site-arrow, .exp-site:focus-visible .exp-site-arrow { transform: translate(2px, -2px); }
+
+  /* — role column — */
+  .exp-date, .exp-subdate { font-family: var(--f-mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: .5rem; line-height: 1.6; }
+  .exp-role { font-family: var(--f-disp); font-weight: 700; font-size: 1.12rem; line-height: 1.3; color: var(--ink); margin-bottom: .5rem; text-wrap: balance; }
   .exp-pts { list-style: none; }
   .exp-pts li { position: relative; padding-left: 1.1rem; color: var(--ink-soft); font-size: .94rem; margin-bottom: .45rem; }
   .exp-pts li::before { content: "▸"; position: absolute; left: 0; color: var(--accent); }
   .exp-pts strong { color: var(--navy); }
-  .exp-chips { display: flex; flex-wrap: wrap; gap: .32rem; margin-top: .7rem; }
+  .exp-chips { display: flex; flex-wrap: wrap; gap: .34rem; margin-top: .7rem; }
   .exp-subrole { margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px dashed var(--line); }
   .ec {
-    font-family: var(--f-mono); font-size: .56rem; letter-spacing: .05em;
+    font-family: var(--f-mono); font-size: .6rem; letter-spacing: .04em;
     color: var(--ink-soft); background: var(--pale); border: 1px solid var(--line);
-    padding: .22rem .48rem; border-radius: var(--r);
+    padding: .24rem .5rem; border-radius: var(--r);
   }
-  @media (max-width: 780px) { .exp-row { grid-template-columns: 1fr; gap: .8rem; } }
+
+  /* — tablet & small laptop: org block becomes a header bar — */
+  @media (max-width: 900px) {
+    .exp-row { grid-template-columns: 1fr; gap: 1.1rem; padding: 1.4rem 1.4rem 1.5rem; }
+    .exp-org {
+      position: static; grid-template-columns: auto minmax(0, 1fr) auto;
+      padding-bottom: 1.1rem; border-bottom: 1px solid var(--line);
+    }
+    .exp-site { grid-column: auto; justify-self: end; min-height: 44px; }
+    .exp-row::before { top: 2.9rem; }
+  }
+  /* — phone — */
+  @media (max-width: 560px) {
+    .exp-list { padding-left: 1.15rem; }
+    .exp-list::before { left: 3px; }
+    .exp-row { padding: 1.1rem 1rem 1.25rem; margin-bottom: 1rem; }
+    .exp-row::before { left: calc(-1.15rem - 2px); top: 2.3rem; }
+    .exp-org { grid-template-columns: auto minmax(0, 1fr); row-gap: .85rem; }
+    .exp-logo { width: 56px; height: 56px; }
+    .exp-logo img { padding: 4px; }
+    .exp-co { font-size: .98rem; }
+    .exp-site { grid-column: 1 / -1; justify-self: stretch; justify-content: center; }
+    .exp-role { font-size: 1.04rem; }
+    .exp-pts li { font-size: .92rem; }
+    .ec { font-size: .62rem; }
+  }
 
   /* ═══ RUNNING — navy telemetry band (inverted) ════════════════ */
   #running .sec-hd { max-width: none; display: flex; flex-wrap: wrap; align-items: end; gap: 1.5rem; }
@@ -896,7 +967,7 @@
     </div>
     <h1 class="hero-name boot-item">Chenyu<br/><em>Li</em></h1>
     <p class="hero-deg boot-item">Triple Minor: Mechatronics &amp; Robotics · Business · Advanced Manufacturing</p>
-    <p class="hero-bio boot-item">Second-year Mechanical Engineering student at the University of Toronto interested in anything related to engineering and business, feel free to reach out or look around to learn more about me!</p>
+    <p class="hero-bio boot-item">I'm a second-year Mechanical Engineering student at the University of Toronto with a foot in both engineering and business. Have a look around, and feel free to reach out.</p>
     <div class="hero-chips boot-item">
       <span class="chip">Robotics</span>
       <span class="chip">SolidWorks</span>
@@ -943,8 +1014,8 @@
       <div class="reveal">
         <div class="about-bio">
           <p>I'm <strong>Chenyu Li</strong>, a second-year <strong>Mechanical Engineering student at the University of Toronto</strong> in the Bachelor of Applied Science (BASc) and Professional Experience Year (PEY) Co-op program, pursuing a triple minor in <strong>Mechatronics &amp; Robotics</strong>, <strong>Business</strong>, and <strong>Advanced Manufacturing</strong>.</p>
-          <p>I like making things that actually work: modelling in SolidWorks, validating in ANSYS, printing prototypes, and then seeing how they hold up in the real world. That process took me from Calgary to <strong>the Netherlands this past year</strong> to compete at the International Small Wind Turbine Competition.</p>
-          <p>Before university I ran a landscaping business from age 14, which was a better lesson on project management and leadership than most things I've learned from a textbook. I speak <strong>English and Mandarin</strong> natively and get by in <strong>German</strong>.</p>
+          <p>What I enjoy most is making things that actually work. I model a part in SolidWorks, check it in ANSYS, print a prototype, and then find out how it holds up in the real world. This past year that process took me from Calgary to <strong>the Netherlands</strong>, where our team competed at the International Small Wind Turbine Competition.</p>
+          <p>Before university I ran my own landscaping business, starting at fourteen. It taught me more about project management and leadership than most things I have read in a textbook. I speak <strong>English and Mandarin</strong> natively and can get by in <strong>German</strong>.</p>
         </div>
         <div class="sk-block">
           <p class="sk-lbl">Programming</p>
@@ -999,7 +1070,7 @@
     <header class="sec-hd reveal" data-note="SHT 02 / BUILD LOG">
       <p class="lbl">02 / Projects</p>
       <h2 class="h2">What I've Built</h2>
-      <p class="intro">Engineering projects across robotics, mechanical design, and software, each taken from concept to working result.</p>
+      <p class="intro">A selection of my work across robotics, mechanical design, and software. Each one went from an idea to a working result.</p>
     </header>
     <div class="proj-grid">
 
@@ -1018,9 +1089,8 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-intl"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>Netherlands</span></div>
           <h3>Vertical Axis Wind Turbine</h3>
-          <p>I contributed to the mechanical, manufacturing, and assembly of a custom 6-foot vertical-axis wind turbine (VAWT) with the University of Toronto Wind Turbine Design Team (UTWIND). In July of 2026, I represented the team alongside 10 other members to compete and present our turbine at the International Small Wind Turbine Competition (ISWTC) at TU Delft and Hanze University in the Netherlands. During testing of the turbine within a wind tunnel, our team achieved a cut-in speed of 4 m/s. </p>
+          <p>With the University of Toronto Wind Turbine Design Team (UTWind), I worked on the mechanical design, manufacturing, and assembly of a custom six-foot vertical-axis wind turbine. In July 2026, I was one of eleven members who travelled to the Netherlands to present and compete with it at the International Small Wind Turbine Competition, hosted by TU Delft and Hanze University. In the wind tunnel, our turbine started producing power at a wind speed of just 4 m/s.</p>
           <div class="proj-tags"><span class="ptag">SolidWorks</span><span class="ptag">FDM 3D Printing</span><span class="ptag">Machining</span><span class="ptag">ANSYS Mechanical</span><span class="ptag">UTWind</span></div>
-          <a href="#" class="proj-link">Details <span class="arrow">→</span></a>
         </div>
       </div>
 
@@ -1045,10 +1115,9 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-act">Design Project · 2026</span></div>
           <h3>Motorized Cross-Country Ski-Assist Device</h3>
-          <p>A powered attachment for children's cross-country skis, designed with a six-person team for a real external client in <strong>Engineering Strategies and Practice 2 (APS112)</strong>, a first-year design course at the University of Toronto. The goal was to let young kids keep pace with their parents on family cross-country outings instead of tiring out and falling behind. We scoped the problem around groomed trails and temperatures down to -20 degrees Celsius, generated 80 full solutions, then narrowed them through a feasibility screen, multi-voting, and graphical decision charts before a Pugh chart picked the winner.</p>
-          <p>I developed the CAD and manufacturing drawings for two of the three shortlisted concepts, modelling in both <strong>Autodesk Fusion and SolidWorks</strong>. The first was a <strong>belt-assisted attachment</strong>, a pair of sprockets driven by a rear motor hub running a continuous tread along the ski to add traction with the snow. The second was a <strong>motorized paddle wheel attachment</strong>, a brushless DC motor turning sprocket-shaped rotors that push against the snow, held on by adjustable suction cups so it fits youth cross-country skis from 110 cm to 170 cm without drilling into them. Both enclose every moving part to meet the toy-safety and IP66 requirements we set for children as young as three, and the paddle wheel came out ahead on the Pugh chart.</p>
+          <p>This is a powered attachment for children's cross-country skis, designed by a team of six for a real client in <strong>Engineering Strategies and Practice 2 (APS112)</strong>, a first-year design course at the University of Toronto. The problem was simple to state: young kids tire out on family ski outings and fall behind their parents. We scoped the design around groomed trails and temperatures down to -20 degrees Celsius, generated eighty candidate solutions, and narrowed them through a feasibility screen, multi-voting, and graphical decision charts, with a Pugh chart making the final call.</p>
+          <p>I produced the CAD and manufacturing drawings for two of the three shortlisted concepts, working in both <strong>Autodesk Fusion and SolidWorks</strong>. The first was a <strong>belt-assisted attachment</strong>, where a rear motor hub drives a pair of sprockets and runs a continuous tread along the ski for extra grip on the snow. The second was a <strong>motorized paddle wheel</strong>, where a brushless DC motor spins sprocket-shaped rotors that push against the snow. It clamps on with adjustable suction cups, so it fits youth skis from 110 cm to 170 cm without drilling a single hole. Both designs enclose every moving part to meet the toy-safety and IP66 requirements we set for children as young as three, and the paddle wheel came out ahead on the Pugh chart.</p>
           <div class="proj-tags"><span class="ptag">Autodesk Fusion</span><span class="ptag">SolidWorks</span><span class="ptag">Technical Drawings</span><span class="ptag">GD&amp;T</span><span class="ptag">Design Process</span><span class="ptag">Pugh Chart</span><span class="ptag">Brushless DC Motors</span><span class="ptag">Client Consulting</span></div>
-          <a href="#" class="proj-link">Details <span class="arrow">→</span></a>
         </div>
       </div>
 
@@ -1060,7 +1129,7 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-act">Concept</span></div>
           <h3>Pick-and-Place Robotic Arm</h3>
-          <p>A concept for a physical robotic arm that sorts parts by colour. I built an interactive simulation first to test the reach, the joint layout, and the way the claw closes before spending money on motors and materials. The plan is to build it for real next, sizing the hardware against an actual torque budget.</p>
+          <p>This is a concept for a robotic arm that sorts parts by colour. Before spending money on motors and materials, I built an interactive simulation to test the reach, the joint layout, and the way the claw closes. The next step is to build it for real, with the hardware sized against a proper torque budget.</p>
           <div class="proj-tags"><span class="ptag">Concept Design</span><span class="ptag">Kinematics</span><span class="ptag">CAD / SolidWorks</span><span class="ptag">Servo &amp; Stepper Motors</span><span class="ptag">Planned: Vision Sorting</span></div>
           <a href="robot-sim.html" class="proj-link">Launch Simulation <span class="arrow">→</span></a>
         </div>
@@ -1074,9 +1143,9 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-act">BEIE Lab</span></div>
           <h3>Fitbit EMA Survey App</h3>
-          <p>Built a custom Fitbit OS clock-face and companion app in JavaScript and HTML/CSS to automate ecological momentary assessment surveys for 20+ participants across a multi-summer heat-exposure study with automated CSV export for data analysis for the Building Energy and Indoor Enviroment Lab (BEIE) at the University of Toronto.</p>
+          <p>For the Building Energy and Indoor Environment (BEIE) Lab at the University of Toronto, I built a custom Fitbit clock face and companion app in JavaScript, SVG, and CSS. It runs short wellbeing surveys on the wrists of more than twenty participants in a multi-summer heat-exposure study, and delivers every answer to the research team as a ready-to-analyse CSV file.</p>
           <div class="proj-tags"><span class="ptag">JavaScript</span><span class="ptag">CSS/HTML</span><span class="ptag">Fitbit OS</span><span class="ptag">JSONBin.io</span><span class="ptag">HAB Research Group</span></div>
-          <a href="#" class="proj-link">Details <span class="arrow">→</span></a>
+          <a href="project-ema-survey.html" class="proj-link">Read the full project <span class="arrow">→</span></a>
         </div>
       </div>
 
@@ -1088,9 +1157,8 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-win"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="m8.5 12.5-1 8 4.5-2.5 4.5 2.5-1-8"/></svg>All KPIs Met</span></div>
           <h3>Finliti: Product Development</h3>
-          <p>Worked on the mechanical CAD and prototyping for Finliti's financial literacy board game product as part of a UTESCA consulting engagement. Used Autodesk Fusion to redesign the physical product to be 30% more compact, and produced FDM 3D printed prototypes to validate the design, achieving 100% of client KPIs.</p>
+          <p>As part of a UTESCA consulting engagement, I handled the mechanical CAD and prototyping for Finliti's financial literacy board game. I redesigned the physical product in Autodesk Fusion to be 30% more compact, then 3D printed prototypes to prove the design worked. We delivered on every one of the client's KPIs.</p>
           <div class="proj-tags"><span class="ptag">Autodesk Fusion</span><span class="ptag">ANSYS Mechanical</span><span class="ptag">FDM 3D Printing</span><span class="ptag">UTESCA</span></div>
-          <a href="#" class="proj-link">Details <span class="arrow">→</span></a>
         </div>
       </div>
 
@@ -1102,9 +1170,9 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-done">Community · 2025</span></div>
           <h3>Calgary Food Bank: CANstruction 2025</h3>
-          <p>Designed and built a large-scale structural sculpture made entirely from donated canned goods for the 2025 Calgary Food Bank CANstruction event. Collaborated with professional engineers from FLUOR Corporation to apply structural principles for maximum height and stability. All cans were donated after the competition.</p>
+          <p>For the 2025 Calgary Food Bank CANstruction event, our team designed and built a large structural sculpture made entirely of donated canned goods. Working alongside professional engineers from Fluor, we applied real structural principles to get as much height and stability as the cans would allow. Every can went to the food bank after the competition.</p>
           <div class="proj-tags"><span class="ptag">Structural Design</span><span class="ptag">Team Collaboration</span><span class="ptag">Community</span></div>
-          <a href="#" class="proj-link">Details <span class="arrow">→</span></a>
+          <a href="https://www.ctvnews.ca/calgary/article/canstruction-fundraiser-event-supports-calgary-food-bank-amid-economic-uncertainty/" class="proj-link" target="_blank" rel="noopener noreferrer">Read the CTV News story <span class="arrow">↗</span></a>
         </div>
       </div>
 
@@ -1117,9 +1185,8 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-done">Community · 2024</span></div>
           <h3>Calgary Food Bank: CANstruction 2024</h3>
-          <p>Participated in the 2024 Calgary Food Bank CANstruction competition, designing and constructing a canned-food sculpture under real structural constraints. Gained hands-on experience applying load distribution and stability analysis in a team environment alongside industry engineers.</p>
+          <p>My first CANstruction was in 2024, designing and building a canned-food sculpture for the Calgary Food Bank under real structural constraints. It was my first hands-on experience with load distribution and stability analysis on a team that included practising engineers.</p>
           <div class="proj-tags"><span class="ptag">Structural Design</span><span class="ptag">Load Distribution</span><span class="ptag">Community</span></div>
-          <a href="#" class="proj-link">Details <span class="arrow">→</span></a>
         </div>
       </div>
 
@@ -1132,23 +1199,23 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-done">High School</span></div>
           <h3>Custom RC Car</h3>
-          <p>Designed, wired, and built a custom remote-controlled car from scratch in high school. Integrated motor drivers, a receiver module, and battery management into a self-fabricated chassis, learning hands-on electronics, soldering, and basic control systems in the process.</p>
-          <div class="proj-tags"><span class="ptag">Arduino</span><span class="ptag">Soldering</span><span class="ptag">3D Printing</span><span class="ptag">Autodesk Fusion</span><span class="ptag">Motor Controllers</span><span class="ptag">Circuit Design</span><span class="ptag">Personal Project</span></div>
-          <a href="#" class="proj-link">Details <span class="arrow">→</span></a>
+          <p>In high school I built a four-wheel-drive car from loose parts and drove it from my phone. An Arduino reads the Dabble gamepad over Bluetooth and runs four gear motors through two L298N motor controllers, all powered by two 9 V batteries behind a master switch. I designed the chassis, motor mounts, and lift-off body shell in Autodesk Fusion and 3D printed them.</p>
+          <div class="proj-tags"><span class="ptag">Arduino</span><span class="ptag">Soldering</span><span class="ptag">3D Printing</span><span class="ptag">Autodesk Fusion</span><span class="ptag">L298N Motor Controllers</span><span class="ptag">Bluetooth</span><span class="ptag">Circuit Design</span><span class="ptag">Personal Project</span></div>
+          <a href="project-rc-car.html" class="proj-link">Schematic, code and design process <span class="arrow">→</span></a>
         </div>
       </div>
 
       <!-- PROJ ─────────────────────────────────────────────── -->
       <div class="proj-card reveal">
         <div class="proj-img-wrap" data-images='["projects/ultrasonic-drawer.jpg"]'>
-          <img src="projects/ultrasonic-drawer.jpg" alt="Ultrasonic Drawer" class="proj-img" />
+          <img src="projects/ultrasonic-drawer.jpg" alt="3D printed light-up drawer with an Arduino mounted on the back" class="proj-img" />
         </div>
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-done">High School</span></div>
-          <h3>Ultrasonic Sensor Drawer</h3>
-          <p>Built an automatic drawer that opens when a hand is detected nearby, using an ultrasonic distance sensor and a servo motor controlled by an Arduino. Designed and fabricated the drawer housing, wired all components, and wrote the control firmware, an early introduction to embedded systems and mechatronics.</p>
+          <h3>Ultrasonic Light-Up Drawer</h3>
+          <p>This is a 3D printed drawer that turns its own light on when you pull it open, so small things are easy to find. An ultrasonic sensor at the back measures how far the drawer has moved, and an Arduino fades an LED on once it passes a set distance and off again when it closes. I designed the drawer and housing in Autodesk Fusion and wrote the firmware. It was my first complete embedded system, from sensor to output.</p>
           <div class="proj-tags"><span class="ptag">Arduino</span><span class="ptag">Soldering</span><span class="ptag">3D Printing</span><span class="ptag">Autodesk Fusion</span><span class="ptag">Ultrasonic Sensor</span><span class="ptag">Circuit Design</span><span class="ptag">Personal Project</span></div>
-          <a href="#" class="proj-link">Details <span class="arrow">→</span></a>
+          <a href="project-light-drawer.html" class="proj-link">Schematic, code and design process <span class="arrow">→</span></a>
         </div>
       </div>
 
@@ -1161,6 +1228,8 @@
      EXPERIENCE
      TO ADD A ROLE: copy any EXP block, paste in .exp-list
      (newer roles go at the top)
+     WEBSITE LINK: each card's URL appears 3× in its .exp-org block
+     (logo, name, and the .exp-site button) — change all three.
 ═══════════════════════════════════════════════════════════════ -->
 <section id="experience" class="sec bg-white">
   <div class="wrap">
@@ -1172,12 +1241,13 @@
 
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
-        <div>
-          <div class="exp-org-row">
-            <span class="exp-logo"><img src="logos/utwind.jpg" alt="UofT Wind Turbine Design Team" /></span>
-            <p class="exp-co">UofT Wind Turbine Design Team</p>
+        <div class="exp-org">
+          <a class="exp-logo" href="https://www.utwind.com/" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><img src="logos/utwind.jpg" alt="" /></a>
+          <div class="exp-org-txt">
+            <p class="exp-co"><a href="https://www.utwind.com/" target="_blank" rel="noopener noreferrer">UofT Wind Turbine Design Team</a></p>
+            <p class="exp-loc">Toronto · Netherlands<span class="exp-sep">·</span><span class="exp-type">Design Team</span></p>
           </div>
-          <p class="exp-loc">Toronto · Netherlands<span class="exp-sep">·</span><span class="exp-type">Design Team</span></p>
+          <a class="exp-site" href="https://www.utwind.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit the UofT Wind Turbine Design Team website (opens in a new tab)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span class="exp-site-url">utwind.com</span><svg class="exp-site-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
         </div>
         <div>
           <p class="exp-date">Aug 2026 – Present</p>
@@ -1213,12 +1283,13 @@
 
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
-        <div>
-          <div class="exp-org-row">
-            <span class="exp-logo"><img src="logos/utca.png" alt="University of Toronto Consulting Association" /></span>
-            <p class="exp-co">University of Toronto Consulting Association</p>
+        <div class="exp-org">
+          <a class="exp-logo" href="https://www.uoftconsulting.com/" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><img src="logos/utca.png" alt="" /></a>
+          <div class="exp-org-txt">
+            <p class="exp-co"><a href="https://www.uoftconsulting.com/" target="_blank" rel="noopener noreferrer">University of Toronto Consulting Association</a></p>
+            <p class="exp-loc">Toronto, Ontario<span class="exp-sep">·</span><span class="exp-type">Club</span></p>
           </div>
-          <p class="exp-loc">Toronto, Ontario<span class="exp-sep">·</span><span class="exp-type">Club</span></p>
+          <a class="exp-site" href="https://www.uoftconsulting.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit the University of Toronto Consulting Association website (opens in a new tab)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span class="exp-site-url">uoftconsulting.com</span><svg class="exp-site-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
         </div>
         <div>
           <p class="exp-date">Aug 2026 – Present</p>
@@ -1233,12 +1304,13 @@
 
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
-        <div>
-          <div class="exp-org-row">
-            <span class="exp-logo"><img src="logos/uoft.jpg" alt="University of Toronto" /></span>
-            <p class="exp-co">University of Toronto</p>
+        <div class="exp-org">
+          <a class="exp-logo" href="https://hab.civmin.utoronto.ca/" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><img src="logos/uoft.jpg" alt="" /></a>
+          <div class="exp-org-txt">
+            <p class="exp-co"><a href="https://hab.civmin.utoronto.ca/" target="_blank" rel="noopener noreferrer">University of Toronto</a></p>
+            <p class="exp-loc">Toronto, Ontario</p>
           </div>
-          <p class="exp-loc">Toronto, Ontario</p>
+          <a class="exp-site" href="https://hab.civmin.utoronto.ca/" target="_blank" rel="noopener noreferrer" aria-label="Visit the University of Toronto website (opens in a new tab)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span class="exp-site-url">hab.civmin.utoronto.ca</span><svg class="exp-site-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
         </div>
         <div>
           <p class="exp-date">Sep 2026 – Present<span class="exp-sep">·</span><span class="exp-type">Part-Time</span></p>
@@ -1259,12 +1331,13 @@
 
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
-        <div>
-          <div class="exp-org-row">
-            <span class="exp-logo"><img src="logos/essco.png" alt="Engineering Student Societies' Council of Ontario" /></span>
-            <p class="exp-co">Engineering Student Societies' Council of Ontario</p>
+        <div class="exp-org">
+          <a class="exp-logo" href="https://www.essco.ca/" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><img src="logos/essco.png" alt="" /></a>
+          <div class="exp-org-txt">
+            <p class="exp-co"><a href="https://www.essco.ca/" target="_blank" rel="noopener noreferrer">Engineering Student Societies' Council of Ontario</a></p>
+            <p class="exp-loc">Toronto, Ontario<span class="exp-sep">·</span><span class="exp-type">Club</span></p>
           </div>
-          <p class="exp-loc">Toronto, Ontario<span class="exp-sep">·</span><span class="exp-type">Club</span></p>
+          <a class="exp-site" href="https://www.essco.ca/" target="_blank" rel="noopener noreferrer" aria-label="Visit the Engineering Student Societies' Council of Ontario website (opens in a new tab)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span class="exp-site-url">essco.ca</span><svg class="exp-site-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
         </div>
         <div>
           <p class="exp-date">May 2026 – Present</p>
@@ -1287,12 +1360,13 @@
 
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
-        <div>
-          <div class="exp-org-row">
-            <span class="exp-logo"><img src="logos/utek.png" alt="University of Toronto Engineering Kompetitions" /></span>
-            <p class="exp-co">University of Toronto Engineering Kompetitions</p>
+        <div class="exp-org">
+          <a class="exp-logo" href="https://utek.skule.ca/" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><img src="logos/utek.png" alt="" /></a>
+          <div class="exp-org-txt">
+            <p class="exp-co"><a href="https://utek.skule.ca/" target="_blank" rel="noopener noreferrer">University of Toronto Engineering Kompetitions</a></p>
+            <p class="exp-loc">Toronto, Ontario<span class="exp-sep">·</span><span class="exp-type">Club</span></p>
           </div>
-          <p class="exp-loc">Toronto, Ontario<span class="exp-sep">·</span><span class="exp-type">Club</span></p>
+          <a class="exp-site" href="https://utek.skule.ca/" target="_blank" rel="noopener noreferrer" aria-label="Visit the University of Toronto Engineering Kompetitions website (opens in a new tab)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span class="exp-site-url">utek.skule.ca</span><svg class="exp-site-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
         </div>
         <div>
           <p class="exp-date">Mar 2026 – Present</p>
@@ -1307,12 +1381,13 @@
 
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
-        <div>
-          <div class="exp-org-row">
-            <span class="exp-logo"><img src="logos/utesca.png" alt="UTESCA" /></span>
-            <p class="exp-co">UofT Eng. Students Consulting Assoc.</p>
+        <div class="exp-org">
+          <a class="exp-logo" href="https://utesca.ca/" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><img src="logos/utesca.png" alt="" /></a>
+          <div class="exp-org-txt">
+            <p class="exp-co"><a href="https://utesca.ca/" target="_blank" rel="noopener noreferrer">UofT Eng. Students Consulting Assoc.</a></p>
+            <p class="exp-loc">Toronto, Ontario<span class="exp-sep">·</span><span class="exp-type">Club</span></p>
           </div>
-          <p class="exp-loc">Toronto, Ontario<span class="exp-sep">·</span><span class="exp-type">Club</span></p>
+          <a class="exp-site" href="https://utesca.ca/" target="_blank" rel="noopener noreferrer" aria-label="Visit the UTESCA website (opens in a new tab)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span class="exp-site-url">utesca.ca</span><svg class="exp-site-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
         </div>
         <div>
           <p class="exp-date">Jul 2026 – Present</p>
@@ -1336,12 +1411,13 @@
 
       <!-- EXP ──────────────────────────────────────────────── -->
       <div class="exp-row reveal">
-        <div>
-          <div class="exp-org-row">
-            <span class="exp-logo"><img src="logos/snowscape.jpg" alt="SnowScape Landscaping" /></span>
+        <div class="exp-org">
+          <span class="exp-logo"><img src="logos/snowscape.jpg" alt="SnowScape Landscaping" /></span>
+          <div class="exp-org-txt">
             <p class="exp-co">SnowScape Landscaping</p>
+            <p class="exp-loc">Calgary, Alberta<span class="exp-sep">·</span><span class="exp-type">Self-Employed</span></p>
           </div>
-          <p class="exp-loc">Calgary, Alberta<span class="exp-sep">·</span><span class="exp-type">Self-Employed</span></p>
+          <!-- TO ADD A WEBSITE: copy an <a class="exp-site"> link from any card above and paste it here -->
         </div>
         <div>
           <p class="exp-date">Jun 2022 – May 2025</p>
@@ -1407,7 +1483,7 @@
     <header class="sec-hd reveal" data-note="SHT 05 / AUX SYSTEMS">
       <p class="lbl">05 / Life Outside Engineering</p>
       <h2 class="h2">What I Do<br/>For Fun</h2>
-      <p class="intro">The best engineers are well-rounded people. Here's what I love to do in my free time outside of studying and working on projects.</p>
+      <p class="intro">The best engineers I know are well-rounded people. Here is what I love to do when I'm not studying or building something.</p>
     </header>
     <div class="hob-grid">
 
@@ -1420,7 +1496,7 @@
         </div>
         <div class="hob-body">
           <h3>Skiing</h3>
-          <p>Grew up skiing in Banff since nothing beats a powder day in the Rockies. I'm hoping to ski tour the Alps someday.</p>
+          <p>I grew up skiing in Banff, and nothing beats a powder day in the Rockies. Ski touring the Alps is on the list.</p>
         </div>
       </div>
 
@@ -1485,7 +1561,7 @@
         </div>
         <div class="hockey-body">
           <h3>Hockey</h3>
-          <p>Started playing club hockey at 6 and never really stopped, still get out to rip pucks whenever I can, over a decade in now. I've done plenty of coaching too, privately and as a volunteer with two U11 teams for Knights Hockey Club through high school, which turned out to be a great way to practice explaining things clearly and adjusting on the fly.</p>
+          <p>I started playing club hockey at six and never really stopped. More than a decade later, I still get out to rip pucks whenever I can. I've done plenty of coaching too, both privately and as a volunteer with two U11 teams at Knights Hockey Club through high school, which turned out to be great practice at explaining things clearly and adjusting on the fly.</p>
         </div>
       </div>
 
@@ -1525,8 +1601,8 @@
           <h3>Calgary Food Bank: CANstruction</h3>
           <p class="vol-org">CANstruction Calgary · 2024 &amp; 2025</p>
           <ul class="vol-pts">
-            <li>Competed in both the <strong>2024 and 2025</strong> CANstruction events for the Calgary Food Bank, designing and building structures made entirely from donated cans alongside engineers from <strong>FLUOR Corporation</strong>.</li>
-            <li>All cans are donated to the food bank after the competition. Photos from both years are in the Projects section above.</li>
+            <li>I competed in the <strong>2024 and 2025</strong> CANstruction events for the Calgary Food Bank, designing and building structures made entirely from donated cans alongside engineers from <strong>Fluor Corporation</strong>.</li>
+            <li>Every can is donated to the food bank once the competition ends. Photos from both years are in the Projects section above.</li>
           </ul>
         </div>
       </div>
@@ -1538,8 +1614,8 @@
           <h3>Coaching: Knights Hockey</h3>
           <p class="vol-org">Knights Hockey · U11 Volunteer Coach</p>
           <ul class="vol-pts">
-            <li>Volunteer coach for the <strong>U11 Division 1 and 2 White Knights Hockey Club</strong> teams during the 2023/2024 and 2024/2025 seasons, running on-ice practices, providing analytical feedback during games, and helping players develop their skating, puck-handling, and game sense.</li>
-            <li>Working with kids at this age is a good reminder that clear communication matters just as much as technical knowledge.</li>
+            <li>I was a volunteer coach for the <strong>U11 Division 1 and 2 White Knights Hockey Club</strong> teams in the 2023/2024 and 2024/2025 seasons. I ran on-ice practices, gave players feedback during games, and helped them develop their skating, puck handling, and game sense.</li>
+            <li>Coaching kids at that age is a good reminder that explaining something clearly matters just as much as knowing it.</li>
           </ul>
         </div>
       </div>
@@ -1551,9 +1627,9 @@
           <h3>Undergraduate Scholarships and Awards Committee</h3>
           <p class="vol-org">Faculty of Engineering, University of Toronto · Student Representative</p>
           <ul class="vol-pts">
-            <li>Student representative on the Undergraduate Scholarships and Awards Committee for the Faculty of Engineering, sitting alongside faculty and staff to review applications and help decide how scholarship funding gets allocated.</li>
-            <li>This gave me a look at the backend of how scholarships actually get awarded, the criteria committees weigh, how funding gets allocated across a large applicant pool, and where the student perspective is meant to carry weight in that process.</li>
-            <li>Reviewing applications also meant evaluating candidate achievements in a professional setting, reading through academic records, extracurricular involvement, and personal statements, and weighing them against each other in a fair and consistent way.</li>
+            <li>I served as the student representative on the Faculty of Engineering's Undergraduate Scholarships and Awards Committee, sitting alongside faculty and staff to review applications and help decide how scholarship funding is allocated.</li>
+            <li>It gave me a look behind the scenes at how scholarships are actually awarded: the criteria the committee weighs, how funding is spread across a large pool of applicants, and where the student voice is meant to carry weight.</li>
+            <li>Reviewing applications also meant assessing people's achievements in a professional setting, reading through academic records, extracurricular involvement, and personal statements, and weighing them against one another fairly and consistently.</li>
           </ul>
         </div>
       </div>
@@ -1571,7 +1647,7 @@
     <div class="contact-c reveal">
       <p class="lbl">07 / Contact</p>
       <h2 class="contact-h">Let's Build<br/><em>Something</em> Together</h2>
-      <p class="contact-sub">Open to internships, research, and design-team opportunities. Also happy to chat about anything, so feel free to reach out!</p>
+      <p class="contact-sub">I'm open to internships, research positions, and design-team opportunities, and I'm always happy to talk about anything engineering, so feel free to reach out.</p>
       <div class="contact-btns">
 
         <!-- Email -->
