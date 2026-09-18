@@ -18,7 +18,6 @@
   ║  projects/vawt.jpg            → Wind turbine project            ║
   ║  projects/actuator.jpg        → Actuator & braking system       ║
   ║  projects/fitbit.jpg          → Fitbit EMA app (BEIE Lab)       ║
-  ║  projects/airflow.jpg         → Tracer gas testing (BEIE Lab)   ║
   ║  projects/cooling.jpg         → IT facility cooling (IIB Lab)   ║
   ║  projects/finliti.jpg         → Finliti product (UTESCA)        ║
   ║  projects/canstruction-2025.jpg → 2025 CANstruction build       ║
@@ -288,14 +287,16 @@
 
   /* ═══ HERO — engineering title sheet ══════════════════════════ */
   #hero {
-    min-height: 100svh;
+    /* Height follows the content. A fixed 100svh left a large empty band
+       under the hero on tall screens, which then stacked with the About
+       section's own top padding. */
     display: grid;
     grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
     gap: clamp(2rem, 5vw, 4.5rem);
     align-items: center;
     width: min(1160px, calc(100% - 3rem));
     margin: 0 auto;
-    padding: calc(var(--nav-h) + 4.5rem) 0 4rem;
+    padding: calc(var(--nav-h) + 4.5rem) 0 clamp(2.5rem, 5vw, 4rem);
     position: relative;
   }
   /* blueprint grid backdrop, full-bleed */
@@ -389,15 +390,6 @@
   .hero-photo-col::before { top: -9px; left: -9px; border-right: none; border-bottom: none; }
   .hero-photo-col::after  { top: -9px; right: -9px; border-left: none; border-bottom: none; }
 
-  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; }
-  .hs {
-    background: #fff; border: 1px solid var(--line); border-top: 3px solid var(--accent);
-    border-radius: var(--r); padding: .8rem .6rem .7rem; text-align: center;
-    box-shadow: var(--shadow);
-  }
-  .hs-n { font-family: var(--f-disp); font-weight: 800; font-size: 1.45rem; color: var(--navy); line-height: 1; }
-  .hs-l { font-family: var(--f-mono); font-size: .55rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); margin-top: .35rem; }
-
   /* boot-in animation */
   .boot-item { opacity: 0; transform: translateY(16px); }
   body.booted .boot-item { animation: bootin .7s cubic-bezier(.2,.7,.2,1) forwards; }
@@ -418,6 +410,9 @@
   }
 
   /* ═══ ABOUT — editorial two-column + sticky spec card ═════════ */
+  /* About sits directly under the hero, so its top padding is trimmed
+     to keep the two sections from separating too far. */
+  #about { padding-top: clamp(3rem, 6vw, 4.5rem); }
   .about-grid { display: grid; grid-template-columns: minmax(0,1.5fr) minmax(0,1fr); gap: clamp(2rem,5vw,4rem); align-items: start; }
   .about-bio p { margin-bottom: 1.1rem; color: var(--ink-soft); font-size: 1.03rem; }
   .about-bio p:first-child { font-size: 1.15rem; color: var(--ink); }
@@ -963,11 +958,11 @@
   <div class="hero-text">
     <div class="hero-pill boot-item">
       <img src="logos/uoftheader.png" alt="University of Toronto" class="hero-pill-logo" />
-      <span>University of Toronto · BASc Mechanical Engineering</span>
+      <span>University of Toronto · Mechanical Engineering</span>
     </div>
     <h1 class="hero-name boot-item">Chenyu<br/><em>Li</em></h1>
     <p class="hero-deg boot-item">Triple Minor: Mechatronics &amp; Robotics · Business · Advanced Manufacturing</p>
-    <p class="hero-bio boot-item">I'm a second-year Mechanical Engineering student at the University of Toronto with a foot in both engineering and business. Have a look around, and feel free to reach out.</p>
+    <p class="hero-bio boot-item">Second-year Mechanical Engineering student at the University of Toronto. I am interested technology, business, and everything that sits in between. I split my time between technical design teams, consulting projects making real world impact and working as an undergraduate researcher. Please feel free to look around to learn more about me and reach out!.</p>
     <div class="hero-chips boot-item">
       <span class="chip">Robotics</span>
       <span class="chip">SolidWorks</span>
@@ -992,11 +987,6 @@
   <div class="hero-photo-col boot-item">
     <span class="brackets" aria-hidden="true"></span>
     <img src="photo.png" alt="Chenyu Li" class="ri hero-img" />
-    <div class="hero-stats">
-      <div class="hs"><div class="hs-n">2026</div><div class="hs-l">University of Toronto Engineering Kompetitions Junior Design Win</div></div>
-      <div class="hs"><div class="hs-n">3</div><div class="hs-l">Engineering Minors</div></div>
-      <div class="hs"><div class="hs-n">3</div><div class="hs-l">Languages</div></div>
-    </div>
   </div>
 </section>
 
@@ -1008,14 +998,15 @@
   <div class="wrap">
     <header class="sec-hd reveal" data-note="SHT 01 / OPERATOR PROFILE">
       <p class="lbl">01 / About</p>
-      <h2 class="h2">The Engineer<br/>Behind the Work</h2>
+      <h2 class="h2">About Me</h2>
     </header>
     <div class="about-grid">
       <div class="reveal">
         <div class="about-bio">
-          <p>I'm <strong>Chenyu Li</strong>, a second-year <strong>Mechanical Engineering student at the University of Toronto</strong> in the Bachelor of Applied Science (BASc) and Professional Experience Year (PEY) Co-op program, pursuing a triple minor in <strong>Mechatronics &amp; Robotics</strong>, <strong>Business</strong>, and <strong>Advanced Manufacturing</strong>.</p>
-          <p>What I enjoy most is making things that actually work. I model a part in SolidWorks, check it in ANSYS, print a prototype, and then find out how it holds up in the real world. This past year that process took me from Calgary to <strong>the Netherlands</strong>, where our team competed at the International Small Wind Turbine Competition.</p>
-          <p>Before university I ran my own landscaping business, starting at fourteen. It taught me more about project management and leadership than most things I have read in a textbook. I speak <strong>English and Mandarin</strong> natively and can get by in <strong>German</strong>.</p>
+          <p>I am a second-year student at the <strong>University of Toronto</strong>, working toward a <strong>Bachelor of Applied Science in Mechanical Engineering</strong>. My program includes a <strong>Professional Experience Year</strong>, a twelve to sixteen month co-operative placement in industry that I will complete starting May 2028 after my third year classes. Alongside the major I am triple minoring in <strong>Mechatronics and Robotics</strong>, <strong>Business</strong>, and <strong>Advanced Manufacturing</strong>.</p>
+          <p>I have an wide range of expertise ranging from project management and consulting to engineering analysis and design. On the leadership side I serve as <strong>President of the University of Toronto Wind Turbine Design Team</strong> and as one of three Vice Presidents of Competitions for the <strong>2028 Ontario Engineering Competition</strong>. I have also worked as a consultant with two student consulting groups, delivering semester-long engagements for real clients.</p>
+          <p> Alongside my leadership experience, I have extensive experience using <strong>SolidWorks and Autodesk Fusion</strong> for computer-aided design, <strong>ANSYS</strong> for computational fluid dynamics and finite element analysis, and <strong>Python, MATLAB, JavaScript and embedded C</strong> for optmizing workflows and software development. I also work as an <strong>undergraduate researcher with the Hub for Advancing Buildings</strong> to develop methods to improve buildis. One unique project I worked on recently was training reinforcement learning agents to optimize the cooling operations in IT facilities on a high-performance computing cluster!</p>
+          <p>Before university I ran a landscaping business that I started at fourteen and grew to more than one hundred clients and a crew of ten. Quoting jobs, scheduling crews and keeping customers happy taught me more about working with people than any course has, and it is where the business half of my interest started. Outside of school you will usually find me on a hockey rink, out on a trail, or somewhere in the middle of a run. I speak <strong>English and Mandarin</strong> natively and can hold a conversation in <strong>German</strong>.</p>
         </div>
         <div class="sk-block">
           <p class="sk-lbl">Programming</p>
@@ -1089,7 +1080,7 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-intl"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>Netherlands</span></div>
           <h3>Vertical Axis Wind Turbine</h3>
-          <p>With the University of Toronto Wind Turbine Design Team (UTWind), I worked on the mechanical design, manufacturing, and assembly of a custom six-foot vertical-axis wind turbine. In July 2026, I was one of eleven members who travelled to the Netherlands to present and compete with it at the International Small Wind Turbine Competition, hosted by TU Delft and Hanze University. In the wind tunnel, our turbine started producing power at a wind speed of just 4 m/s.</p>
+          <p>With the University of Toronto Wind Turbine Design Team (UTWind), I contributed to the mechanical design, fabrication, and final assembly of a custom six-foot vertical-axis wind turbine, from component CAD and structural analysis through machining and integration. In July 2026, I was one of eleven members who travelled to the Netherlands to present the turbine and compete at the International Small Wind Turbine Competition, hosted by TU Delft and Hanze University. During wind-tunnel characterisation, the rotor achieved a cut-in speed of 4 m/s, the threshold at which it begins delivering usable electrical power.</p>
           <div class="proj-tags"><span class="ptag">SolidWorks</span><span class="ptag">FDM 3D Printing</span><span class="ptag">Machining</span><span class="ptag">ANSYS Mechanical</span><span class="ptag">UTWind</span></div>
         </div>
       </div>
@@ -1115,8 +1106,8 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-act">Design Project · 2026</span></div>
           <h3>Motorized Cross-Country Ski-Assist Device</h3>
-          <p>This is a powered attachment for children's cross-country skis, designed by a team of six for a real client in <strong>Engineering Strategies and Practice 2 (APS112)</strong>, a first-year design course at the University of Toronto. The problem was simple to state: young kids tire out on family ski outings and fall behind their parents. We scoped the design around groomed trails and temperatures down to -20 degrees Celsius, generated eighty candidate solutions, and narrowed them through a feasibility screen, multi-voting, and graphical decision charts, with a Pugh chart making the final call.</p>
-          <p>I produced the CAD and manufacturing drawings for two of the three shortlisted concepts, working in both <strong>Autodesk Fusion and SolidWorks</strong>. The first was a <strong>belt-assisted attachment</strong>, where a rear motor hub drives a pair of sprockets and runs a continuous tread along the ski for extra grip on the snow. The second was a <strong>motorized paddle wheel</strong>, where a brushless DC motor spins sprocket-shaped rotors that push against the snow. It clamps on with adjustable suction cups, so it fits youth skis from 110 cm to 170 cm without drilling a single hole. Both designs enclose every moving part to meet the toy-safety and IP66 requirements we set for children as young as three, and the paddle wheel came out ahead on the Pugh chart.</p>
+          <p>This is a powered propulsion attachment for children's cross-country skis, developed by a six-person team for an external client in <strong>Engineering Strategies and Practice 2 (APS112)</strong>, a first-year design course at the University of Toronto. The client's need was straightforward: young skiers fatigue quickly on family outings and cannot maintain their parents' pace. We bounded the problem to groomed trails and ambient temperatures down to -20 degrees Celsius, generated eighty candidate concepts, and converged through a feasibility screen, multi-voting, and graphical decision matrices, with a weighted Pugh matrix selecting the final concept.</p>
+          <p>I produced the CAD models and dimensioned manufacturing drawings for two of the three shortlisted concepts, working in both <strong>Autodesk Fusion and SolidWorks</strong>. The first was a <strong>belt-driven traction attachment</strong>, in which a rear motor hub drives a sprocket pair and a continuous tread along the underside of the ski to increase tractive effort on packed snow. The second was a <strong>motorised paddle-wheel unit</strong>, in which a brushless DC motor drives sprocket-profile rotors that generate thrust against the snow surface. It mounts with adjustable suction cups, accommodating youth skis from 110 cm to 170 cm with no permanent modification. Both designs fully enclose their moving parts to satisfy the toy-safety and IP66 ingress-protection requirements we specified for users as young as three, and the paddle wheel ranked highest in the final Pugh matrix.</p>
           <div class="proj-tags"><span class="ptag">Autodesk Fusion</span><span class="ptag">SolidWorks</span><span class="ptag">Technical Drawings</span><span class="ptag">GD&amp;T</span><span class="ptag">Design Process</span><span class="ptag">Pugh Chart</span><span class="ptag">Brushless DC Motors</span><span class="ptag">Client Consulting</span></div>
         </div>
       </div>
@@ -1129,7 +1120,7 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-act">Concept</span></div>
           <h3>Pick-and-Place Robotic Arm</h3>
-          <p>This is a concept for a robotic arm that sorts parts by colour. Before spending money on motors and materials, I built an interactive simulation to test the reach, the joint layout, and the way the claw closes. The next step is to build it for real, with the hardware sized against a proper torque budget.</p>
+          <p>This is a concept for a pick-and-place robotic arm that sorts components by colour. Before committing to actuators and materials, I built an interactive kinematic simulation to validate the reach envelope, the joint configuration, and the closing geometry of the end effector. The next phase is a physical build, with the servo and stepper motors selected against a calculated torque budget for each joint.</p>
           <div class="proj-tags"><span class="ptag">Concept Design</span><span class="ptag">Kinematics</span><span class="ptag">CAD / SolidWorks</span><span class="ptag">Servo &amp; Stepper Motors</span><span class="ptag">Planned: Vision Sorting</span></div>
           <a href="robot-sim.html" class="proj-link">Launch Simulation <span class="arrow">→</span></a>
         </div>
@@ -1143,7 +1134,7 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-act">BEIE Lab</span></div>
           <h3>Fitbit EMA Survey App</h3>
-          <p>For the Building Energy and Indoor Environment (BEIE) Lab at the University of Toronto, I built a custom Fitbit clock face and companion app in JavaScript, SVG, and CSS. It runs short wellbeing surveys on the wrists of more than twenty participants in a multi-summer heat-exposure study, and delivers every answer to the research team as a ready-to-analyse CSV file.</p>
+          <p>For the Building Energy and Indoor Environment (BEIE) Lab at the University of Toronto, I developed a custom Fitbit OS clock face and phone companion application in JavaScript, SVG, and CSS. It administers scheduled and on-demand ecological momentary assessment surveys to more than twenty participants in a multi-summer residential heat-exposure study, then transmits each response through a Bluetooth and REST data pipeline into a cloud store, from which the research team exports an analysis-ready CSV dataset.</p>
           <div class="proj-tags"><span class="ptag">JavaScript</span><span class="ptag">CSS/HTML</span><span class="ptag">Fitbit OS</span><span class="ptag">JSONBin.io</span><span class="ptag">HAB Research Group</span></div>
           <a href="project-ema-survey.html" class="proj-link">Read the full project <span class="arrow">→</span></a>
         </div>
@@ -1157,7 +1148,7 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-win"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="m8.5 12.5-1 8 4.5-2.5 4.5 2.5-1-8"/></svg>All KPIs Met</span></div>
           <h3>Finliti: Product Development</h3>
-          <p>As part of a UTESCA consulting engagement, I handled the mechanical CAD and prototyping for Finliti's financial literacy board game. I redesigned the physical product in Autodesk Fusion to be 30% more compact, then 3D printed prototypes to prove the design worked. We delivered on every one of the client's KPIs.</p>
+          <p>As part of a UTESCA consulting engagement, I led the mechanical CAD and prototyping for Finliti's financial literacy board game. I re-engineered the physical product in Autodesk Fusion to reduce its footprint by 30% while preserving its function, then validated the redesign through iterative FDM-printed prototypes and performance testing. The engagement met every one of the client's key performance indicators.</p>
           <div class="proj-tags"><span class="ptag">Autodesk Fusion</span><span class="ptag">ANSYS Mechanical</span><span class="ptag">FDM 3D Printing</span><span class="ptag">UTESCA</span></div>
         </div>
       </div>
@@ -1170,7 +1161,7 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-done">Community · 2025</span></div>
           <h3>Calgary Food Bank: CANstruction 2025</h3>
-          <p>For the 2025 Calgary Food Bank CANstruction event, our team designed and built a large structural sculpture made entirely of donated canned goods. Working alongside professional engineers from Fluor, we applied real structural principles to get as much height and stability as the cans would allow. Every can went to the food bank after the competition.</p>
+          <p>For the 2025 Calgary Food Bank CANstruction event, our team designed and erected a large-scale structural sculpture composed entirely of donated canned goods. Working alongside professional engineers from Fluor, we applied load-path and stability analysis to maximise the structure's height within the compressive limits of the cans and the constraints of an unfastened, dry-stacked assembly. Every can was donated to the food bank after the competition.</p>
           <div class="proj-tags"><span class="ptag">Structural Design</span><span class="ptag">Team Collaboration</span><span class="ptag">Community</span></div>
           <a href="https://www.ctvnews.ca/calgary/article/canstruction-fundraiser-event-supports-calgary-food-bank-amid-economic-uncertainty/" class="proj-link" target="_blank" rel="noopener noreferrer">Read the CTV News story <span class="arrow">↗</span></a>
         </div>
@@ -1185,7 +1176,7 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-done">Community · 2024</span></div>
           <h3>Calgary Food Bank: CANstruction 2024</h3>
-          <p>My first CANstruction was in 2024, designing and building a canned-food sculpture for the Calgary Food Bank under real structural constraints. It was my first hands-on experience with load distribution and stability analysis on a team that included practising engineers.</p>
+          <p>My first CANstruction was in 2024, designing and constructing a canned-food sculpture for the Calgary Food Bank under genuine structural constraints. It was my first applied experience with load distribution, centre-of-mass control, and stability analysis, working on a team that included practising structural engineers.</p>
           <div class="proj-tags"><span class="ptag">Structural Design</span><span class="ptag">Load Distribution</span><span class="ptag">Community</span></div>
         </div>
       </div>
@@ -1199,7 +1190,7 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-done">High School</span></div>
           <h3>Custom RC Car</h3>
-          <p>In high school I built a four-wheel-drive car from loose parts and drove it from my phone. An Arduino reads the Dabble gamepad over Bluetooth and runs four gear motors through two L298N motor controllers, all powered by two 9 V batteries behind a master switch. I designed the chassis, motor mounts, and lift-off body shell in Autodesk Fusion and 3D printed them.</p>
+          <p>In high school I designed and built a four-wheel-drive, tank-steer RC car from discrete components and controlled it from my phone. An Arduino Uno decodes gamepad commands from the Dabble app over a Bluetooth serial link and drives four DC gear motors through an L298N dual H-bridge, with PWM speed control and ramped acceleration in firmware, all powered by two parallel 9 V batteries behind a master isolation switch. I modelled the chassis, motor mounts, and removable body shell in Autodesk Fusion and fabricated them by FDM 3D printing.</p>
           <div class="proj-tags"><span class="ptag">Arduino</span><span class="ptag">Soldering</span><span class="ptag">3D Printing</span><span class="ptag">Autodesk Fusion</span><span class="ptag">L298N Motor Controllers</span><span class="ptag">Bluetooth</span><span class="ptag">Circuit Design</span><span class="ptag">Personal Project</span></div>
           <a href="project-rc-car.html" class="proj-link">Schematic, code and design process <span class="arrow">→</span></a>
         </div>
@@ -1213,7 +1204,7 @@
         <div class="proj-body">
           <div class="proj-top"><span class="badge b-done">High School</span></div>
           <h3>Ultrasonic Light-Up Drawer</h3>
-          <p>This is a 3D printed drawer that turns its own light on when you pull it open, so small things are easy to find. An ultrasonic sensor at the back measures how far the drawer has moved, and an Arduino fades an LED on once it passes a set distance and off again when it closes. I designed the drawer and housing in Autodesk Fusion and wrote the firmware. It was my first complete embedded system, from sensor to output.</p>
+          <p>This is a 3D printed drawer that illuminates itself automatically when opened. An HC-SR04 ultrasonic sensor mounted in the housing measures the drawer's displacement by time-of-flight ranging, and an Arduino applies a median filter and hysteresis thresholds to that signal before fading an LED on through PWM once the drawer passes a set distance, and off again when it closes. I designed the drawer and housing in Autodesk Fusion and wrote the firmware. It was my first complete embedded system, from sensor acquisition to actuated output.</p>
           <div class="proj-tags"><span class="ptag">Arduino</span><span class="ptag">Soldering</span><span class="ptag">3D Printing</span><span class="ptag">Autodesk Fusion</span><span class="ptag">Ultrasonic Sensor</span><span class="ptag">Circuit Design</span><span class="ptag">Personal Project</span></div>
           <a href="project-light-drawer.html" class="proj-link">Schematic, code and design process <span class="arrow">→</span></a>
         </div>
