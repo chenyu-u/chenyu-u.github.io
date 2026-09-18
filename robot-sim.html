@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Pick &amp; Place Cell · Chenyu Li</title>
+<title>Robotic Arm Simulator · Chenyu Li</title>
 
 <meta name="author" content="Chenyu Li" />
 <meta name="description" content="Browser-based 4-DOF robotic pick-and-place simulation with inverse kinematics, a 360° stepper base, a hinged crank-slider gripper and program export. Built with three.js by Chenyu Li." />
@@ -180,7 +180,7 @@
       color:var(--ink-faint);text-align:left;padding:6px 12px 6px 0;border-bottom:1px solid var(--navy)}
   .note table.bom td{padding:9px 12px 9px 0;border-bottom:1px solid var(--line);color:var(--ink-soft);
       line-height:1.55;vertical-align:top}
-  .note table.bom td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+  .note table.bom td:first-child{color:var(--ink);font-weight:600;min-width:170px}
   .note table.bom td:nth-child(2){color:var(--blue);white-space:nowrap}
   .steps{font-family:var(--f-mono);font-size:.72rem;max-width:600px;margin-top:6px}
   .steps div{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #EDF2F7}
@@ -233,7 +233,7 @@
   <div class="masthead">
     <div>
       <p class="lbl">4-DOF Manipulator · 360° Base · Hinged Claw</p>
-      <h1 class="h1">Pick &amp; Place Cell</h1>
+      <h1 class="h1">Robotic Arm Simulator</h1>
       <p class="byline">A concept simulation by <a href="index.html">Chenyu Li</a> ·
          Mechanical Engineering, University of Toronto</p>
       <p class="byline" style="margin-top:2px">A first pass at a colour-sorting robotic arm I plan to build as physical hardware.</p>
@@ -245,7 +245,7 @@
   </div>
 
   <div class="tabs" role="tablist">
-    <button class="tab" role="tab" aria-selected="true"  data-tab="cell">CELL</button>
+    <button class="tab" role="tab" aria-selected="true"  data-tab="cell">SIMULATOR</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="notes">BUILD NOTES</button>
   </div>
 
@@ -306,45 +306,45 @@
     <div class="notes">
       <div>
         <div class="note">
-          <p class="lbl">§1</p><h2>What this is</h2>
+          <p class="lbl">01</p><h2>Project Overview</h2>
           <p>This is a concept for a physical robotic arm I want to build. Before ordering motors and cutting material, I wanted to know whether the arm I had in mind could actually reach the parts, sort them into a bin, and close its claw the way I pictured. So I built this simulation to test all of that on screen first. You click the floor to drop a part, and the arm plans a path and runs a pick and place into the bin.</p>
           <p>I put the code together quickly with the help of AI tools. What I spent my own time on is the part I care about as a mechanical engineer: the geometry of the arm, the joint layout, the reach, and the claw mechanism. The goal was never to write clever software. It was to check that the machine makes sense before I build it.</p>
         </div>
 
         <div class="note">
-          <p class="lbl">§2</p><h2>How I came up with the dimensions</h2>
+          <p class="lbl">02</p><h2>Arm Dimensions</h2>
           <p>I started from the job. The arm has to pick small cubes off a desk and drop them into a bin about a hand's width away. That set the reach. I picked link lengths of 120, 90, and 55 mm for the shoulder, forearm, and wrist, which gives a total reach a bit over 300 mm once the gripper is added. That covers the desk area I want without the arm being so long that the motors can't hold it up.</p>
           <p>The shoulder sits 40 mm above the base plate so the arm clears the surface at full fold. The claw adds a fixed 34 mm from the wrist to the point between the fingertips. I kept every number in one place at the top of the code so I could change one length, watch the reachable area update, and settle on proportions that felt buildable. These are the same dimensions I would take into CAD and then into real parts.</p>
         </div>
 
         <div class="note">
-          <p class="lbl">§3</p><h2>How the arm moves</h2>
+          <p class="lbl">03</p><h2>How the Joints Move</h2>
           <p>The base spins the whole arm left and right. The other three joints all work in a single flat plane, so the hard part of the math only ever deals with two numbers: how far out the target is, and how high. To point the arm at a spot, I turn the base to face it, then solve the three planar joints to reach it.</p>
           <p>One detail that matters more than it sounds: the arm aims the fingertips at the part, not the wrist. The gripper is a real length of the arm, so if you aim the wrist instead, every grab lands short by the length of the claw. In the simulation you would not notice because the part just snaps to the tool. On a real arm it would drive the palm into the part and stall the motor. So I treat the gripper as the last segment of the arm.</p>
         </div>
 
         <div class="note">
-          <p class="lbl">§4</p><h2>Why the base is a stepper, not a servo</h2>
+          <p class="lbl">04</p><h2>Base Motor: Stepper Instead of Servo</h2>
           <p>I wanted the arm to reach all the way around, a full circle, so it can pick from one side and place on the other. A normal hobby servo only turns 180 degrees and stops, which would cut the working area in half. So the base uses a stepper motor driving a belt instead. That gives continuous rotation and fine control over the angle.</p>
           <p>This choice created a problem I had to handle in the design. Cables cannot twist forever. A base that truly spins without limit needs a slip ring at the column, or the controller has to unwind itself now and then. It is the kind of thing that is easy to forget on paper and expensive to find out on the bench, so I am noting it now as something the physical build has to account for.</p>
         </div>
 
         <div class="note">
-          <p class="lbl">§5</p><h2>The claw, and a problem I ran into</h2>
+          <p class="lbl">05</p><h2>Claw Mechanism</h2>
           <p>The two fingers pivot on pins and are pushed open and closed by a single actuator through a linkage. One motor, two jaws that move together. It is the kind of gripper you can build from flat plate and a few dowel pins, which is why I chose it.</p>
           <p>The problem I ran into was that my first version of the claw did not really move. It just slid two blocks a few millimetres apart, which was both invisible on screen and not honest about how the real thing works. So I reworked it into a proper linkage where the actuator position is solved from the finger angle, the same constraint the real aluminium parts would follow. Now the fingers swing through about 55 degrees and you can actually see them open and close. It also goes stiff near the end of its travel, the same way a real linkage does, which is useful feedback when picking the link lengths.</p>
           <p>I track the claw by the gap between the pads in millimetres, because that is what you would measure with callipers around a part. Everything else follows from that number.</p>
         </div>
 
         <div class="note">
-          <p class="lbl">§6</p><h2>Making the motion honest</h2>
+          <p class="lbl">06</p><h2>Motion Speed and Timing</h2>
           <p>My first version timed each step by hand, saying a move takes so many seconds no matter how far the arm has to travel. That is backwards from how a real machine works, and it fell apart fast. A motor has a top speed, so if I ask a joint to move further than it can in the time I gave it, the simulation and the real arm stop agreeing.</p>
           <p>I changed it so each move has a speed, not a duration, and the time comes from how far the arm actually travels. Every joint is also capped at its own top speed. If a path asks for more than the joints can deliver, the tool falls behind and a follow error reading shows how far. That is the same kind of error a real controller reports, so it keeps the simulation honest about what the hardware could do.</p>
           <p>A move also only finishes when the arm has actually arrived and the jaws have reached their gap, not when a timer runs out. This is how a real controller works, and it is what would let the same list of moves drive the physical arm.</p>
         </div>
 
         <div class="note">
-          <p class="lbl">§7</p><h2>The pick and place cycle</h2>
+          <p class="lbl">07</p><h2>Pick-and-Place Sequence</h2>
           <p>Each part runs through the same eight steps.</p>
           <div class="steps">
             <div><span class="i">01</span><span class="p">APPROACH</span><span class="s">rapid</span><span class="d">Rise to clearance above the part, jaws open</span></div>
@@ -359,13 +359,13 @@
         </div>
 
         <div class="note">
-          <p class="lbl">§8</p><h2>How this connects to a real arm</h2>
+          <p class="lbl">08</p><h2>Motor Commands and Export</h2>
           <p>Motors do not take angles in degrees. The stepper base wants step counts, the servos want pulse widths, and the claw actuator wants a command based on how far its rod moves. So each joint in the simulation carries a calibration: its range, a flag for whether the motor is mounted backwards, and a small offset for the fact that a motor horn never lines up perfectly. The panel shows these live values while the arm moves, which is exactly what you would check before powering a real arm so it does not drive into a hard stop.</p>
           <p>The EXPORT button solves the whole cycle and downloads it as a file listing every move with its target, joint angles, claw gap, and the actual command for each motor. That file is the real handoff to an Arduino or ESP32. The idea is that the browser is the teach pendant and the exported file is the program the physical arm runs.</p>
         </div>
 
         <div class="note">
-          <p class="lbl">§9</p><h2>What this does not model yet</h2>
+          <p class="lbl">09</p><h2>Simulation Limitations</h2>
           <p>Being clear about the gaps, because these are the things standing between a clean run here and a working arm on the bench.</p>
           <ul>
             <li>No gravity or torque. This is the big one. A real shoulder motor holding the arm out at full reach might stall or brown out under a load this simulation carries for free. I need to budget torque before I trust any of this on hardware.</li>
@@ -378,15 +378,15 @@
         </div>
 
         <div class="note">
-          <p class="lbl">§10</p><h2>Parts list for the physical build</h2>
+          <p class="lbl">10</p><h2>Parts List</h2>
           <p>This is what I am planning to actually buy, sized off the link lengths and reach the simulation already settled on. Nothing here is exotic. The whole point of keeping the arm small (about 300 mm reach with the gripper) was to stay in hobby-servo territory instead of needing industrial actuators.</p>
           <table class="bom">
             <thead><tr><th>Part</th><th>Role</th><th>Notes</th></tr></thead>
             <tbody>
               <tr><td>NEMA17 stepper</td><td>Base rotation</td><td>Driven through a 4:1 GT2 belt so the base turns slower than the motor but with more torque. Full 360°, no end stops.</td></tr>
               <tr><td>TMC2209 driver</td><td>Base stepper driver</td><td>Quiet microstepping. Picked over an A4988 mainly for the lower noise at idle.</td></tr>
-              <tr><td>Slip ring, 6-wire</td><td>Base wiring</td><td>The base spins continuously, so power and signal wires cannot just dangle off the column. This is the part that made continuous rotation actually feasible instead of a nice idea on paper. See §11.</td></tr>
-              <tr><td>Serial bus servos, 20 to 30 kg-cm class</td><td>Shoulder, elbow</td><td>These two carry the most load, shoulder especially, since it holds the weight of everything past it at a long lever arm. Sized with the torque estimate in §12.</td></tr>
+              <tr><td>Slip ring, 6-wire</td><td>Base wiring</td><td>The base spins continuously, so power and signal wires cannot just dangle off the column. This is the part that made continuous rotation actually feasible instead of a nice idea on paper. See section 11.</td></tr>
+              <tr><td>Serial bus servos, 20 to 30 kg-cm class</td><td>Shoulder, elbow</td><td>These two carry the most load, shoulder especially, since it holds the weight of everything past it at a long lever arm. Sized with the torque estimate in section 12.</td></tr>
               <tr><td>Smaller bus servo, 8 to 12 kg-cm class</td><td>Wrist</td><td>Much lower load than shoulder or elbow, mostly just orienting the gripper.</td></tr>
               <tr><td>Micro linear actuator or a small hobby servo</td><td>Claw</td><td>Drives the crank-slider linkage the simulation already models. Only needs to open and close, not hold a static load for long.</td></tr>
               <tr><td>Aluminium flat bar, 6mm</td><td>Link plates</td><td>Twin side plates per link, the same shape the 3D model already shows. Aluminium over 3D-printed plastic for the shoulder and elbow links specifically, since those see the highest bending load.</td></tr>
@@ -397,11 +397,11 @@
               <tr><td>Bench power supply, 6 to 7.4V for servos, separate 12V for the stepper driver</td><td>Power</td><td>Servos and steppers want different voltages, and I do not want a servo brownout resetting the whole controller mid-move.</td></tr>
             </tbody>
           </table>
-          <p>The one item on this list I do not have a firm number for yet is exact servo torque. I have a rough calculation in §12, but I want to model the arm in CAD first and get real mass numbers for each link before I commit to buying anything expensive.</p>
+          <p>The one item on this list I do not have a firm number for yet is exact servo torque. I have a rough calculation in section 12, but I want to model the arm in CAD first and get real mass numbers for each link before I commit to buying anything expensive.</p>
         </div>
 
         <div class="note">
-          <p class="lbl">§11</p><h2>Problems I ran into</h2>
+          <p class="lbl">11</p><h2>Problems Found During Simulation</h2>
           <p>Most of these showed up while building the simulation, not the hardware, since the hardware has not started yet. But a few of them are exactly the kind of problem that would have been much more annoying to discover after cutting metal, which is the whole reason I built this first.</p>
           <p><strong>The claw did not actually move.</strong> My first pass at the gripper linkage just slid two blocks a few millimetres apart in response to a slider. It looked fine at a glance but was not solving the actual linkage geometry, so the number on screen and the physical motion it was supposed to represent had nothing to do with each other. I redid it as a proper crank-slider, where the actuator position is solved from the finger angle the same way the real aluminium parts would constrain it. That was worth catching now instead of after machining a claw that does not close the way the drawing said it would.</p>
           <p><strong>The tool point could go through the floor.</strong> Early on, the joint angle limits on shoulder, elbow, and wrist looked reasonable individually, but nothing checked what they added up to. A shoulder angle around minus 20 degrees combined with the elbow folding down was enough to put the fingertip about 150 mm below the floor, well past what the numbers on any single slider suggested. I added a check that runs after every move: if the tool has gone below the floor, lift the wrist, then the elbow, then the shoulder, in that order, until it clears. I tested it against thousands of joint combinations before trusting it.</p>
@@ -411,17 +411,17 @@
         </div>
 
         <div class="note">
-          <p class="lbl">§12</p><h2>Some of the math</h2>
-          <p>I do not want to overstate this. Most of the arm is straightforward trigonometry, not anything advanced. But a few pieces are worth writing down, partly because they are the parts that would matter most if I ever swap this for a proper robotics library, and partly because working them out by hand is what caught the bugs in §11 in the first place.</p>
+          <p class="lbl">12</p><h2>Kinematics and Torque Math</h2>
+          <p>I do not want to overstate this. Most of the arm is straightforward trigonometry, not anything advanced. But a few pieces are worth writing down, partly because they are the parts that would matter most if I ever swap this for a proper robotics library, and partly because working them out by hand is what caught the bugs in section 11 in the first place.</p>
           <p><strong>Splitting a 3D problem into a 2D one.</strong> The arm only really has to solve two kinds of motion: spin the base to face the target, then reach out and up in a flat vertical plane. Given a target point in 3D space, the base angle falls straight out of <code>atan2(-z, x)</code>, and once the base is facing the right way, the remaining reach is just a distance and a height, <code>r = hypot(x, z)</code>, in that plane. This is the one piece of linear algebra doing the most work in the whole file. Instead of solving three joint angles in 3D, which is genuinely harder, I am solving one angle in 3D and three angles in a 2D plane that rotates with the base. Every other calculation in the arm assumes this split already happened.</p>
           <p><strong>Forward kinematics as chained rotations.</strong> Once you are in that 2D plane, each link just adds its own angle onto a running total and steps forward by its length at that heading: <code>angle += jointAngle; x += length * cos(angle); y += length * sin(angle)</code>, repeated down the chain. That is the planar version of composing rotation matrices and translating along the new local axis at each joint, just written directly in cos and sin instead of as matrix multiplication, since in two dimensions that is the same thing with less notation.</p>
           <p><strong>Solving backward with CCD.</strong> Going from a target point back to the three joint angles that reach it does not have one clean answer. A three-link arm reaching a single point in a plane has one more degree of freedom than it needs, so there are infinitely many valid elbow and wrist combinations for most targets, not one correct answer to solve for algebraically. I used cyclic coordinate descent instead of a closed-form solve: starting from the wrist and working back toward the shoulder, each joint rotates a little to point the tool more directly at the target, repeated for several passes until it converges. It is not the fastest method that exists, but it is simple enough to trust, and it naturally picks a solution close to wherever the arm already was, so the motion between moves stays smooth instead of jumping between different elbow-up and elbow-down configurations.</p>
-          <p><strong>Distance between two line segments.</strong> This is what the self-collision and bin-wall checks in §11 actually run on. Given two line segments, the standard way to find the closest they ever get to each other is to project each segment's direction onto the vector between their start points, using dot products, and clamp the result so the closest point cannot slide off either segment's actual length. It looks fiddly written out, but it is the same handful of dot products used to check any two line segments in the whole scene, whether that is two arm links or an arm link and a bin wall, just with different geometry fed in.</p>
+          <p><strong>Distance between two line segments.</strong> This is what the self-collision and bin-wall checks in section 11 actually run on. Given two line segments, the standard way to find the closest they ever get to each other is to project each segment's direction onto the vector between their start points, using dot products, and clamp the result so the closest point cannot slide off either segment's actual length. It looks fiddly written out, but it is the same handful of dot products used to check any two line segments in the whole scene, whether that is two arm links or an arm link and a bin wall, just with different geometry fed in.</p>
           <p><strong>A rough torque number.</strong> To get a first sense of what to buy, I estimated the worst case load on the shoulder joint: the weight of the forearm, wrist, and gripper, acting at the horizontal distance from the shoulder to wherever the arm's centre of mass ends up when fully extended. Torque is just that weight times that horizontal distance. It is a static estimate, no acceleration or dynamic loading included, so it is a floor on what the servo needs to handle, not the full answer. I am treating it as a sanity check for now, enough to know roughly which class of servo to look at, and I plan to redo it properly once the CAD model gives me real masses instead of guesses.</p>
         </div>
 
         <div class="note">
-          <p class="lbl">§13</p><h2>Next steps</h2>
+          <p class="lbl">13</p><h2>Next Steps</h2>
           <ul>
             <li>Model the arm properly in CAD and confirm the link lengths turn into parts that are actually stiff enough and reachable on a real desk.</li>
             <li>Work out a torque budget for each joint and pick motors that can hold the poses, then order them.</li>
@@ -436,7 +436,7 @@
 
       <aside>
         <div class="sect">
-          <p class="lbl">Envelope</p>
+          <p class="lbl">Arm Specs</p>
           <div class="row"><span class="k">REACH</span><span class="v">~300 mm</span></div>
           <div class="row"><span class="k">SHOULDER HEIGHT</span><span class="v">40 mm</span></div>
           <div class="row"><span class="k">LINKS</span><span class="v">120 / 90 / 55 mm</span></div>
