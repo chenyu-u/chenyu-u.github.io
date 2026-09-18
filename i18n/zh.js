@@ -944,5 +944,11 @@ window.CL_I18N.zh = {
  "Parts List": "零件清单",
  "Problems Found During Simulation": "仿真中发现的问题",
  "Kinematics and Torque Math": "运动学与扭矩计算",
- "Next Steps": "下一步"
+ "Next Steps": "下一步",
+ "Add &nbsp;window-view.jpg&nbsp; next to laptop.html<br><span style=\"font-size:26px;font-weight:400\">(Windows hides extensions — the file may really be window-view.jpg.jpg)</span>": "将 window-view.jpg 文件放在 laptop.html<br> 旁边<span style=\"font-size:26px;font-weight:400\">（Windows 会隐藏文件扩展名——该文件实际名称可能为 window-view.jpg.jpg）</span>",
+ "Certificate 1<br><span style=\"font-size:21px;font-weight:400\">add certificate-1.jpg</span>": "证书 1<br><span style=\"font-size:21px;font-weight:400\">添加 certificate-1.jpg</span>",
+ "Certificate 2<br><span style=\"font-size:21px;font-weight:400\">add certificate-2.jpg</span>": "证书 2<br><span style=\"font-size:21px;font-weight:400\">添加 certificate-2.jpg</span>",
+ "Certificate 3<br><span style=\"font-size:21px;font-weight:400\">add certificate-3.jpg</span>": "证书 3<br><span style=\"font-size:21px;font-weight:400\">添加 certificate-3.jpg</span>",
+ "Certificate 4<br><span style=\"font-size:21px;font-weight:400\">add certificate-4.jpg</span>": "证书 4<br><span style=\"font-size:21px;font-weight:400\">添加 certificate-4.jpg</span>",
+ "Chrome": "Chrome"
 };
