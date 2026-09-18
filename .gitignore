@@ -1,19 +1,59 @@
-# dev notes, not part of the deployed site
+# ═══════════════════════════════════════════════════════════════
+#  Files that stay on your computer but never go to GitHub.
+#  Everything the live site needs (pages, images, i18n/, tools/,
+#  .github/) is NOT listed here, so it is always uploaded.
+# ═══════════════════════════════════════════════════════════════
+
+# ── Personal notes and drafts (README.md is still published) ──
 *.md
 !README.md
+*.txt
+*.docx
+*.pdf
+drafts/
+notes/
 
-# CAD source — large, browser never touches these
+# ── CAD source files (large; the browser never uses them) ──
 cad/
 *.step
 *.stp
+*.f3d
+*.SLDPRT
+*.SLDASM
+*.stl
 
-# early drafts, if superseded
+# ── Early drafts that were replaced ──
 sim_module.js
 *.jsx
 
-# OS/editor junk
+# ── Folders Claude / other tools save downloads into ──
+Claude outputs/
+
+# ── Build tools (tools/i18n-sync.mjs installs its browser here) ──
+node_modules/
+package-lock.json
+package.json
+npm-debug.log*
+
+# ── Python caches (fetch_strava.py) ──
+__pycache__/
+*.pyc
+.venv/
+
+# ── Secrets: API keys belong in GitHub → Settings → Secrets ──
+.env
+.env.*
+*.key
+
+# ── Editor and operating-system junk ──
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
-.vscode/
-# tools/i18n-sync.mjs installs its headless browser here
-node_modules/
+desktop.ini
+Desktop.ini
+~$*
+*.tmp
+*.bak
+*.swp
+*.log
