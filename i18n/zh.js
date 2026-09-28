@@ -964,5 +964,8 @@ window.CL_I18N.zh = {
  "Certificate 2<br><span style=\"font-size:21px;font-weight:400\">add certificate-2.jpg</span>": "证书 2<br><span style=\"font-size:21px;font-weight:400\">添加 certificate-2.jpg</span>",
  "Certificate 3<br><span style=\"font-size:21px;font-weight:400\">add certificate-3.jpg</span>": "证书 3<br><span style=\"font-size:21px;font-weight:400\">添加 certificate-3.jpg</span>",
  "Certificate 4<br><span style=\"font-size:21px;font-weight:400\">add certificate-4.jpg</span>": "证书 4<br><span style=\"font-size:21px;font-weight:400\">添加 certificate-4.jpg</span>",
- "Chrome": "Chrome"
+ "Chrome": "Chrome",
+ "Onshape": "Onshape",
+ "Jupyter": "Jupyter",
+ "Minitab": "Minitab"
 };

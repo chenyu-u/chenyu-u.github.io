@@ -963,5 +963,8 @@ window.CL_I18N.de = {
  "Certificate 2<br><span style=\"font-size:21px;font-weight:400\">add certificate-2.jpg</span>": "Zertifikat 2<br>– <span style=\"font-size:21px;font-weight:400\">„certificate-2.jpg“ hinzufügen</span>",
  "Certificate 3<br><span style=\"font-size:21px;font-weight:400\">add certificate-3.jpg</span>": "Zertifikat 3<br>– <span style=\"font-size:21px;font-weight:400\">„certificate-3.jpg“ hinzufügen</span>",
  "Certificate 4<br><span style=\"font-size:21px;font-weight:400\">add certificate-4.jpg</span>": "Zertifikat 4<br>– <span style=\"font-size:21px;font-weight:400\">„certificate-4.jpg“ hinzufügen</span>",
- "Chrome": "Chrom"
+ "Chrome": "Chrom",
+ "Onshape": "Onshape",
+ "Jupyter": "Jupyter",
+ "Minitab": "Minitab"
 };
