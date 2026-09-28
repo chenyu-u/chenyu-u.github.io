@@ -1,0 +1,57 @@
+/* ═══════════════════════════════════════════════════════════════════
+   site-prefs.css · theme + language menus (see site-prefs.js)
+   Shared by every page. Colours come from each page's own tokens,
+   with fallbacks so it also works on pages that define fewer tokens.
+═══════════════════════════════════════════════════════════════════ */
+.sp-controls { display: inline-flex; align-items: center; gap: .4rem; flex-shrink: 0; }
+.sp-dd { position: relative; }
+.sp-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .3rem;
+  height: 32px; min-width: 32px; padding: 0 .45rem;
+  font-family: var(--f-mono, 'IBM Plex Mono', monospace); font-size: .62rem; font-weight: 600; letter-spacing: .08em;
+  color: var(--ink-soft, #4A5B70); background: var(--sp-btn-bg, transparent);
+  border: 1px solid var(--line, #DCE4EC); border-radius: var(--r, 3px);
+  cursor: pointer; transition: color .18s, background .18s, border-color .18s;
+}
+.sp-btn:hover, .sp-dd.open .sp-btn { color: #fff; background: var(--navy, #002A5C); border-color: var(--navy, #002A5C); }
+.sp-btn:focus-visible { outline: 2px solid var(--blue, #1668C2); outline-offset: 2px; }
+.sp-btn svg { flex-shrink: 0; }
+.sp-lang-code { min-width: 1.1em; text-align: left; }
+
+.sp-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 1000;
+  min-width: 168px; padding: .35rem;
+  background: var(--card, #fff); border: 1px solid var(--line-strong, #B9C6D4);
+  border-top: 2px solid var(--navy, #002A5C); border-radius: var(--r, 3px);
+  box-shadow: 0 14px 34px rgba(0, 20, 50, .18);
+  display: none; flex-direction: column; gap: 2px;
+}
+.sp-dd.open .sp-menu { display: flex; }
+.sp-menu button {
+  display: flex; align-items: center; gap: .6rem; width: 100%;
+  padding: .55rem .65rem; border: 0; border-radius: 2px; background: transparent; cursor: pointer;
+  font-family: var(--f-body, 'IBM Plex Sans', system-ui, sans-serif); font-size: .85rem; text-align: left;
+  color: var(--ink, #16273B);
+}
+.sp-menu button:hover, .sp-menu button:focus-visible { background: var(--blue-lt, #E9F1FB); outline: none; }
+.sp-menu button svg:first-child { color: var(--blue, #1668C2); }
+.sp-menu .sp-code {
+  font-family: var(--f-mono, monospace); font-size: .62rem; font-weight: 600; letter-spacing: .06em;
+  color: var(--blue, #1668C2); min-width: 1.8em;
+}
+.sp-menu .sp-check { margin-left: auto; color: var(--blue, #1668C2); visibility: hidden; }
+.sp-menu [aria-checked="true"] { font-weight: 600; }
+.sp-menu [aria-checked="true"] .sp-check { visibility: visible; }
+
+/* dark theme: menu surface */
+html[data-theme="dark"] .sp-menu { box-shadow: 0 14px 34px rgba(0, 0, 0, .5); }
+
+/* Simplified Chinese: add CJK faces behind the Latin ones so Windows,
+   macOS and Android all pick a clean sans-serif for the Chinese text,
+   and loosen the wide letter-spacing used on English caps labels. */
+html[lang="zh-CN"] {
+  --f-disp: 'Archivo', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC', system-ui, sans-serif;
+  --f-body: 'IBM Plex Sans', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC', system-ui, sans-serif;
+  --f-mono: 'IBM Plex Mono', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC', monospace;
+}
+html[lang="zh-CN"] body { line-break: strict; }

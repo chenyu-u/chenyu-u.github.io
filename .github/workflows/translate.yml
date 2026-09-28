@@ -1,0 +1,72 @@
+# ═══════════════════════════════════════════════════════════════════
+#  Auto-translate the site into 简体中文 and Deutsch
+#
+#  Every time you push a change to an .html page, this finds any
+#  English text that is new or edited, translates it with DeepL and
+#  commits the result to i18n/zh.js and i18n/de.js.
+#  Translations that already exist (including ones you fixed by hand)
+#  are never overwritten.
+#
+#  ONE-TIME SETUP: add your DeepL API key as a repository secret named
+#  DEEPL_API_KEY  (Settings → Secrets and variables → Actions → New
+#  repository secret). A free DeepL API account is enough.
+#
+#  You can also run it by hand: Actions tab → this workflow → Run workflow.
+# ═══════════════════════════════════════════════════════════════════
+name: Translate site (中文 + Deutsch)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.html'
+      - 'i18n/glossary.json'
+      - 'tools/i18n-sync.mjs'
+      - 'site-prefs.js'
+      - '.github/workflows/translate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: translate
+  cancel-in-progress: false
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install headless browser
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Translate new or edited English text
+        env:
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+        run: |
+          if [ -z "$DEEPL_API_KEY" ]; then
+            echo "::warning::DEEPL_API_KEY secret is not set, so nothing was translated. See the top of .github/workflows/translate.yml."
+          fi
+          node tools/i18n-sync.mjs
+
+      - name: Commit translations
+        run: |
+          if git diff --quiet -- i18n/; then
+            echo "Nothing new to translate."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add i18n/zh.js i18n/de.js
+          git commit -m "Auto-translate new text (zh, de)"
+          git pull --rebase
+          git push
