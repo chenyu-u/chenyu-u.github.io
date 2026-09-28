@@ -1,16 +1,37 @@
 {
-  "generated_at": "2026-09-18T07:16:26.635647+00:00",
+  "generated_at": "2026-09-28T08:30:47.894529+00:00",
   "ytd": {
-    "distance": 94038,
-    "count": 19,
-    "moving_time": 31744.0
+    "distance": 115123,
+    "count": 22,
+    "moving_time": 39184.0
   },
   "all": {
-    "distance": 102197.0,
-    "count": 21,
-    "moving_time": 34117
+    "distance": 123282.5,
+    "count": 24,
+    "moving_time": 41557
   },
   "activities": [
+    {
+      "type": "Run",
+      "name": "University of Toronto Run Club Run",
+      "distance": 5039.8,
+      "moving_time": 1975,
+      "start_date": "2026-09-26T14:13:04Z"
+    },
+    {
+      "type": "Run",
+      "name": "Foodies Run Club Sunday Run",
+      "distance": 5814.8,
+      "moving_time": 1900,
+      "start_date": "2026-09-20T14:18:47Z"
+    },
+    {
+      "type": "Run",
+      "name": "University of Toronto Run Club Run",
+      "distance": 10230.9,
+      "moving_time": 3565,
+      "start_date": "2026-09-19T14:14:56Z"
+    },
     {
       "type": "Run",
       "name": "Foodies Run Club Sunday Run",
@@ -31,27 +52,6 @@
       "distance": 8291.5,
       "moving_time": 2077,
       "start_date": "2026-08-29T00:43:58Z"
-    },
-    {
-      "type": "Run",
-      "name": "University of Toronto Run Club Run",
-      "distance": 5471.8,
-      "moving_time": 1802,
-      "start_date": "2026-08-26T23:09:29Z"
-    },
-    {
-      "type": "Run",
-      "name": "University of Toronto Run Club Run",
-      "distance": 5647.1,
-      "moving_time": 1903,
-      "start_date": "2026-08-19T23:14:12Z"
-    },
-    {
-      "type": "Run",
-      "name": "Foodies Run Club Sunday Run",
-      "distance": 5042.5,
-      "moving_time": 1572,
-      "start_date": "2026-07-26T14:21:33Z"
     }
   ]
 }
