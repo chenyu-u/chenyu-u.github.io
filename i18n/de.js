@@ -4,6 +4,20 @@
    New or edited English text is added here automatically by tools/i18n-sync.mjs (GitHub Action). Your hand edits are never overwritten. */
 window.CL_I18N = window.CL_I18N || {};
 window.CL_I18N.de = {
+ "CAD &amp; Simulation": "CAD &amp; Simulation",
+ "Tools": "Werkzeuge",
+ "Certifications": "Zertifizierungen",
+ "Ansys Fluent (CFD)": "Ansys Fluent (CFD)",
+ "Ansys Mechanical (FEA)": "Ansys Mechanical (FEM)",
+ "Python (Pandas, NumPy)": "Python (Pandas, NumPy)",
+ "Linux / Bash": "Linux / Bash",
+ "Slurm (HPC)": "Slurm (HPC)",
+ "Arduino IDE": "Arduino IDE",
+ "AI Workflows (Claude, Copilot)": "KI-Workflows (Claude, Copilot)",
+ "DFM": "DFM (fertigungsgerechte Konstruktion)",
+ "CNC Machining (Lathe, Mill)": "CNC-Bearbeitung (Drehen, Fräsen)",
+ "SolidWorks Associate (CSWA)": "SolidWorks Associate (CSWA)",
+ "Microsoft Python (Data Analysis, Automation, Scripting)": "Microsoft Python (Datenanalyse, Automatisierung, Skripting)",
  "Chenyu Li · Mechanical Engineering @ UofT": "Chenyu Li · Maschinenbau @ UofT",
  "Back to top": "Nach oben",
  "CL / PORTFOLIO<br>REV 2026": "CL / PORTFOLIO<br>REV 2026",

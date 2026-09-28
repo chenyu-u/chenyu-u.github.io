@@ -4,6 +4,20 @@
    New or edited English text is added here automatically by tools/i18n-sync.mjs (GitHub Action). Your hand edits are never overwritten. */
 window.CL_I18N = window.CL_I18N || {};
 window.CL_I18N.zh = {
+ "CAD &amp; Simulation": "CAD 与仿真",
+ "Tools": "工具",
+ "Certifications": "证书",
+ "Ansys Fluent (CFD)": "Ansys Fluent（计算流体力学）",
+ "Ansys Mechanical (FEA)": "Ansys Mechanical（有限元分析）",
+ "Python (Pandas, NumPy)": "Python（Pandas、NumPy）",
+ "Linux / Bash": "Linux / Bash",
+ "Slurm (HPC)": "Slurm（高性能计算）",
+ "Arduino IDE": "Arduino IDE",
+ "AI Workflows (Claude, Copilot)": "AI 工作流（Claude、Copilot）",
+ "DFM": "DFM 可制造性设计",
+ "CNC Machining (Lathe, Mill)": "数控加工（车床、铣床）",
+ "SolidWorks Associate (CSWA)": "SolidWorks 认证助理工程师（CSWA）",
+ "Microsoft Python (Data Analysis, Automation, Scripting)": "Microsoft Python 认证（数据分析、自动化、脚本编写）",
  "Chenyu Li · Mechanical Engineering @ UofT": "李辰宇 · 多伦多大学机械工程",
  "Back to top": "返回顶部",
  "CL / PORTFOLIO<br>REV 2026": "CL / 作品集<br>2026 版",
