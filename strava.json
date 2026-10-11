@@ -1,16 +1,23 @@
 {
-  "generated_at": "2026-10-10T08:19:07.004482+00:00",
+  "generated_at": "2026-10-11T08:35:56.721580+00:00",
   "ytd": {
-    "distance": 120395,
-    "count": 23,
-    "moving_time": 40836.0
+    "distance": 128760,
+    "count": 24,
+    "moving_time": 43624.0
   },
   "all": {
-    "distance": 128554.09999999998,
-    "count": 25,
-    "moving_time": 43209
+    "distance": 136919.8,
+    "count": 26,
+    "moving_time": 45997
   },
   "activities": [
+    {
+      "type": "Run",
+      "name": "University of Toronto Run Club Run",
+      "distance": 8365.7,
+      "moving_time": 2788,
+      "start_date": "2026-10-10T14:12:21Z"
+    },
     {
       "type": "Run",
       "name": "Kings College Circle Night Run",
@@ -45,13 +52,6 @@
       "distance": 5098.6,
       "moving_time": 1548,
       "start_date": "2026-09-06T14:23:19Z"
-    },
-    {
-      "type": "Run",
-      "name": "Evening Run Around Kings College Circle",
-      "distance": 5289.3,
-      "moving_time": 1722,
-      "start_date": "2026-09-03T23:18:45Z"
     }
   ]
 }
