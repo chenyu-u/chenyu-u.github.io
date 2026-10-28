@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-10-27T07:36:11.893710+00:00",
+  "ytd": {
+    "distance": 139644,
+    "count": 26,
+    "moving_time": 47266.0
+  },
+  "all": {
+    "distance": 147803.4,
+    "count": 28,
+    "moving_time": 49639
+  },
+  "activities": [
+    {
+      "type": "Run",
+      "name": "Sunday Morning Run",
+      "distance": 5403.5,
+      "moving_time": 1786,
+      "start_date": "2026-10-25T12:09:30Z"
+    },
+    {
+      "type": "Run",
+      "name": "Rainy Night Run",
+      "distance": 5480.2,
+      "moving_time": 1856,
+      "start_date": "2026-10-16T01:03:46Z"
+    },
+    {
+      "type": "Run",
+      "name": "University of Toronto Run Club Run",
+      "distance": 8365.7,
+      "moving_time": 2788,
+      "start_date": "2026-10-10T14:12:21Z"
+    },
+    {
+      "type": "Run",
+      "name": "Kings College Circle Night Run",
+      "distance": 5271.6,
+      "moving_time": 1652,
+      "start_date": "2026-10-09T00:12:04Z"
+    },
+    {
+      "type": "Run",
+      "name": "University of Toronto Run Club Run",
+      "distance": 5039.8,
+      "moving_time": 1975,
+      "start_date": "2026-09-26T14:13:04Z"
+    },
+    {
+      "type": "Run",
+      "name": "Foodies Run Club Sunday Run",
+      "distance": 5814.8,
+      "moving_time": 1900,
+      "start_date": "2026-09-20T14:18:47Z"
+    }
+  ]
+}
