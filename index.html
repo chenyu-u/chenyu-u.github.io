@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en" class="js">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chenyu Li · Mechanical Engineering @ University of Toronto</title>
+<meta name="description" content="Chenyu Li, Mechanical Engineering student at the University of Toronto. Follow the wind from the Rockies to Calgary, Toronto and Delft through projects, experience and coursework." />
+<link rel="icon" href="logos/uoftheader.png" />
+<link rel="preconnect" href="https://unpkg.com" crossorigin />
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.min.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+} }
+</script>
+<link rel="modulepreload" href="https://unpkg.com/three@0.160.0/build/three.module.min.js" crossorigin />
+<link rel="modulepreload" href="https://unpkg.com/three@0.160.0/examples/jsm/objects/Sky.js" crossorigin />
+<link rel="modulepreload" href="https://unpkg.com/three@0.160.0/examples/jsm/utils/BufferGeometryUtils.js" crossorigin />
+<link rel="modulepreload" href="world.js" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..900;1,100,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="site-prefs.css" />
+<link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
+<script src="site-prefs.js"></script>
+<script src="live-weather.js"></script>
+<!--
+  ════════════════════════════════════════════════════════════════════
+  FOLLOW THE WIND · home page
+  One story in five places: Rockies → Calgary → Toronto → Delft → next.
+  A 3D world (world.js, three.js) sits fixed behind the page; a gold
+  wind current flows through it and the camera follows as you scroll.
+
+  Two kinds of section:
+    .opener   full-screen chapter title, the 3D scene is the star
+    .sheet    reading column on the left, the scene keeps moving right
+  Each section has data-shot="…" naming the camera shot in world.js.
+
+  • Portfolio (classic.html) has the same content as a plain page, and
+    section ids match it, so links like index.html#projects still work.
+  • Sound is generated in the browser and stays off until switched on.
+  • No WebGL: openers fall back to a painted sky gradient.
+  ════════════════════════════════════════════════════════════════════
+-->
+<style>
+  :root {
+    --paper:  #F7F9FA;
+    --paper-2:#EEF2F4;
+    --ink:    #14202B;
+    --ink-2:  #45535F;
+    --ink-3:  #75828D;
+    --rule:   #D9E0E5;
+    --wind:   #1E3765;     /* University of Toronto blue */
+    --wind-ink: #1E3765;
+    --done:   #2D8A4E;
+    --now:    #2F6FCF;
+    --scrim:  rgba(247, 249, 250, .0);
+    --f: 'Archivo', system-ui, sans-serif;
+    --bar-h: 60px;
+    --sheet-w: min(640px, 50vw);
+  }
+  html[data-theme="dark"] {
+    --paper:  #0F161D;
+    --paper-2:#17212B;
+    --ink:    #E8EDF1;
+    --ink-2:  #A9B6C1;
+    --ink-3:  #7A8996;
+    --rule:   #24313D;
+    --wind: #7EA6E6;
+    --wind-ink: #9DBBEE;
+    --now:    #7FB0F5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  html { overflow-x: clip; }
+  body { font-family: var(--f); font-size: 17px; line-height: 1.6; color: var(--ink); background: #CFDCE6; overflow-x: clip; }
+  html[data-theme="dark"] body { background: #0A1220; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration-color: var(--wind); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  a:hover { text-decoration-color: currentColor; }
+  :focus-visible { outline: 2px solid var(--wind); outline-offset: 3px; border-radius: 2px; }
+
+  #world { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; }
+  body.no3d #world { display: none; }
+  body.no3d .opener { background: linear-gradient(#7FA3CC, #E9C7A6); }
+  html[data-theme="dark"] body.no3d .opener { background: linear-gradient(#050A16, #1B2A47); }
+
+  /* ── top bar ─────────────────────────────────────────────── */
+  .bar {
+    position: fixed; inset: 0 0 auto 0; z-index: 50; height: var(--bar-h);
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem;
+    padding: 0 clamp(16px, 3vw, 32px);
+    transition: background-color .35s, box-shadow .35s;
+  }
+  .bar.solid { background: color-mix(in srgb, var(--paper) 95%, transparent); box-shadow: 0 1px 0 var(--rule); }
+  .bar-name { font-weight: 700; font-size: 1.15rem; letter-spacing: -.01em; text-decoration: none; justify-self: start; }
+  .bar-right { justify-self: end; display: flex; align-items: center; gap: .4rem; }
+  .bar-right > a { font-weight: 600; font-size: .92rem; text-decoration: none; padding: .4rem .6rem; border-radius: 6px; }
+  .bar-right > a:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+  .sound-btn {
+    display: inline-flex; align-items: center; gap: .45rem; height: 34px; padding: 0 .75rem 0 .6rem;
+    border-radius: 17px; border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+    background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink);
+    font: 600 .88rem var(--f); cursor: pointer;
+  }
+  .sound-btn .w1, .sound-btn .w2 { display: none; }
+  .sound-btn[aria-pressed="true"] .w1, .sound-btn[aria-pressed="true"] .w2 { display: inline; animation: pulse 1.6s ease-in-out infinite; }
+  .sound-btn[aria-pressed="true"] .w2 { animation-delay: -.5s; }
+  .sound-btn[aria-pressed="true"] .x { display: none; }
+  @keyframes pulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+
+  /* the route: five stops with the wind's position between them */
+  .route { display: flex; align-items: center; position: relative; list-style: none; }
+  .route::before { content: ""; position: absolute; left: 12px; right: 12px; bottom: -3px; height: 1px; background: color-mix(in srgb, var(--ink) 22%, transparent); }
+  .route li { position: relative; }
+  .route a { display: block; position: relative; padding: .3rem .7rem; font-size: .86rem; font-weight: 600; text-decoration: none; color: var(--ink-2); }
+  .route a span { position: relative; z-index: 1; background: transparent; padding: 0 .1rem; }
+  .route a.here { color: var(--ink); }
+  .route-dot { position: absolute; bottom: -4px; left: 0; width: 26px; height: 3px; border-radius: 2px; background: var(--wind); }
+  .bar-place { display: none; font-weight: 600; font-size: .9rem; color: var(--ink-2); }
+  @media (max-width: 980px) { .route { display: none; } .bar { grid-template-columns: auto 1fr auto; } .bar-place { display: block; } }
+  @media (max-width: 640px) { .bar-right > a.hide-s { display: none; } .sound-btn .lbl { display: none; } .sound-btn { padding: 0 .6rem; } .bar-place { font-size: .85rem; } }
+
+  /* ── openers (scene first) ──────────────────────────────── */
+  main { position: relative; z-index: 2; }
+  .opener { position: relative; min-height: 100svh; display: flex; align-items: flex-end; padding: calc(var(--bar-h) + 2rem) clamp(16px, 6vw, 96px) clamp(48px, 10vh, 110px); pointer-events: none; }
+  .opener > * { pointer-events: auto; }
+  .opener-text { max-width: 40rem; }
+  .coords { font-size: .9rem; font-weight: 500; color: var(--ink-2); font-variant-numeric: tabular-nums; display: flex; gap: .8rem; align-items: center; margin-bottom: .6rem; }
+  .coords b { font-weight: 700; color: var(--ink); }
+  .place {
+    font-weight: 800; line-height: .88; letter-spacing: -.025em;
+    font-size: clamp(3.6rem, 11vw, 9.5rem);
+  }
+  .opener .lede { margin-top: 1rem; font-size: clamp(1.1rem, 1.9vw, 1.35rem); line-height: 1.45; max-width: 32rem; color: var(--ink); }
+  /* text on the scene: a soft halo instead of a box */
+  .opener .place, .opener .lede, .opener .coords { text-shadow: 0 0 22px color-mix(in srgb, var(--paper) 75%, transparent), 0 0 2px color-mix(in srgb, var(--paper) 60%, transparent); }
+  html[data-theme="dark"] .opener .place, html[data-theme="dark"] .opener .lede, html[data-theme="dark"] .opener .coords { text-shadow: 0 0 22px rgba(5, 10, 20, .8); }
+
+  /* a soft wash of paper behind opener text, so it reads over any terrain */
+  .opener::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(120% 90% at 0% 100%, color-mix(in srgb, var(--paper) 78%, transparent) 0%, color-mix(in srgb, var(--paper) 35%, transparent) 38%, transparent 62%); }
+  .hero::before { background: radial-gradient(90% 110% at 0% 50%, color-mix(in srgb, var(--paper) 80%, transparent) 0%, color-mix(in srgb, var(--paper) 40%, transparent) 40%, transparent 66%); }
+  html[data-theme="dark"] .opener::before { background: radial-gradient(120% 90% at 0% 100%, rgba(6,10,18,.72) 0%, rgba(6,10,18,.3) 40%, transparent 64%); }
+  html[data-theme="dark"] .hero::before { background: radial-gradient(90% 110% at 0% 50%, rgba(6,10,18,.72) 0%, rgba(6,10,18,.3) 42%, transparent 68%); }
+  .opener-text { position: relative; }
+  .hero { align-items: center; }
+  .hero .place { font-size: clamp(4.2rem, 13vw, 11.5rem); }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.6rem; }
+  .btn {
+    display: inline-flex; align-items: center; gap: .55rem; text-decoration: none; cursor: pointer;
+    font: 650 1rem var(--f); padding: .78rem 1.15rem; border-radius: 999px; border: 1.5px solid var(--ink); color: var(--ink);
+    background: color-mix(in srgb, var(--paper) 90%, transparent);
+  }
+  .btn.primary { background: var(--ink); color: var(--paper); }
+  .btn svg { transition: transform .25s ease; }
+  .btn.primary:hover svg { transform: translateY(3px); }
+  .scroll-cue { position: absolute; left: 50%; bottom: 22px; transform: translateX(var(--btn-x, -50%)); width: 1.5px; height: 46px; background: color-mix(in srgb, var(--ink) 25%, transparent); overflow: hidden; }
+  .scroll-cue::after { content: ""; position: absolute; left: 0; top: -20px; width: 100%; height: 20px; background: var(--ink); animation: cue 2.2s ease-in-out infinite; }
+  @keyframes cue { to { top: 46px; } }
+
+  /* ── sheets (reading) ───────────────────────────────────── */
+  .sheet {
+    position: relative; width: var(--sheet-w); background: var(--paper);
+    padding: clamp(3.5rem, 8vh, 6rem) clamp(22px, 4vw, 64px) clamp(3rem, 7vh, 5rem);
+    box-shadow: 1px 0 0 var(--rule), 24px 0 60px -40px rgba(10, 25, 40, .35);
+  }
+  .sheet + .sheet { border-top: 1px solid var(--rule); }
+  .opener + .sheet { border-radius: 0 14px 0 0; }
+  .sheet:has(+ .opener) { border-radius: 0 0 14px 0; }
+  .kicker { font-size: .95rem; font-weight: 600; color: var(--wind-ink); margin-bottom: .35rem; }
+  .sheet h2 { font-weight: 800; font-size: clamp(2rem, 3.8vw, 2.9rem); line-height: 1.02; letter-spacing: -.02em; }
+  .sheet h3 { font-weight: 700; font-size: 1.28rem; line-height: 1.2; letter-spacing: -.005em; }
+  .sheet .lead { margin-top: 1rem; font-size: 1.15rem; line-height: 1.5; color: var(--ink); max-width: 36rem; }
+  .sheet p { color: var(--ink-2); }
+  .sheet p strong { color: var(--ink); font-weight: 650; }
+  .block { margin-top: 2.6rem; }
+  .block > h3 { margin-bottom: .55rem; }
+  .meta { font-size: .93rem; color: var(--ink-3); }
+  .go { display: inline-block; margin-top: .55rem; font-weight: 650; color: var(--ink); }
+  figure figcaption { font-size: .86rem; color: var(--ink-3); margin-top: .4rem; }
+  .ph { border-radius: 10px; overflow: hidden; background: var(--paper-2); }
+  .ph img { width: 100%; height: auto; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin-top: 1rem; }
+  .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; margin-top: 1rem; }
+  .pair, .trio { align-items: start; }
+  .wide { margin-top: 1rem; }
+  .side { display: grid; grid-template-columns: 1fr 150px; gap: 1.3rem; align-items: start; }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 1.4rem 2.2rem; margin-top: 1.1rem; }
+  .stats div { min-width: 6rem; }
+  .stats b { display: block; font-weight: 800; font-size: 2rem; line-height: 1; letter-spacing: -.02em; color: var(--ink); }
+  .stats span { font-size: .9rem; color: var(--ink-3); }
+
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.6rem; margin-top: 1.6rem; }
+  .facts dt { font-weight: 650; font-size: .93rem; color: var(--ink-3); }
+  .facts dd { font-size: 1rem; line-height: 1.4; }
+
+  .proj { display: grid; grid-template-columns: 210px 1fr; gap: 1.3rem; padding: 1.6rem 0; border-top: 1px solid var(--rule); }
+  .proj:first-of-type { border-top: 0; }
+  .proj .ph { align-self: start; }
+  .proj p { margin-top: .35rem; font-size: .98rem; }
+  .proj.feature { grid-template-columns: 1fr; }
+
+
+  .roles { list-style: none; margin-top: 1.4rem; }
+  .role { display: grid; grid-template-columns: 48px 1fr; gap: 1rem; padding: 1.15rem 0; border-top: 1px solid var(--rule); }
+  .role:first-child { border-top: 0; padding-top: .2rem; }
+  .role-logo { width: 48px; height: 48px; border-radius: 10px; background: #fff; border: 1px solid var(--rule); padding: 5px; }
+  .role-logo img { width: 100%; height: 100%; object-fit: contain; }
+  .co-head { display: flex; align-items: center; gap: 1rem; }
+  .co-head .role-logo { flex: none; width: 56px; height: 56px; }
+  .co-head .meta { margin-top: .15rem; }
+  .role .org { font-size: .97rem; color: var(--ink-2); }
+  .role .what { margin-top: .3rem; font-size: .96rem; }
+  .role .wins { margin: .45rem 0 0; padding-left: 1.1rem; }
+  .role .wins li { margin-top: .4rem; padding-left: .15rem; }
+  .role .wins li::marker { color: var(--wind); }
+
+  .terms { width: 100%; border-collapse: collapse; font-size: .94rem; margin-top: 1rem; }
+  .terms th { text-align: left; vertical-align: top; font-weight: 700; padding: .8rem .9rem .8rem 0; white-space: nowrap; width: 5.6rem; }
+  .terms th small { display: block; font-weight: 400; font-size: .82rem; color: var(--ink-3); }
+  .terms td { vertical-align: top; padding: .8rem .8rem .8rem 0; color: var(--ink-2); line-height: 1.45; }
+  .terms tr + tr > * { border-top: 1px solid var(--rule); }
+  .terms .t { display: flex; align-items: center; gap: .45rem; font-weight: 650; color: var(--ink); margin-bottom: .15rem; }
+  .terms .t i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--ink-3); }
+  .terms .done .t i { background: var(--done); border-color: var(--done); }
+  .terms .now .t i { background: var(--now); border-color: var(--now); }
+  .terms .now .t::after { content: "this term"; font-weight: 500; font-size: .8rem; color: var(--now); }
+  .terms .pey td { color: var(--ink-3); font-style: italic; }
+  .minors { display: grid; gap: .8rem; margin-top: 1rem; }
+  .minors p { font-size: .96rem; }
+  .minors b { color: var(--ink); font-weight: 650; }
+
+  .board { background: #15212B; color: #EAF1F6; border-radius: 12px; padding: 1.2rem 1.3rem 1rem; margin-top: 1.3rem; }
+  .board-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .board-grid div { padding: .1rem 1rem; border-left: 1px solid #304452; }
+  .board-grid div:first-child { border-left: 0; padding-left: 0; }
+  .board b { display: block; font-weight: 800; font-size: clamp(2.1rem, 4.4vw, 2.8rem); line-height: 1; font-variant-numeric: tabular-nums; }
+  .board span { font-size: .88rem; color: #A6B8C6; }
+  .board p { margin-top: .9rem; padding-top: .75rem; border-top: 1px solid #304452; font-size: .92rem; color: #A6B8C6; }
+  .board p b { display: inline; font-size: inherit; font-weight: 650; color: #fff; }
+
+  .contact-links { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.6rem; }
+  .contact-links a { text-decoration: none; font-weight: 650; padding: .75rem 1.1rem; border-radius: 999px; border: 1.5px solid var(--ink); }
+  .contact-links a.primary { background: var(--ink); color: var(--paper); }
+
+  footer { position: relative; z-index: 2; width: var(--sheet-w); background: var(--paper); border-top: 1px solid var(--rule); padding: 1.6rem clamp(22px, 4vw, 64px) 2.2rem; display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; font-size: .92rem; color: var(--ink-3); border-radius: 0 0 14px 0; }
+  footer a { color: var(--ink-2); }
+  .end-space { height: 40vh; }
+
+  @media (max-width: 860px) {
+    :root { --sheet-w: 100%; }
+    .hero { align-items: flex-end; }
+    .opener::before, .hero::before { background: linear-gradient(to top, color-mix(in srgb, var(--paper) 88%, transparent) 0%, color-mix(in srgb, var(--paper) 55%, transparent) 32%, transparent 58%); }
+    html[data-theme="dark"] .opener::before, html[data-theme="dark"] .hero::before { background: linear-gradient(to top, rgba(6,10,18,.85) 0%, rgba(6,10,18,.45) 34%, transparent 60%); }
+    .scroll-cue { display: none; }
+    .sheet, .opener + .sheet, .sheet:has(+ .opener), footer { border-radius: 18px 18px 0 0; box-shadow: none; }
+    .sheet + .sheet { border-radius: 0; }
+    .sheet:has(+ .opener) { border-radius: 18px 18px 18px 18px; }
+    .end-space { height: 0; }
+  }
+  @media (max-width: 560px) {
+    body { font-size: 16px; }
+    .side { grid-template-columns: 1fr; } .side .ph { width: 160px; }
+    .proj { grid-template-columns: 1fr; gap: .8rem; }
+    .facts { grid-template-columns: 1fr; }
+    .terms, .terms tbody, .terms tr, .terms th, .terms td { display: block; width: auto; }
+    .terms th { padding-bottom: .1rem; }
+    .terms td { padding: .35rem 0; border-top: 0 !important; }
+    .trio { grid-template-columns: 1fr 1fr; }
+    .board-grid div { padding: .1rem .6rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .scroll-cue::after { animation: none; } }
+
+  /* ── cover: the name in a wind tunnel ──────────────────── */
+  body.loading { overflow: hidden; }
+  #cover { position: fixed; inset: 0; z-index: 200; color: #EEEBE4; overflow: hidden; background: transparent; touch-action: none; }   /* no pinch-zoom on the cover */
+  html:not(.js) #cover { display: none; }
+  #cover canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  #cover .cv-top, #cover .cv-bot { transition: opacity .35s ease, transform .5s cubic-bezier(.7,0,.2,1); }
+  #cover.leaving .cv-top, #cover.leaving .cv-bot { opacity: 0; transform: translateY(-12px); }
+  #cover.leaving { pointer-events: none; }
+  html.js body.loading::after { content: ""; position: fixed; inset: 0; z-index: 199; background: #0B1830; pointer-events: none; }
+  html.js body.loading.cover-on::after { display: none; }
+  .cv-top, .cv-bot { position: absolute; z-index: 1; left: clamp(18px, 4vw, 56px); right: clamp(18px, 4vw, 56px); display: flex; justify-content: space-between; align-items: flex-end; gap: 1.5rem; text-shadow: 0 0 3px #0B1830, 0 1px 14px #0B1830; }
+  /* a soft dark backing so the small print stays readable over the moving streams */
+  .cv-top::before, .cv-bot::before { content: ""; position: absolute; z-index: -1; left: -80px; right: -80px; pointer-events: none; }
+  .cv-top::before { top: -60px; bottom: -46px; background: linear-gradient(rgba(11,24,48,.92), rgba(11,24,48,0)); }
+  .cv-bot::before { bottom: -60px; top: -56px; background: linear-gradient(to top, rgba(11,24,48,.94), rgba(11,24,48,0)); }
+  .cv-top { top: calc(env(safe-area-inset-top) + 22px); align-items: flex-start; font-size: 1rem; line-height: 1.45; color: #C6CFD9; }
+  .cv-top b { display: block; color: #F4F1EA; font-weight: 700; font-size: 1.06rem; }
+  .cv-top span { color: #E3E8EE; font-weight: 550; }
+  .cv-bot { bottom: calc(env(safe-area-inset-bottom) + 30px); }
+  .cv-line { font-size: clamp(.98rem, 1.35vw, 1.15rem); line-height: 1.5; color: #E7EAED; font-weight: 450; white-space: nowrap; }
+  @media (max-width: 900px) { .cv-line { white-space: normal; max-width: 30rem; } }
+  /* live conditions in Toronto: appear only once known, never shift the layout */
+  .cv-wx { font-size: .94rem; line-height: 1.45; color: #C6CFD9; font-weight: 400; display: flex; align-items: center; gap: .7rem; flex: none; opacity: 0; transition: opacity .9s ease; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cv-wx .wx-txt { display: flex; flex-direction: column; }
+  .cv-wx b { font-weight: 700; color: #E3E8EE; }
+  .cv-wx.on { opacity: 1; }
+  .wx-arrow { width: 22px; height: 22px; flex: none; color: #E3E8EE; transform: rotate(var(--wx-rot, 0deg)); transition: transform 1.2s cubic-bezier(.3,.7,.2,1); }
+  @media (max-width: 1100px) { .cv-bot { flex-direction: column; align-items: flex-start; gap: .9rem; } .cv-wx { white-space: normal; } }
+  .live-wx { font-size: 15px; line-height: 1.5; color: var(--ink-2); margin-top: .9rem; max-width: 32rem; display: flex; gap: .6rem; align-items: baseline; opacity: 0; transition: opacity .9s ease; }
+  .live-wx.on { opacity: 1; }
+  .live-wx:empty, .live-wx:not(.on) { pointer-events: none; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--wind); flex: none; position: relative; top: -1px; }
+  .live-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--wind); opacity: .45; animation: liveDot 2.4s ease-out infinite; will-change: transform, opacity; }
+  @keyframes liveDot { 0% { transform: scale(1); opacity: .45; } 70%, 100% { transform: scale(3); opacity: 0; } }   /* transform + opacity only: runs on the compositor */
+  @media (prefers-reduced-motion: reduce) { .live-dot::after { animation: none; opacity: 0; } }
+  /* the one way in: centred under the name; fills as the world loads, then becomes the button */
+  .cv-enter { position: absolute; z-index: 2; left: var(--btn-left, 50%); top: var(--btn-top, 68%); transform: translateX(var(--btn-x, -50%)); height: 58px; min-width: 236px; padding: 0 30px; border-radius: 999px;
+    border: 1.5px solid rgba(143,180,240,.55); background: rgba(11,24,48,.6); color: #F1EEE7; font: 650 1.04rem var(--f); letter-spacing: .01em;
+    overflow: hidden; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: .65rem; cursor: pointer; -webkit-tap-highlight-color: transparent;
+    transition: background .45s, color .45s, border-color .45s, box-shadow .35s, transform .35s cubic-bezier(.2,.9,.2,1.25), opacity .35s; }
+  .cv-fill { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(110,156,232,.28), rgba(110,156,232,.55)); transform-origin: left; transform: scaleX(0); transition: opacity .4s; }
+  .cv-label, .cv-arrow { position: relative; }
+  .cv-label { font-variant-numeric: tabular-nums; }
+  .cv-arrow { width: 18px; height: 18px; flex: none; display: none; transition: transform .3s; }
+  .cv-enter.ready { background: #F1EEE7; color: #0B1830; border-color: #F1EEE7; }
+  .cv-enter.ready .cv-fill { opacity: 0; }
+  .cv-enter.ready .cv-arrow { display: block; }
+  .cv-enter.ready:hover { transform: translateX(var(--btn-x, -50%)) scale(1.045); box-shadow: 0 0 0 7px rgba(110,156,232,.22), 0 0 46px rgba(110,156,232,.5); }
+  .cv-enter.ready:hover .cv-arrow { transform: translateX(4px); }
+  .cv-enter:focus-visible { outline: 2px solid #AECBF7; outline-offset: 5px; }
+  .cv-enter:disabled { cursor: progress; }
+  .cv-enter.firing { transform: translateX(var(--btn-x, -50%)) scale(.92); animation: cvPulse .55s ease-out; }
+  @keyframes cvPulse { from { box-shadow: 0 0 0 0 rgba(174,203,247,.9), 0 0 60px rgba(110,156,232,.8); } to { box-shadow: 0 0 0 46px rgba(174,203,247,0), 0 0 0 rgba(110,156,232,0); } }
+  #cover.leaving .cv-enter { opacity: 0; transform: translateX(var(--btn-x, -50%)) scale(1.25); transition: opacity .3s .05s, transform .5s cubic-bezier(.2,.8,.2,1); }
+  @media (max-width: 640px) { .cv-line { font-size: 1rem; } .cv-enter { height: 54px; min-width: 210px; } .cv-top span { display: none; } }
+  /* hero type rises in once the cover has gone */
+  .hero .coords, .hero .place, .hero .lede, .hero .hero-actions { transition: transform 1.1s cubic-bezier(.2,.8,.15,1), opacity .9s ease; }
+  body.loading .hero .coords, body.loading .hero .place, body.loading .hero .lede, body.loading .hero .hero-actions { opacity: 0; transform: translateY(40px); }
+  .hero .place { transition-delay: .08s; } .hero .lede { transition-delay: .16s; } .hero .hero-actions { transition-delay: .24s; }
+  @media (prefers-reduced-motion: reduce) { #cover, #letters, .hero .place, .hero .lede, .hero .coords, .hero .hero-actions { transition: opacity .3s !important; } #cover.out { transform: none; } }
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-stopped { overflow: hidden; }
+
+  /* ── TYPE SYSTEM: the only sizes, weights and colours text uses in the story ─────────────
+     sizes   display · h2 · h3 · lead · body · small      weights 400 and 700      colours ink and ink-2
+     (blue is kept for links, markers and progress, never for text) */
+  :root { --t-display: clamp(3.2rem, 9vw, 7.5rem); --t-h2: clamp(1.9rem, 3.2vw, 2.5rem); --t-h3: 1.25rem; --t-lead: 1.1875rem; --t-body: 1.0625rem; --t-small: .9375rem; }
+  html body main, html body .bar { font-weight: 400 !important; }
+  html body main :is(p, li, dd, dt, td, th, span, small, figcaption, a, em, i, div, b, strong) { font-size: inherit !important; font-weight: inherit !important; font-style: normal !important; letter-spacing: 0 !important; }
+  html body main :is(.sheet, .opener-text) { font-size: var(--t-body) !important; line-height: 1.6 !important; color: var(--ink) !important; }
+  html body main .sheet :is(p, li, dd, td, .what, .minors p) { color: var(--ink) !important; }
+  /* display and headings */
+  html body main .place, html body main .hero .place { font-size: var(--t-display) !important; font-weight: 700 !important; line-height: .92 !important; letter-spacing: -.02em !important; color: var(--ink) !important; }
+  html body main .sheet h2 { font-size: var(--t-h2) !important; font-weight: 700 !important; line-height: 1.08 !important; letter-spacing: -.015em !important; color: var(--ink) !important; }
+  html body main .sheet h3 { font-size: var(--t-h3) !important; font-weight: 700 !important; line-height: 1.25 !important; letter-spacing: 0 !important; color: var(--ink) !important; }
+  /* lead lines: under a heading and under a place name */
+  html body main .sheet .lead.lead, html body main .opener .lede.lede { font-size: var(--t-lead) !important; line-height: 1.5 !important; color: var(--ink) !important; }
+  /* small: labels, dates, captions, table, figure labels */
+  html body main :is(.kicker, .coords, .meta, .org, figcaption, small, dt, th, td, .t, .stats span, .board span, .board p, .terms .t::after).x,
+  html body main .sheet :is(.kicker, .meta, .org, figcaption, small, dt, th, td, .t, .stats span, .board span, .board p),
+  html body main .opener .coords, html body main .opener .coords * { font-size: var(--t-small) !important; line-height: 1.5 !important; color: var(--ink-2) !important; }
+  html body main .sheet :is(.kicker, dt, th, .t), html body main .opener .coords b { font-weight: 700 !important; }
+  html body main .sheet .kicker { color: var(--ink-2) !important; margin-bottom: .4rem !important; }
+  html body main .terms .now .t::after { font-size: var(--t-small) !important; font-weight: 400 !important; color: var(--ink-2) !important; }
+  /* bold inside body text, and the big figures (same size as h2) */
+  html body main .sheet :is(strong, p b, .minors b) { font-weight: 700 !important; color: var(--ink) !important; }
+  html body main .sheet :is(.stats b, .board-grid b) { font-size: var(--t-h2) !important; font-weight: 700 !important; line-height: 1 !important; color: var(--ink) !important; }
+  html body main .sheet .board-grid b, html body main .sheet .board p b { color: #fff !important; }
+  html body main .sheet :is(.board span, .board p) { color: #B7C6D2 !important; }
+  /* buttons and links share the body size, bold */
+  html body main :is(.btn, .go, .contact-links a) { font-size: var(--t-body) !important; font-weight: 700 !important; }
+  /* top bar: body size for the name, small for everything else */
+  html body .bar .bar-name { font-size: var(--t-body) !important; font-weight: 700 !important; }
+  html body .bar :is(.route a, .bar-place, .bar-right > a, .sound-btn) { font-size: var(--t-small) !important; font-weight: 700 !important; }
+  html body .bar .route a { color: var(--ink-2) !important; } html body .bar .route a.here { color: var(--ink) !important; }
+  html body footer, html body footer * { font-size: var(--t-small) !important; font-weight: 400 !important; color: var(--ink-2) !important; }
+</style>
+</head>
+<body class="loading">
+
+<canvas id="world" aria-hidden="true"></canvas>
+<div id="cover" role="dialog" aria-label="Welcome">
+  <canvas id="veil" aria-hidden="true"></canvas>
+  <canvas id="flow" aria-hidden="true"></canvas>
+  <canvas id="letters" aria-hidden="true"></canvas>
+  <div class="cv-top"><div><b>Chenyu Li</b>Mechanical Engineering</div><span>University of Toronto</span></div>
+  <div class="cv-bot">
+    <p class="cv-line">A story that follows the wind, from the Rockies where I grew up to a wind tunnel in Delft.</p>
+    <p class="cv-wx" id="cv-wx" data-no-i18n aria-live="off"><svg class="wx-arrow" id="cv-wx-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="wx-txt"><b id="cv-wx-head"></b><span id="cv-wx-text"></span></span></p>
+  </div>
+  <button class="cv-enter" id="cv-enter" type="button" disabled aria-label="Loading">
+    <span class="cv-fill" id="cv-fill"></span><span class="cv-label"><span id="cv-word">Loading</span> <span id="cv-pct" data-no-i18n>0%</span></span>
+    <svg class="cv-arrow" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h11M10 4.5 14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</div>
+
+<header class="bar" id="bar">
+  <a class="bar-name" href="#top">Chenyu Li</a>
+  <ol class="route" id="route" aria-label="Chapters">
+    <li><a href="#top" data-stop="0"><span>Rockies</span></a></li>
+    <li><a href="#calgary" data-stop="1"><span>Calgary</span></a></li>
+    <li><a href="#toronto" data-stop="2"><span>Toronto</span></a></li>
+    <li><a href="#delft" data-stop="3"><span>Delft</span></a></li>
+    <li><a href="#next" data-stop="4"><span>Next</span></a></li>
+    <i class="route-dot" id="route-dot" aria-hidden="true"></i>
+  </ol>
+  <span class="bar-place" id="bar-place" aria-live="polite">Rockies</span>
+  <div class="bar-right">
+    <button class="sound-btn" id="sound" type="button" aria-pressed="false" aria-label="Turn sound on"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4z" fill="currentColor" stroke-width="1.5"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18.3 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg><span class="lbl">Sound</span></button>
+    <a class="hide-s" href="classic.html">Portfolio</a>
+    <a class="hide-s" href="laptop.html">My office</a>
+    <div data-prefs-slot></div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ═══ HERO · the Rockies ═══ -->
+  <section class="opener hero" data-shot="rockies" data-stop="0" aria-label="Introduction">
+    <div class="opener-text">
+      <p class="coords"><b>Banff, Alberta</b> 51.17° N, 115.57° W</p>
+      <h1 class="place">Chenyu Li</h1>
+      <p class="lede">Mechanical Engineering student at the University of Toronto. This is the path that brought me here, from the mountains where I grew up to the wind turbine my team took across the Atlantic.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#calgary">Start the story
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v11M3 8.5 8 13.5l5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="btn" href="classic.html">Read it as one page</a>
+      </div>
+    </div>
+    <div class="scroll-cue" aria-hidden="true"></div>
+  </section>
+
+  <!-- ═══ 1 · CALGARY ═══ -->
+  <section class="opener" id="calgary" data-shot="calgary" data-stop="1">
+    <div class="opener-text">
+      <p class="coords"><b>Chapter 1</b> 51.04° N, 114.07° W</p>
+      <h2 class="place">Calgary</h2>
+      <p class="lede">Where I grew up, learned to ski and play hockey, and founded my first business at fourteen.</p>
+    </div>
+  </section>
+
+  <section class="sheet" data-shot="calgary-lawn" data-stop="1">
+    <p class="kicker">Growing up in Calgary</p>
+    <h2>Early Years in Alberta</h2>
+    <p class="lead">Weekends were spent skiing and hiking in Banff National Park, and I have played competitive club hockey since the age of six.</p>
+    <div class="pair">
+      <figure class="ph"><img width="1956" height="4252" src="hobbies/skiing.jpg" alt="Skiing in Banff" loading="lazy" /></figure>
+      <figure class="ph"><img width="750" height="1000" src="img/banff.jpg" alt="Banff Avenue in winter" loading="lazy" /></figure>
+    </div>
+
+    <div class="block">
+      <div class="co-head"><span class="role-logo"><img width="168" height="168" src="logos/snowscape-sm.jpg" alt="SnowScape Landscaping logo" loading="lazy" /></span><div>
+        <h3>SnowScape Landscaping</h3>
+        <p class="meta">Founder and owner, June 2022 to May 2025</p>
+      </div></div>
+      <p style="margin-top:.5rem">At fourteen I started mowing lawns on my street. Three years later it was a business with a crew of ten. Quoting jobs, scheduling crews and keeping customers happy taught me more about working with people than any course has, and it's where my interest in business started.</p>
+      <div class="stats">
+        <div><b>100+</b><span>clients</span></div>
+        <div><b>10</b><span>person crew</span></div>
+        <div><b>$28k+</b><span>net profit</span></div>
+        <div><b>39%</b><span>repeat clients</span></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Early Engineering Projects</h3>
+      <p>In high school I started making things that move. A Bluetooth <a href="project-rc-car.html">RC car</a> on a chassis I designed and printed, and an <a href="project-light-drawer.html">ultrasonic drawer</a> that lights itself when opened: my first complete sensor-to-motor systems.</p>
+      <div class="pair">
+        <figure class="ph"><img width="3024" height="4032" src="projects/rc-car-1.jpg" alt="Bluetooth RC car" loading="lazy" /></figure>
+        <figure class="ph"><img width="3024" height="4032" src="projects/ultrasonic-drawer.jpg" alt="Ultrasonic light-up drawer" loading="lazy" /></figure>
+      </div>
+    </div>
+
+    <div class="block" id="volunteering">
+      <h3>Community Involvement</h3>
+      <p>Two years of <strong>CANstruction</strong> for the Calgary Food Bank, designing structures from donated cans alongside engineers from Fluor; every can went to the food bank. And two seasons as a <strong>volunteer coach</strong> for U11 teams at Knights Hockey, which taught me that explaining something clearly matters as much as knowing it.</p>
+      <div class="trio">
+        <figure class="ph"><img width="750" height="1000" src="img/canstruction-2025.jpg" alt="CANstruction 2025" loading="lazy" /></figure>
+        <figure class="ph"><img width="750" height="1000" src="img/canstruction-2024.jpg" alt="CANstruction 2024" loading="lazy" /></figure>
+        <figure class="ph"><img width="750" height="1000" src="img/coaching.jpg" alt="Coaching U11 hockey" loading="lazy" /></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 2 · TORONTO ═══ -->
+  <section class="opener" id="toronto" data-shot="toronto" data-stop="2">
+    <div class="opener-text">
+      <p class="coords"><b>Chapter 2</b> 43.66° N, 79.40° W</p>
+      <h2 class="place">Toronto</h2>
+      <p class="lede">Mechanical Engineering at the University of Toronto, and captain of its Wind Turbine Design Team.</p>
+      <p class="live-wx" id="to-wx" data-no-i18n><i class="live-dot" aria-hidden="true"></i><span id="to-wx-text"></span></p>
+    </div>
+  </section>
+
+  <section class="sheet" id="about" data-shot="campus" data-stop="2">
+    <p class="kicker">University of Toronto, 2025 to present</p>
+    <h2>Bachelor of Applied Science, Mechanical Engineering</h2>
+    <div class="side" style="margin-top:1rem">
+      <div>
+        <p class="lead" style="margin-top:0">Second-year Mechanical Engineering student completing minors in Mechatronics and Robotics, Engineering Business, and Advanced Manufacturing.</p>
+        <p style="margin-top:.8rem">I like problems that sit between engineering and business: a design is only half done if nobody can build it, fund it or use it.</p>
+      </div>
+      <figure class="ph"><img width="1856" height="1856" src="about.png" alt="Chenyu Li" loading="lazy" /></figure>
+    </div>
+    <dl class="facts">
+      <div><dt>Co-op</dt><dd>Professional Experience Year from May 2028</dd></div>
+      <div><dt>Tools</dt><dd>SolidWorks, Fusion, Ansys, Python, MATLAB, Robot Operating System 2</dd></div>
+      <div><dt>Recognition</dt><dd>University of Toronto Engineering Kompetitions Junior Design winner 2026, University of Toronto Excellence Award</dd></div>
+      <div><dt>Languages</dt><dd>English and Mandarin, conversational German</dd></div>
+    </dl>
+
+    <div class="block" id="coursework">
+      <h3>Relevant Coursework</h3>
+      <div class="minors">
+        <p><b>Mechatronics and Robotics:</b> Control Systems, Robotics, Mechatronic Systems Design, microelectromechanical systems, research thesis.</p>
+        <p><b>Engineering Business:</b> Accounting and Finance, Entrepreneurship, Competitive Strategy, Organizational Behaviour, Engineering Economics, Negotiations.</p>
+        <p><b>Advanced Manufacturing:</b> Manufacturing Engineering, Design of Effective Products, Advanced Manufacturing Technologies.</p>
+      </div>
+      <table class="terms"><tbody>
+        <tr><th>Year 1<small>2025–26</small></th>
+          <td class="done"><div class="t"><i></i>Fall</div>Orientation, Chemistry and Materials, Engineering Strategies I, Calculus I and II, Mechanics, Linear Algebra</td>
+          <td class="done"><div class="t"><i></i>Winter</div>Programming, Engineering Strategies II, Electrical Fundamentals, Accounting and Finance, Dynamics, MIE Seminar</td></tr>
+        <tr><th>Year 2<small>2026–27</small></th>
+          <td class="now"><div class="t"><i></i>Fall</div>Thermodynamics, Engineering Analysis, Probability and Statistics, Mechanical Design, Materials Science, Entrepreneurship</td>
+          <td><div class="t"><i></i>Winter</div>Life on Other Worlds, Markets and Competitive Strategy, Differential Equations, Manufacturing Engineering, Mechanics of Solids, Numerical Methods</td></tr>
+        <tr><th>Year 3<small>2027–28</small></th>
+          <td><div class="t"><i></i>Fall</div>Kinematics and Dynamics of Machines, Fluid Mechanics, Design for the Environment, Circuits, Design of Effective Products</td>
+          <td><div class="t"><i></i>Winter</div>Organizational Behaviour, Thermal Energy Conversion, Heat and Mass Transfer, Mechanics of Solids II, Electronics for Mechatronics</td></tr>
+        <tr class="pey"><th>Co-op<small>2028–29</small></th><td colspan="2">Professional Experience Year in industry, 12 to 16 months</td></tr>
+        <tr><th>Year 4<small>2029–30</small></th>
+          <td><div class="t"><i></i>Fall</div>Robotics, Negotiations, Engineering Economics, Control Systems, Capstone Design, Research Thesis</td>
+          <td><div class="t"><i></i>Winter</div>Mechatronic Systems, Capstone Design, Research Thesis, microelectromechanical systems, Advanced Manufacturing Technologies</td></tr>
+      </tbody></table>
+      <p class="meta" style="margin-top:.8rem">Course codes are in the <a href="classic.html#coursework">portfolio</a>.</p>
+    </div>
+  </section>
+
+  <section class="sheet" id="projects" data-shot="turbine" data-stop="2">
+    <p class="kicker">Projects</p>
+    <h2>Selected Projects</h2>
+    <article class="proj feature">
+      <figure class="ph"><img width="4284" height="5712" src="projects/vawt-1.jpg" alt="University of Toronto Wind Turbine Design Team vertical axis wind turbine" loading="lazy" /></figure>
+      <div>
+        <h3>Vertical-Axis Wind Turbine</h3>
+        <p class="meta">University of Toronto Wind Turbine Design Team, 2025 to 2026</p>
+        <p>A six-foot turbine taken from computer-aided design and structural analysis through machining and assembly. I prototyped the actuator and shaft-braking subsystems, and in the wind tunnel it started delivering power at 4 m/s. The turbine you see spinning in the scene is this one.</p>
+      </div>
+    </article>
+    <article class="proj">
+      <figure class="ph"><img width="939" height="193" src="projects/ski-assist-1.jpg" alt="Motorized ski-assist concept" loading="lazy" onerror="this.onerror=null;this.src='projects/ski-assist-2.jpg'" /></figure>
+      <div><h3>Motorized Ski-Assist Device for Children</h3><p class="meta">Client design project, 2026</p>
+        <p>A powered attachment so young cross-country skiers can keep up with their parents. From eighty concepts to two that I modelled and drew; my paddle-wheel design ranked first.</p></div>
+    </article>
+    <article class="proj">
+      <figure class="ph"><img width="856" height="570" src="projects/arm.jpg" alt="Robotic arm simulation" loading="lazy" /></figure>
+      <div><h3>Pick-and-Place Robotic Arm</h3><p class="meta">Concept with a working simulation</p>
+        <p>Before buying a motor, I built a browser simulation to check reach, joint layout and gripper geometry against a torque budget.</p>
+        <a class="go" href="robot-sim.html">Try the simulation</a></div>
+    </article>
+    <article class="proj">
+      <figure class="ph"><img width="793" height="792" src="projects/EMA-survey.jpg" alt="Fitbit survey clock face" loading="lazy" /></figure>
+      <div><h3>Fitbit Survey Application for a Heat-Exposure Study</h3><p class="meta">Building Energy and Indoor Environment Lab, University of Toronto</p>
+        <p>A clock face and phone companion that asks twenty-plus participants how they feel during summer heat, then sends each answer to the cloud for analysis.</p>
+        <a class="go" href="project-ema-survey.html">Read how it works</a></div>
+    </article>
+    <article class="proj">
+      <figure class="ph"><img width="642" height="469" src="projects/finliti-card-dealer.jpg" alt="Card dealer prototype" loading="lazy" /></figure>
+      <div><h3>Finliti Card Dealer Redesign</h3><p class="meta">University of Toronto Engineering Students Consulting Association consulting, 2025–26</p>
+        <p>Redesigned a board game's card dealer to take up 30% less space while still holding 160 cards. It met every one of the client's targets.</p></div>
+    </article>
+  </section>
+
+  <section class="sheet" id="experience" data-shot="research" data-stop="2">
+    <p class="kicker">Experience</p>
+    <h2>Research, Engineering and Consulting</h2>
+    <p class="lead">Selected results from each role. Full descriptions and tools are in the <a href="classic.html#experience">portfolio</a>.</p>
+    <ol class="roles">
+      <li class="role"><span class="role-logo"><img width="964" height="964" src="logos/uoft.jpg" alt="" /></span><div>
+        <h3>Undergraduate Research Intern</h3><p class="org">Hub for Advancing Buildings, University of Toronto, May to August 2026, full-time</p>
+        <ul class="wins">
+          <li>Identified the best reinforcement learning configuration for <strong>every</strong> chiller and room thermal model pairing by building a Python pipeline that trained and ranked Proximal Policy Optimization agents on a high-performance computing cluster.</li>
+          <li>Quantified outdoor air delivery and airflow between units across multiple high-rise apartments by writing Python scripts that processed tracer-gas and differential-pressure data.</li>
+          <li>Automated survey collection for <strong>20+</strong> participant kits in a multi-summer heat-exposure study by developing a Fitbit clock face and phone companion in JavaScript.</li>
+        </ul></div></li>
+      <li class="role"><span class="role-logo"><img width="500" height="500" src="logos/utwind.jpg" alt="" /></span><div>
+        <h3>Team Captain</h3><p class="org">University of Toronto Wind Turbine Design Team, August 2026 to present</p>
+        <ul class="wins">
+          <li>Grew the operating budget by over <strong>115%</strong> year over year by building a sponsorship team that secured external sponsors and partnerships.</li>
+          <li>Leading <strong>100+</strong> members across <strong>6</strong> departments toward the International Small Wind Turbine Contest by owning the design, manufacturing and testing timeline with a <strong>35-person</strong> leadership team.</li>
+          <li>Raised fall recruitment activity by <strong>55%</strong> year over year by restructuring leadership roles and the recruitment strategy.</li>
+          <li>Improving efficiency and self-starting by integrating electronic braking and actuator-driven variable blade pitch, after prototyping those subsystems and wind-tunnel testing a turbine at Delft University of Technology as a team member.</li>
+        </ul></div></li>
+      <li class="role"><span class="role-logo"><img width="500" height="500" src="logos/utesca.png" alt="" /></span><div>
+        <h3>Engineering Projects Director</h3><p class="org">University of Toronto Engineering Students Consulting Association, July 2026 to present</p>
+        <ul class="wins">
+          <li>Leading an <strong>8-person</strong> team to deliver a cloud software prototype for a software client by scoping requirements, setting the timeline and coordinating mobile, backend, security and integration work.</li>
+          <li>Reduced a client's card dealer footprint by <strong>30%</strong> while keeping <strong>160-card</strong> capacity and meeting <strong>100%</strong> of the client's targets, by redesigning it in Autodesk Fusion as a student consultant from October 2025 to April 2026.</li>
+        </ul></div></li>
+      <li class="role"><span class="role-logo"><img width="292" height="307" src="logos/utca.png" alt="" /></span><div>
+        <h3>Associate Consultant</h3><p class="org">University of Toronto Consulting Association, August 2026 to present</p>
+        <ul class="wins">
+          <li>Supported a client's strategic recommendations over a semester-long engagement by conducting market and competitor research and presenting the analysis with the engagement team.</li>
+        </ul></div></li>
+      <li class="role"><span class="role-logo"><img width="330" height="100" src="logos/essco.png" alt="" /></span><div>
+        <h3>Vice President of Competitions, Ontario Engineering Competition 2028</h3><p class="org">Engineering Student Societies' Council of Ontario, May 2026 to present</p>
+        <ul class="wins">
+          <li>Planning <strong>9</strong> competitions for <strong>350+</strong> students from <strong>16</strong> universities by leading <strong>20</strong> directors alongside two co-vice presidents.</li>
+          <li>Managing a <strong>$1,600</strong> merchandise budget for <strong>150+</strong> conference delegates by directing procurement and local vendor sourcing for the Conference on Advocacy and Leadership in Engineering 2027.</li>
+        </ul></div></li>
+      <li class="role"><span class="role-logo"><img width="1080" height="1080" src="logos/utek.png" alt="" /></span><div>
+        <h3>Junior Design Director</h3><p class="org">University of Toronto Engineering Kompetitions, March 2026 to present</p>
+        <ul class="wins">
+          <li>Designed a competition for <strong>150+</strong> first and second year students, a year after winning it, by writing the competition package, managing budget and schedule, and recruiting judges and sponsors.</li>
+        </ul></div></li>
+    </ol>
+    <a class="go" href="classic.html#experience">See every role in full</a>
+  </section>
+
+  <section class="sheet" id="running" data-shot="lake" data-stop="2">
+    <p class="kicker">Athletics</p>
+    <h2>Running and Hockey</h2>
+    <p class="lead">I run regularly along the Lake Ontario waterfront. These figures update nightly from Strava.</p>
+    <div class="board" aria-live="polite">
+      <div class="board-grid">
+        <div><b id="r-km">–</b><span>km this year</span></div>
+        <div><b id="r-runs">–</b><span>runs</span></div>
+        <div><b id="r-hrs">–</b><span>hours moving</span></div>
+      </div>
+      <p id="r-last">Loading the latest run</p>
+    </div>
+    <div class="block">
+      <h3>Intramural Hockey</h3>
+      <div class="side" style="margin-top:.4rem">
+        <p>I compete in intramural hockey for the Faculty of Applied Science and Engineering, more than a decade after my first club season.</p>
+        <figure class="ph"><img width="704" height="1000" src="img/hockey.jpg" alt="Playing hockey" loading="lazy" /></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 3 · DELFT ═══ -->
+  <section class="opener" id="delft" data-shot="delft" data-stop="3">
+    <div class="opener-text">
+      <p class="coords"><b>Chapter 3</b> 52.01° N, 4.36° E</p>
+      <h2 class="place">Delft</h2>
+      <p class="lede">In July 2026, an eleven-member team brought our turbine to the Netherlands for international competition.</p>
+    </div>
+  </section>
+
+  <section class="sheet" id="hobbies" data-shot="delft-stand" data-stop="3">
+    <p class="kicker">International Small Wind Turbine Contest</p>
+    <h2>Wind Tunnel Testing at Delft University of Technology</h2>
+    <p class="lead">We presented the turbine and our report to judges from Delft University of Technology and Hanze University, then put it in their wind tunnel to measure how much energy it could actually make.</p>
+    <figure class="ph wide"><img width="4284" height="5712" src="projects/vawt-2.jpg" alt="The turbine at the contest" loading="lazy" /></figure>
+
+    <div class="block">
+      <h3>International Perspective</h3>
+      <p>Delft is the most recent of the 33 cities I've visited. I travel to see how other places solve the same problems: transit, bridges, public space. A few from earlier trips, and <a href="map.html">every stop on the map</a>.</p>
+      <div class="trio">
+        <figure class="ph"><img width="750" height="1000" src="img/spain.jpg" alt="Spain" loading="lazy" /><figcaption>Spain</figcaption></figure>
+        <figure class="ph"><img width="1000" height="750" src="img/germany.jpg" alt="Germany" loading="lazy" /><figcaption>Germany</figcaption></figure>
+        <figure class="ph"><img width="750" height="1000" src="img/czechia.jpg" alt="Czechia" loading="lazy" /><figcaption>Czechia</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 4 · NEXT ═══ -->
+  <section class="opener" id="next" data-shot="horizon" data-stop="4">
+    <div class="opener-text">
+      <p class="coords"><b>Chapter 4</b> Wherever the wind goes</p>
+      <h2 class="place">What's next</h2>
+      <p class="lede">A twelve to sixteen month Professional Experience Year in industry, beginning May 2028.</p>
+    </div>
+  </section>
+
+  <section class="sheet" id="contact" data-shot="horizon-high" data-stop="4">
+    <p class="kicker">Contact</p>
+    <h2>Get in Touch</h2>
+    <p class="lead">I am seeking internship and research opportunities, and welcome conversations about engineering, design teams and collaboration.</p>
+    <div class="contact-links">
+      <a class="primary" href="mailto:che.li@mail.utoronto.ca">Email me</a>
+      <a href="https://linkedin.com/in/li-chenyu" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/chenyu-u" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://hab.civmin.utoronto.ca/people/chenyu-li/" target="_blank" rel="noopener">Research group</a>
+    </div>
+    <p class="meta" style="margin-top:1rem">che.li@mail.utoronto.ca</p>
+  </section>
+  <footer>
+    <span>Chenyu Li, University of Toronto</span>
+    <a href="classic.html">Portfolio</a>
+    <a href="laptop.html">My office</a>
+    <a href="robot-sim.html">Robot arm simulation</a>
+  </footer>
+  <div class="end-space" aria-hidden="true"></div>
+</main>
+
+<!-- page logic that works without 3D: scroll state, route, running board -->
+<script>
+(function () {
+  'use strict';
+  var sections = [].slice.call(document.querySelectorAll('main > section'));
+  var stops = [].slice.call(document.querySelectorAll('#route a'));
+  var STOP_NAMES = ['Rockies', 'Calgary', 'Toronto', 'Delft', 'Next'];
+  var bar = document.getElementById('bar'), place = document.getElementById('bar-place'), dot = document.getElementById('route-dot');
+  var S = window.__story = { u: 0, sections: sections, stop: 0, sheetCover: 0, sceneVisible: true, has3d: false, listeners: [] };
+
+  // key scroll positions: a section's shot is fully reached when its top is 30% down the screen
+  /* Phones: the reading panels span the whole width, so the scene is only seen in the chapter openers.
+     The camera holds on an opener's view while it is on screen, flies while the panels cover the scene,
+     and is already in place when the next opener slides up. */
+  function phoneU(y, vh) {
+    var ops = [];
+    sections.forEach(function (s, k) { if (s.classList.contains('opener')) ops.push({ k: k, top: s.offsetTop, bot: s.offsetTop + s.offsetHeight }); });
+    for (var j = 0; j < ops.length; j++) {
+      var o = ops[j], holdEnd = o.bot - vh * .45, next = ops[j + 1];
+      if (!next || y <= holdEnd) return o.k;
+      var arrive = next.top - vh * 1.02;
+      if (y < arrive) return o.k + (next.k - o.k) * Math.min(1, Math.max(0, (y - holdEnd) / Math.max(1, arrive - holdEnd)));
+    }
+    return ops.length ? ops[ops.length - 1].k : 0;
+  }
+  function keys() { return sections.map(function (s, i) { return i === 0 ? 0 : Math.max(0, s.offsetTop - innerHeight * .3); }); }
+  var K = keys();
+  function update() {
+    var y = scrollY, vh = innerHeight, i = 0;
+    while (i < K.length - 1 && y >= K[i + 1]) i++;
+    var f = i < K.length - 1 ? (y - K[i]) / Math.max(1, K[i + 1] - K[i]) : 0;
+    S.u = Math.min(sections.length - 1, i + Math.min(1, Math.max(0, f)));
+    if (innerWidth <= 860) S.u = phoneU(y, vh);
+    S.shotIndex = Math.floor(S.u);
+
+    // which chapter we're in, and how much of the screen the reading column covers
+    var stop = 0, cover = 0, openerVisible = false;
+    sections.forEach(function (s) {
+      var r = s.getBoundingClientRect();
+      if (r.top < vh * .5) stop = +s.dataset.stop;
+      var vis = Math.max(0, Math.min(vh, r.bottom) - Math.max(0, r.top)) / vh;
+      if (s.classList.contains('sheet')) cover += vis; else if (vis > 0.02) openerVisible = true;
+    });
+    S.sheetCover = Math.min(1, cover);
+    S.sceneVisible = innerWidth > 860 || openerVisible;
+    if (stop !== S.stop) { S.stop = stop; S.listeners.forEach(function (fn) { fn(stop); }); }
+    place.textContent = STOP_NAMES[stop];
+    stops.forEach(function (a, k) { a.classList.toggle('here', k === stop); });
+    // the gold dash travels along the route line in proportion to scroll
+    var a = stops[stop], b = stops[Math.min(stops.length - 1, stop + 1)];
+    if (a && dot) {
+      var rl = document.getElementById('route').getBoundingClientRect().left, ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+      var ar = ra.left - rl + ra.width / 2, br = rb.left - rl + rb.width / 2;
+      var chapterStart = document.querySelector('main [data-stop="' + stop + '"]'), next = document.querySelector('.opener[data-stop="' + (stop + 1) + '"]');
+      var t = 0;
+      if (chapterStart && next) t = Math.min(1, Math.max(0, (y + vh * .5 - chapterStart.offsetTop) / (next.offsetTop - chapterStart.offsetTop)));
+      dot.style.transform = 'translateX(' + (ar + (br - ar) * t - 13).toFixed(1) + 'px)';
+    }
+    bar.classList.toggle('solid', S.sheetCover > .15 || innerWidth <= 860 && y > vh * .6);
+  }
+  var raf = 0;
+  addEventListener('scroll', function () { if (!raf) raf = requestAnimationFrame(function () { raf = 0; update(); }); }, { passive: true });
+  addEventListener('resize', function () { K = keys(); update(); });
+  addEventListener('load', function () { K = keys(); update(); });
+  if ('ResizeObserver' in window) new ResizeObserver(function () { K = keys(); update(); }).observe(document.querySelector('main'));
+  update();
+
+  fetch('strava.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
+    var y = d.ytd || {};
+    document.getElementById('r-km').textContent = Math.round((y.distance || 0) / 1000);
+    document.getElementById('r-runs').textContent = y.count || 0;
+    document.getElementById('r-hrs').textContent = Math.round((y.moving_time || 0) / 3600);
+    var a = (d.activities || []).filter(function (x) { return x.type === 'Run'; })[0], el = document.getElementById('r-last');
+    if (a) {
+      var pace = a.moving_time / (a.distance / 1000);
+      el.innerHTML = 'Last run <b>' + (a.distance / 1000).toFixed(1) + ' km</b> at ' + Math.floor(pace / 60) + ':' + String(Math.round(pace % 60)).padStart(2, '0') +
+        ' per km, ' + new Date(a.start_date).toLocaleDateString('en-CA', { month: 'long', day: 'numeric' });
+    } else el.textContent = 'No runs logged yet this year';
+  }).catch(function () { document.getElementById('r-last').textContent = 'Running stats are unavailable right now'; });
+
+  // Toronto opener: today's conditions, which the scene behind it is showing
+  var toWx = document.getElementById('to-wx'), toTx = document.getElementById('to-wx-text');
+  if (window.__wx) window.__wx.on(function () { var t = window.__wx.line('opener'); toTx.textContent = t; toWx.classList.toggle('on', !!t); });
+})();
+</script>
+
+<script>
+/* Cover: "Chenyu Li" as an object in a wind tunnel. Streamlines flow left to right and bend around the
+   letters (a distance field of the lettering steers them). The ring fills as the 3D world is built.
+   Entering: the letters break into particles that the wind carries off, and the dark screen itself is
+   blown away in streaks, gust by gust, uncovering the Rockies while the camera dives in. */
+(function () {
+  var S = window.__story, cover = document.getElementById('cover'), btn = document.getElementById('cv-enter');
+  var fill = document.getElementById('cv-fill'), pct = document.getElementById('cv-pct'), word = document.getElementById('cv-word');
+  var veil = document.getElementById('veil'), flow = document.getElementById('flow'), letters = document.getElementById('letters');
+  var vx = veil.getContext('2d'), fx = flow.getContext('2d'), lx = letters.getContext('2d', { willReadFrequently: true });
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var BG = '#0B1830';
+  var W, H, dpr, CELL = 5, GW, GH, dist, parts = [], speedUp = 1, entered = false, running = true, exitT0 = 0, bits = null, sprite = null;
+  var hover = 0, hoverOn = false, gatherT0 = 0, BC = { x: 0, y: 0 };   // button hover, the pull-in on click, button centre (device px)
+  // the free stream follows Toronto's real wind (north is up). Until it is known, and from the click on,
+  // it is the tunnel's own steady left-to-right flow, so the way in looks exactly the same every time.
+  var LW = { a: 0, s: 1, g: 0 }, LT = { a: 0, s: 1, g: 0 }, cx = 1, cy = 0;
+  var wxEl = document.getElementById('cv-wx'), wxTx = document.getElementById('cv-wx-text'), wxAr = document.getElementById('cv-wx-arrow');
+  function liveWind(d) {
+    if (d) {
+      var to = (d.dir + 180) * Math.PI / 180;                      // meteorological "from" → the way it blows
+      LT.a = Math.atan2(-Math.cos(to), Math.sin(to));               // screen angle: east → right, north → up
+      LT.s = Math.max(.55, Math.min(1.7, .55 + d.speed / 32));      // calm drifts, a gale streams
+      LT.g = Math.max(0, Math.min(1, (d.gust - d.speed) / Math.max(d.speed, 8)));
+      if (d.speed < 2) { LT.a = 0; LT.s = .5; LT.g = 0; }
+      wxAr.style.setProperty('--wx-rot', (d.speed < 2 ? 0 : LT.a * 180 / Math.PI).toFixed(1) + 'deg');
+      wxAr.style.visibility = d.speed < 2 ? 'hidden' : '';
+      if (!(t > 1.2) && !gatherT0) { LW.a = LT.a; LW.s = LT.s; LW.g = LT.g; }   // known before the flow has settled (cache, fast network): start in the real wind, no swing
+    }
+    var txt = window.__wx ? window.__wx.line('cover') : '';
+    wxTx.textContent = txt; document.getElementById('cv-wx-head').textContent = txt ? window.__wx.line('head') : ''; wxEl.classList.toggle('on', !!txt);
+  }
+  if (window.__wx) window.__wx.on(liveWind);
+  S.coverOpaque = true;
+
+  // the cover's own box (the layout viewport): unlike innerWidth/innerHeight it doesn't shrink when a phone pinch-zooms
+  function VW() { return cover.clientWidth || document.documentElement.clientWidth; }
+  function VH() { return cover.clientHeight || document.documentElement.clientHeight; }
+  function layoutText() {
+    var portrait = VH() > VW() * 1.1, lines = portrait ? ['Chenyu', 'Li'] : ['Chenyu Li'];
+    var size = portrait ? Math.min(VW() * .27, VH() * .2) : Math.min(VW() * .155, VH() * .3);
+    return { lines: lines, size: size * dpr, font: '800 ' + Math.round(size * dpr) + 'px Archivo, system-ui, sans-serif' };
+  }
+  function drawLetters(ctx, L, fill) {
+    ctx.font = L.font; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = fill;
+    var lh = L.size * .9, total = lh * L.lines.length, y0 = H * .43 - total / 2 + L.size * .78;
+    L.bottom = y0 + (L.lines.length - 1) * lh + L.size * .2;          // under the descender of the y
+    L.lines.forEach(function (t, i) { ctx.fillText(t, (W - ctx.measureText(t).width) * .5, y0 + i * lh); });   // each line centred
+  }
+  function build() {
+    dpr = Math.min(devicePixelRatio || 1, 2); bw = VW(); bh = VH();
+    W = veil.width = flow.width = letters.width = Math.round(VW() * dpr); H = veil.height = flow.height = letters.height = Math.round(VH() * dpr);
+    vx.fillStyle = BG; vx.fillRect(0, 0, W, H);
+    var L = layoutText();
+    lx.font = L.font; var wmax = 0; L.lines.forEach(function (t) { wmax = Math.max(wmax, lx.measureText(t).width); });
+    if (wmax > W * .86) { L.size *= W * .86 / wmax; L.font = '800 ' + Math.round(L.size) + 'px Archivo, system-ui, sans-serif'; }
+    lx.clearRect(0, 0, W, H); drawLetters(lx, L, '#F1EEE7');
+    // the button sits centred under the name
+    cover.style.setProperty('--btn-top', Math.round(L.bottom / dpr + Math.max(30, VH() * .055)) + 'px');
+    var br = btn.getBoundingClientRect(); BC.x = (br.left + br.width / 2) * dpr; BC.y = (br.top + br.height / 2) * dpr;
+    CELL = Math.round(5 * dpr); GW = Math.ceil(W / CELL); GH = Math.ceil(H / CELL);
+    var m = document.createElement('canvas'); m.width = GW; m.height = GH; var mx = m.getContext('2d');
+    mx.scale(1 / CELL, 1 / CELL); drawLetters(mx, L, '#fff');
+    // the streams part around the button too
+    mx.beginPath(); if (mx.roundRect) mx.roundRect(br.left * dpr, br.top * dpr, br.width * dpr, br.height * dpr, br.height * dpr / 2); else mx.rect(br.left * dpr, br.top * dpr, br.width * dpr, br.height * dpr); mx.fill();
+    var px = mx.getImageData(0, 0, GW, GH).data; dist = new Float32Array(GW * GH);
+    for (var i = 0; i < GW * GH; i++) dist[i] = px[i * 4 + 3] > 100 ? -1 : 1e6;
+    for (var y = 0; y < GH; y++) for (var x = 0; x < GW; x++) { var k = y * GW + x; if (dist[k] < 0) continue;
+      var d = dist[k]; if (x > 0) d = Math.min(d, Math.max(0, dist[k - 1]) + 1); if (y > 0) d = Math.min(d, Math.max(0, dist[k - GW]) + 1);
+      if (x > 0 && y > 0) d = Math.min(d, Math.max(0, dist[k - GW - 1]) + 1.414); if (x < GW - 1 && y > 0) d = Math.min(d, Math.max(0, dist[k - GW + 1]) + 1.414); dist[k] = d; }
+    for (y = GH - 1; y >= 0; y--) for (x = GW - 1; x >= 0; x--) { k = y * GW + x; if (dist[k] < 0) continue;
+      d = dist[k]; if (x < GW - 1) d = Math.min(d, Math.max(0, dist[k + 1]) + 1); if (y < GH - 1) d = Math.min(d, Math.max(0, dist[k + GW]) + 1);
+      if (x < GW - 1 && y < GH - 1) d = Math.min(d, Math.max(0, dist[k + GW + 1]) + 1.414); if (x > 0 && y < GH - 1) d = Math.min(d, Math.max(0, dist[k + GW - 1]) + 1.414); dist[k] = d; }
+    var N = VW() < 640 ? 950 : 1500; parts = [];
+    for (i = 0; i < N; i++) parts.push(spawn(Math.random() * W));
+    fx.clearRect(0, 0, W, H);
+    // a soft streak used to blow the dark screen away: solid on the left, feathered at the leading edge and top/bottom
+    sprite = document.createElement('canvas'); sprite.width = 512; sprite.height = 64; var sx = sprite.getContext('2d');
+    var gH = sx.createLinearGradient(0, 0, 512, 0); gH.addColorStop(0, 'rgba(0,0,0,1)'); gH.addColorStop(.78, 'rgba(0,0,0,1)'); gH.addColorStop(1, 'rgba(0,0,0,0)');
+    sx.fillStyle = gH; sx.fillRect(0, 0, 512, 64);
+    sx.globalCompositeOperation = 'destination-in';
+    var gV = sx.createLinearGradient(0, 0, 0, 64); gV.addColorStop(0, 'rgba(0,0,0,0)'); gV.addColorStop(.3, 'rgba(0,0,0,1)'); gV.addColorStop(.7, 'rgba(0,0,0,1)'); gV.addColorStop(1, 'rgba(0,0,0,0)');
+    sx.fillStyle = gV; sx.fillRect(0, 0, 512, 64);
+    document.body.classList.add('cover-on');
+  }
+  function spawn(x, y) { return { x: x, y: y == null ? Math.random() * H : y, life: 200 + Math.random() * 400, hi: Math.random() < .1 }; }
+  // a new stream enters through whichever edges the wind is blowing in from, in proportion to the flow through each
+  function spawnUp() {
+    var l = Math.max(0, cx) * H, r = Math.max(0, -cx) * H, tp = Math.max(0, cy) * W, bt = Math.max(0, -cy) * W, k = Math.random() * (l + r + tp + bt);
+    if ((k -= l) < 0) return spawn(-Math.random() * 40);
+    if ((k -= r) < 0) return spawn(W + Math.random() * 40);
+    if ((k -= tp) < 0) return spawn(Math.random() * W, -Math.random() * 40);
+    return spawn(Math.random() * W, H + Math.random() * 40);
+  }
+  function D(x, y) { var gx = Math.max(0, Math.min(GW - 1, x / CELL | 0)), gy = Math.max(0, Math.min(GH - 1, y / CELL | 0)); return dist[gy * GW + gx]; }
+
+  // the lettering as particles: one for every few pixels of ink
+  function shatter() {
+    var step = Math.max(2, Math.round(2.5 * dpr)), img = lx.getImageData(0, 0, W, H).data, list = [];
+    for (var y = 0; y < H; y += step) for (var x = 0; x < W; x += step) {
+      if (img[(y * W + x) * 4 + 3] < 128) continue;
+      list.push({ x: x, y: y, vx: 0, vy: 0, d: (x / W) * .42 + Math.random() * .16, life: .7 + Math.random() * .6, s: step * (.7 + Math.random() * .5), seed: Math.random() * 6.28 });
+    }
+    return list;
+  }
+
+  var last = performance.now(), t = 0;
+  function frame(now) {
+    if (!running) return;
+    requestAnimationFrame(frame);
+    var dt = Math.min(.05, (now - last) / 1000); last = now; t += dt;
+    var step = 60 * dt, ex = entered && exitT0 ? (now - exitT0) / 1000 : -1;
+    hover += ((hoverOn ? 1 : 0) - hover) * Math.min(1, dt * 5);
+    var g = gatherT0 ? (now - gatherT0) / 1000 : -1;
+    speedUp = ex >= 0 ? 1 + 7 * Math.min(1, ex / .7) * Math.min(1, ex / .7) : 1 + hover * .9;
+    // ease toward the live wind (shortest way round); once the visitor clicks, swing back to the tunnel's flow
+    var tA = g >= 0 ? 0 : LT.a, tS = g >= 0 ? 1 : LT.s, tG = g >= 0 ? 0 : LT.g, kw = 1 - Math.exp(-dt * (g >= 0 ? 7 : .9));
+    var da = Math.atan2(Math.sin(tA - LW.a), Math.cos(tA - LW.a));
+    LW.a += da * kw; LW.s += (tS - LW.s) * kw; LW.g += (tG - LW.g) * kw;
+    cx = Math.cos(LW.a); cy = Math.sin(LW.a);
+    var gust = 1 + LW.g * .45 * (Math.sin(t * .9) * .6 + Math.sin(t * 2.3 + 1.7) * .4);   // gusts: the whole stream surges and eases
+    // streamlines
+    fx.globalCompositeOperation = 'destination-out'; fx.fillStyle = 'rgba(0,0,0,' + Math.min(1, .075 * step * (ex >= 0 ? .6 : 1)) + ')'; fx.fillRect(0, 0, W, H);
+    fx.globalCompositeOperation = 'source-over'; fx.lineWidth = (ex >= 0 ? 1.6 : 1.1) * dpr; fx.lineCap = 'round';
+    var U = 2.1 * dpr * speedUp * step * LW.s * gust, R = 26, his = [], wav = .12 + LW.g * .1;
+    fx.beginPath(); fx.strokeStyle = 'rgba(236,238,242,.55)';
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i], dc = ex >= 0 ? 1e6 : D(p.x, p.y);
+      var along = p.x * cx + p.y * cy, across = p.y * cx - p.x * cy;
+      var wv = Math.sin(along * .0025 / dpr + t * .7 + across * .002 / dpr) * wav;
+      var vxx = cx - cy * wv, vy = cy + cx * wv;
+      if (dc >= 0 && dc < R) {
+        var gxp = D(p.x + CELL, p.y) - D(p.x - CELL, p.y), gyp = D(p.x, p.y + CELL) - D(p.x, p.y - CELL), gl = Math.hypot(gxp, gyp) || 1;
+        var nx = gxp / gl, ny = gyp / gl, w = Math.exp(-dc / 7), dot = vxx * nx + vy * ny;
+        if (dot < 0) { vxx -= dot * nx * w * 1.05; vy -= dot * ny * w * 1.05; }
+        var sp = 1 + .7 * w; vxx *= sp; vy *= sp;
+      }
+      if (g >= 0 && ex < 0) {                                       // clicked: every stream is drawn into the button, spiralling
+        var ddx = BC.x - p.x, ddy = BC.y - p.y, dl = Math.hypot(ddx, ddy) || 1, pull = Math.min(1, g / .3) * Math.min(1, g / .3);
+        var ux = (ddx * .88 - ddy * .38) / dl, uy = (ddy * .88 + ddx * .38) / dl, spd = Math.min(dl * .35, (10 + 70 * pull) * dpr * step);
+        vxx = vxx * (1 - pull) + ux * pull * spd / U; vy = vy * (1 - pull) + uy * pull * spd / U;
+        if (dl < 30 * dpr) { parts[i] = spawn(Math.random() * W); continue; }
+        dc = 1e6;
+      }
+      var ox = p.x, oy = p.y; p.x += vxx * U; p.y += vy * U; p.life -= step;
+      if (dc < 0 || p.x > W + 45 || p.x < -45 || p.y < -45 || p.y > H + 45 || p.life < 0) { parts[i] = Math.random() < .85 ? spawnUp() : spawn(Math.random() * W); continue; }
+      if (p.hi) his.push(ox, oy, p.x, p.y); else { fx.moveTo(ox, oy); fx.lineTo(p.x, p.y); }
+    }
+    fx.stroke();
+    fx.beginPath(); fx.strokeStyle = 'rgba(120,165,235,.9)';
+    for (i = 0; i < his.length; i += 4) { fx.moveTo(his[i], his[i + 1]); fx.lineTo(his[i + 2], his[i + 3]); }
+    fx.stroke();
+    if (ex >= 0) exitFrame(ex, dt);
+  }
+
+  // ── the way in ───────────────────────────────────────────────
+  var BANDS = 26, delays = [];
+  for (var b = 0; b < BANDS; b++) delays.push(.12 + .22 * Math.abs(Math.sin(b * 1.7)) + (b % 4) * .035 + Math.random() * .06);
+  function ease(u) { u = Math.max(0, Math.min(1, u)); return u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2; }
+  function exitFrame(ex, dt) {
+    // 1. the name comes apart, left edge first, and is carried downwind
+    lx.clearRect(0, 0, W, H);
+    lx.fillStyle = '#F1EEE7';
+    var acc = 2600 * dpr;
+    for (var i = 0; i < bits.length; i++) {
+      var q = bits[i], age = ex - q.d;
+      if (age < 0) { lx.fillRect(q.x, q.y, q.s, q.s); continue; }
+      if (age > q.life) continue;
+      q.vx += acc * dt * (.6 + .8 * Math.sin(q.seed) * Math.sin(q.seed)); q.vy += Math.sin(q.seed + age * 9) * 900 * dpr * dt;
+      q.x += q.vx * dt; q.y += q.vy * dt;
+      lx.globalAlpha = 1 - age / q.life;
+      lx.fillRect(q.x, q.y, q.s * (1 + age * 3), q.s * .7);            // stretched along the wind as it speeds up
+    }
+    lx.globalAlpha = 1;
+    // 2. the dark screen is blown away in streaks
+    vx.globalCompositeOperation = 'destination-out';
+    var bh = H / BANDS * 2.4;
+    for (var k = 0; k < BANDS; k++) {
+      var u = ease((ex - delays[k]) / .95), front = W * (-.2 + 1.55 * u);
+      if (front <= 0) continue;
+      var y = (k + .5) * H / BANDS + Math.sin(k * 2.3 + ex * 3) * H / BANDS * .3;
+      vx.drawImage(sprite, -W * .1, y - bh / 2, front + W * .1, bh);
+    }
+    vx.globalCompositeOperation = 'source-over';
+    if (ex > 1.45) vx.clearRect(0, 0, W, H);
+    // 3. streamlines thin out into the scene
+    flow.style.opacity = String(Math.max(0, 1 - Math.max(0, ex - .9) / .7));
+    if (ex > .55 && document.body.classList.contains('loading')) { document.body.classList.remove('loading'); if (window.__lenis) window.__lenis.start(); }
+    if (ex > 1.75) { running = false; cover.remove(); if (location.hash) { var el = document.querySelector(location.hash); if (el) el.scrollIntoView(); } }
+  }
+
+  // progress ring: follows the 3D build, never jumps
+  var shown = 0, ready = false;
+  function progress() {
+    if (entered) return;
+    requestAnimationFrame(progress);
+    var target = S.has3d || document.body.classList.contains('no3d') ? 1 : (S.buildProgress || 0) * .97;
+    shown += (target - shown) * .12; if (target === 1 && shown > .985) shown = 1;
+    fill.style.transform = 'scaleX(' + shown.toFixed(3) + ')';
+    if (!ready) pct.textContent = Math.round(shown * 100) + '%';
+    if (shown === 1 && !ready) {
+      ready = true; btn.disabled = false; btn.classList.add('ready'); cover.classList.add('ready'); word.textContent = 'Enter the story'; pct.remove(); btn.removeAttribute('aria-label');
+      if (location.hash) enter();
+    }
+  }
+  function enter() {
+    if (!ready || entered) return; entered = true;
+    if (window.__sound) window.__sound.enter();                    // the whoosh, and the score fading in (this click unlocks audio)
+    if (reduce) { cover.classList.add('leaving'); S.coverOpaque = false; S.introStart = performance.now(); document.body.classList.remove('loading'); if (window.__lenis) window.__lenis.start(); running = false; cover.remove(); return; }
+    // the streams rush into the button for a beat, then the name is blown apart
+    btn.classList.add('firing'); gatherT0 = performance.now();
+    setTimeout(function () {
+      cover.classList.add('leaving');
+      bits = shatter();
+      exitT0 = performance.now();
+      S.coverOpaque = false;                                       // the world was drawn once behind the cover; it starts moving now
+      S.introStart = exitT0 + 120;
+    }, 380);
+  }
+  // only the button opens the site (Enter/Space work on it once focused)
+  btn.addEventListener('click', enter);
+  btn.addEventListener('pointerenter', function () { hoverOn = ready; });
+  btn.addEventListener('pointerleave', function () { hoverOn = false; });
+  btn.addEventListener('focus', function () { hoverOn = ready; }); btn.addEventListener('blur', function () { hoverOn = false; });
+
+  var fontReady = document.fonts && document.fonts.load ? document.fonts.load('800 100px Archivo') : Promise.resolve();
+  Promise.race([fontReady, new Promise(function (r) { setTimeout(r, 1500); })]).then(function () { build(); requestAnimationFrame(frame); });
+  // rebuild only for a real change of window size: not for pinch-zoom, and not for the phone
+  // browser's toolbar sliding in and out (a small height change)
+  var rt, bw = 0, bh = 0;
+  addEventListener('resize', function () {
+    if (entered || (window.visualViewport && visualViewport.scale > 1.01)) return;
+    clearTimeout(rt); rt = setTimeout(function () { if (VW() !== bw || Math.abs(VH() - bh) > 140) build(); }, 150);
+  });
+  requestAnimationFrame(progress);
+})();
+</script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+/* Inertia scrolling on desktop: wheel and trackpad input glide instead of stepping, so the camera moves smoothly.
+   Touch devices keep native scrolling. Paused while the cover is up. */
+(function () {
+  if (!window.Lenis || matchMedia('(pointer: coarse)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var lenis = window.__lenis = new Lenis({ lerp: .085, wheelMultiplier: .9 });
+  if (document.body.classList.contains('loading')) lenis.stop();
+  (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(performance.now());
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#"]'); if (!a) return;
+    var el = a.getAttribute('href') === '#top' ? 0 : document.querySelector(a.getAttribute('href')); if (el === null) return;
+    e.preventDefault(); lenis.scrollTo(el, { duration: 1.8, easing: function (t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; } });
+  });
+})();
+</script>
+<script type="module" src="world.js"></script>
+<script src="sound.js" defer></script>
+<script>
+  setTimeout(function () { if (!window.__story.has3d) document.body.classList.add('no3d'); }, 30000);
+</script>
+</body>
+</html>
