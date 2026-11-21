@@ -1,16 +1,23 @@
 {
-  "generated_at": "2026-11-20T09:53:00.565554+00:00",
+  "generated_at": "2026-11-21T09:29:15.755316+00:00",
   "ytd": {
-    "distance": 140848,
-    "count": 27,
-    "moving_time": 47626.0
+    "distance": 146590,
+    "count": 28,
+    "moving_time": 49356.0
   },
   "all": {
-    "distance": 149007.49999999997,
-    "count": 29,
-    "moving_time": 49999
+    "distance": 154749.19999999998,
+    "count": 30,
+    "moving_time": 51729
   },
   "activities": [
+    {
+      "type": "Run",
+      "name": "Night Run",
+      "distance": 5741.7,
+      "moving_time": 1730,
+      "start_date": "2026-11-21T02:24:13Z"
+    },
     {
       "type": "Run",
       "name": "Night Run",
@@ -45,13 +52,6 @@
       "distance": 5271.6,
       "moving_time": 1652,
       "start_date": "2026-10-09T00:12:04Z"
-    },
-    {
-      "type": "Run",
-      "name": "University of Toronto Run Club Run",
-      "distance": 5039.8,
-      "moving_time": 1975,
-      "start_date": "2026-09-26T14:13:04Z"
     }
   ]
 }
