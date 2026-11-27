@@ -2224,6 +2224,6 @@ window.CL_I18N.de = {
  "Second concept model (photo 2 of 4)": "Zweites Konzeptmodell (Foto 2 von 4)",
  "Third concept model (photo 3 of 4)": "Drittes Konzeptmodell (Foto 3 von 4)",
  "Video of the computer-aided design model (photo 4 of 4)": "Video des CAD-Modells (Foto 4 von 4)",
- "The 2024 structure going up (photo 2 of 2)": "Der Bau des Gebäudes für das Jahr 2024 (Foto 2 von 2)",
+ "The 2024 structure going up (photo 2 of 2)": "Die Dosenskulptur 2024 im Aufbau (Foto 2 von 2)",
  "The car from another angle (photo 2 of 2)": "Das Auto aus einem anderen Blickwinkel (Foto 2 von 2)"
 };
