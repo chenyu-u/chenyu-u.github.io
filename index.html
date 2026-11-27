@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en" class="js">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="favicon.png" type="image/png" />
+<title>Chenyu Li · Mechanical Engineering @ University of Toronto</title>
+<meta name="description" content="Chenyu Li, Mechanical Engineering student at the University of Toronto. I love designing things that move, from wind turbines and robots to the business that gets them built." />
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/three.module.min.js",
+  "three/addons/": "./vendor/three/addons/"
+} }
+</script>
+<link rel="modulepreload" href="./vendor/three/three.module.min.js" />
+<link rel="modulepreload" href="turbine.js?v=9" />
+<link rel="preload" href="fonts/archivo-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="site.css?v=9" />
+<link rel="stylesheet" href="shell.css?v=8" />
+<link rel="stylesheet" href="site-prefs.css" />
+<link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
+<script src="site-prefs.js"></script>
+<script src="live-weather.js"></script>
+<script src="site.js?v=9" defer></script>
+<script>
+  /* the cover fills while the page and the 3D turbine load; a reload always starts at the top */
+  window.__story = { has3d: false, buildProgress: 0 };
+  window.__home = { u: 0 };
+  try { history.scrollRestoration = 'manual'; if ((performance.getEntriesByType('navigation')[0] || {}).type === 'reload' && location.hash) history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+</script>
+<!--
+  HOME
+  The wind cover (shared with story.html) opens onto the build: one 3D wind turbine (turbine.js)
+  on a plain studio floor, put up part by part as you scroll (foundation, tower, drivetrain,
+  nacelle, hub, blades), with the steps listed across the top and the text down the left. Detail lives on
+  projects.html, experience.html, life.html and resume.html. Header and footer: tools/shell.mjs.
+-->
+<style>
+  /* ── cover: the name in a wind tunnel ──────────────────── */
+  body.loading { overflow: hidden; }
+  #cover { position: fixed; inset: 0; z-index: 200; color: #EEEBE4; overflow: hidden; background: transparent; touch-action: none; }   /* no pinch-zoom on the cover */
+  html:not(.js) #cover { display: none; }
+  #cover canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  #cover .cv-top, #cover .cv-bot { transition: opacity .35s ease, transform .5s cubic-bezier(.7,0,.2,1); }
+  #cover.leaving .cv-top, #cover.leaving .cv-bot { opacity: 0; transform: translateY(-12px); }
+  #cover.leaving { pointer-events: none; }
+  html.js body.loading::after { content: ""; position: fixed; inset: 0; z-index: 199; background: #0B1830; pointer-events: none; }
+  html.js body.loading.cover-on::after { display: none; }
+  .cv-top, .cv-bot { position: absolute; z-index: 1; left: clamp(18px, 4vw, 56px); right: clamp(18px, 4vw, 56px); display: flex; justify-content: space-between; align-items: flex-end; gap: 1.5rem; text-shadow: 0 0 3px #0B1830, 0 1px 14px #0B1830; }
+  /* a soft dark backing so the small print stays readable over the moving streams */
+  .cv-top::before, .cv-bot::before { content: ""; position: absolute; z-index: -1; left: -80px; right: -80px; pointer-events: none; }
+  .cv-top::before { top: -60px; bottom: -46px; background: linear-gradient(rgba(11,24,48,.92), rgba(11,24,48,0)); }
+  .cv-bot::before { bottom: -60px; top: -56px; background: linear-gradient(to top, rgba(11,24,48,.94), rgba(11,24,48,0)); }
+  .cv-top { top: calc(env(safe-area-inset-top) + 22px); align-items: flex-start; font-size: 1rem; line-height: 1.45; color: #C6CFD9; }
+  .cv-top b { display: block; color: #F4F1EA; font-weight: 700; font-size: 1.06rem; }
+  .cv-top span { color: #E3E8EE; font-weight: 550; }
+  .cv-bot { bottom: calc(env(safe-area-inset-bottom) + 30px); }
+  .cv-line { font-size: clamp(.98rem, 1.35vw, 1.15rem); line-height: 1.5; color: #E7EAED; font-weight: 450; white-space: nowrap; }
+  @media (max-width: 900px) { .cv-line { white-space: normal; max-width: 30rem; } }
+  /* live conditions in Toronto: appear only once known, never shift the layout */
+  .cv-wx { font-size: .94rem; line-height: 1.45; color: #C6CFD9; font-weight: 400; display: flex; align-items: center; gap: .7rem; flex: none; opacity: 0; transition: opacity .9s ease; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cv-wx .wx-txt { display: flex; flex-direction: column; }
+  .cv-wx b { font-weight: 700; color: #E3E8EE; }
+  .cv-wx.on { opacity: 1; }
+  .wx-arrow { width: 22px; height: 22px; flex: none; color: #E3E8EE; transform: rotate(var(--wx-rot, 0deg)); transition: transform 1.2s cubic-bezier(.3,.7,.2,1); }
+  @media (max-width: 1100px) { .cv-bot { flex-direction: column; align-items: flex-start; gap: .9rem; } .cv-wx { white-space: normal; } }
+  .live-wx { font-size: 15px; line-height: 1.5; color: var(--ink-2); margin-top: .9rem; max-width: 32rem; display: flex; gap: .6rem; align-items: baseline; opacity: 0; transition: opacity .9s ease; }
+  .live-wx.on { opacity: 1; }
+  .live-wx:empty, .live-wx:not(.on) { pointer-events: none; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--wind); flex: none; position: relative; top: -1px; }
+  .live-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--wind); opacity: .45; animation: liveDot 2.4s ease-out infinite; will-change: transform, opacity; }
+  @keyframes liveDot { 0% { transform: scale(1); opacity: .45; } 70%, 100% { transform: scale(3); opacity: 0; } }   /* transform + opacity only: runs on the compositor */
+  @media (prefers-reduced-motion: reduce) { .live-dot::after { animation: none; opacity: 0; } }
+  /* the one way in: centred under the name; fills as the world loads, then becomes the button */
+  .cv-enter { position: absolute; z-index: 2; left: var(--btn-left, 50%); top: var(--btn-top, 68%); transform: translateX(var(--btn-x, -50%)); height: 58px; min-width: 236px; padding: 0 30px; border-radius: 999px;
+    border: 1.5px solid rgba(143,180,240,.55); background: rgba(11,24,48,.6); color: #F1EEE7; font: 650 1.04rem var(--f); letter-spacing: .01em;
+    overflow: hidden; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: .65rem; cursor: pointer; -webkit-tap-highlight-color: transparent;
+    transition: background .45s, color .45s, border-color .45s, box-shadow .35s, transform .35s cubic-bezier(.2,.9,.2,1.25), opacity .35s; }
+  .cv-fill { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(110,156,232,.28), rgba(110,156,232,.55)); transform-origin: left; transform: scaleX(0); transition: opacity .4s; }
+  .cv-label, .cv-arrow { position: relative; }
+  .cv-label { font-variant-numeric: tabular-nums; }
+  .cv-arrow { width: 18px; height: 18px; flex: none; display: none; transition: transform .3s; }
+  .cv-enter.ready { background: #F1EEE7; color: #0B1830; border-color: #F1EEE7; }
+  .cv-enter.ready .cv-fill { opacity: 0; }
+  .cv-enter.ready .cv-arrow { display: block; }
+  .cv-enter.ready:hover { transform: translateX(var(--btn-x, -50%)) scale(1.045); box-shadow: 0 0 0 7px rgba(110,156,232,.22), 0 0 46px rgba(110,156,232,.5); }
+  .cv-enter.ready:hover .cv-arrow { transform: translateX(4px); }
+  .cv-enter:focus-visible { outline: 2px solid #AECBF7; outline-offset: 5px; }
+  .cv-enter:disabled { cursor: progress; }
+  .cv-enter.firing { transform: translateX(var(--btn-x, -50%)) scale(.92); animation: cvPulse .55s ease-out; }
+  @keyframes cvPulse { from { box-shadow: 0 0 0 0 rgba(174,203,247,.9), 0 0 60px rgba(110,156,232,.8); } to { box-shadow: 0 0 0 46px rgba(174,203,247,0), 0 0 0 rgba(110,156,232,0); } }
+  #cover.leaving .cv-enter { opacity: 0; transform: translateX(var(--btn-x, -50%)) scale(1.25); transition: opacity .3s .05s, transform .5s cubic-bezier(.2,.8,.2,1); }
+  @media (max-width: 640px) { .cv-line { font-size: 1rem; } .cv-enter { height: 54px; min-width: 210px; } .cv-top span { display: none; } }
+  /* ── home: one turbine on a plain studio floor, built as you scroll; the text runs down the left ── */
+  :root { --stage: #EEF1F4; --stage-a: rgba(240,243,246,.94); }
+  html[data-theme="dark"] { --stage: #12171D; --stage-a: rgba(17,22,28,.94); }
+  body[data-page="home"] { background: linear-gradient(180deg, #F7F9FA 0%, #EDF0F3 55%, #E5E9ED 100%) fixed; }
+  html[data-theme="dark"] body[data-page="home"] { background: linear-gradient(180deg, #0D1115 0%, #12171D 55%, #171C23 100%) fixed; }
+  body.no3d { background: var(--paper-2); }
+  #turbine { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; opacity: 0; transition: opacity .8s ease; }
+  #turbine.on { opacity: 1; }
+  /* part names drawn over the 3D, with leader lines */
+  .tags { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; font: 700 13px var(--f); transition: opacity .4s; }
+  .tags line { stroke: var(--ink-3); stroke-width: 1; }
+  .tags circle { fill: var(--ink-2); }
+  .tags text { fill: var(--ink-2); paint-order: stroke; stroke: var(--stage); stroke-width: 5px; stroke-linejoin: round; }
+  .tags .now line { stroke: var(--wind); } .tags .now circle { fill: var(--wind); } .tags .now text { fill: var(--ink); font-size: 14px; }
+  .tags .detail-mark circle { stroke: var(--wind); stroke-width: 1.25; stroke-dasharray: 5 4; fill: none; }
+  .tags .detail-mark text { fill: var(--wind); font-size: 15px; }
+  /* the build, step by step, across the top of the 3D */
+  .build { position: fixed; z-index: 3; top: 84px; left: min(44vw, 640px); right: var(--gutter); padding-left: 1.5rem; transition: opacity .4s; }
+  .build-title { font-size: var(--t-small); color: var(--ink-2); margin: 0; }
+  .build-title b { color: var(--ink); font-weight: 700; }
+  .build-track { position: relative; margin: .6rem 0 3.3rem; }
+  .build-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0 .3rem; counter-reset: st; }
+  .build-steps li { counter-increment: st; border-top: 3px solid var(--rule); padding-top: .4rem; font-size: var(--t-xs); line-height: 1.3; color: var(--ink-3); white-space: nowrap; transition: color .3s, border-color .3s; }
+  .build-steps li::before { content: counter(st); font-variant-numeric: tabular-nums; margin-right: .3rem; }
+  .build-steps li b { font-weight: 700; }
+  .build-steps li.done { border-top-color: var(--ink-3); color: var(--ink-2); }
+  .build-steps li.on { border-top-color: var(--wind); color: var(--ink); }
+  .build-steps li span { display: none; }
+  .build-steps li.on span, .build-intro { position: absolute; left: 0; top: calc(100% + .55rem); max-width: 36rem; font-size: var(--t-small); line-height: 1.45; color: var(--ink-2); white-space: normal; }
+  .build-steps li.on span { display: block; }
+  .build-intro { margin: 0; display: none; }
+  body[data-step="0"] .build-intro { display: block; }
+  /* a close look inside the nacelle while it goes together */
+  .detail { position: fixed; z-index: 1; right: var(--gutter); bottom: 1.5rem; width: clamp(15rem, 23vw, 22rem); aspect-ratio: 4 / 3; border: 1px solid var(--ink-3); border-radius: 4px; pointer-events: none; opacity: 0; transition: opacity .35s; }
+  .detail span { position: absolute; left: .7rem; top: .45rem; font-size: var(--t-xs); font-weight: 700; color: var(--wind); }
+  body.detail-on .detail { opacity: 1; }
+  body.loading .build, body.loading .tags, body.past-line .build, body.past-line .tags, body.past-line .detail, body.no3d .build, body.no3d .tags, body.no3d .detail { opacity: 0 !important; pointer-events: none; }
+  @media (max-width: 900px), (max-height: 660px) { .detail { display: none; } }
+  /* the text: plain on the studio, a soft wash behind it */
+  .scene-page { position: relative; z-index: 2; }
+  .scene-page::before { content: ""; position: fixed; left: 0; top: 0; bottom: 0; width: min(54vw, 780px); background: linear-gradient(90deg, var(--stage-a) 0, var(--stage-a) 64%, transparent); pointer-events: none; z-index: -1; }
+  .blk-sec { min-height: 100svh; display: flex; align-items: center; padding: 6.5rem var(--gutter) 4rem; }
+  .blk { width: min(33rem, 40vw); }
+  .blk.wide { width: min(37rem, 42vw); }
+  .blk h2 { font-size: var(--t-h2); line-height: 1.12; margin-bottom: 1.2rem; }
+  .blk h3 { font-size: var(--t-h3); line-height: 1.3; margin-top: 1rem; }
+  .blk h3 a { text-decoration: none; } .blk h3 a:hover { text-decoration: underline; text-decoration-color: var(--wind); }
+  .blk p { color: var(--ink-2); margin-top: .4rem; }
+  .blk .ctx { color: var(--ink-3); font-size: var(--t-small); }
+  .blk .more { margin-top: 1.4rem; } .blk .more a { font-weight: 700; color: var(--ink); }
+  .item + .item { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--rule); }
+  .blk.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.4rem; align-items: start; }
+  .blk.duo .item + .item { margin: 0; padding: 0; border: 0; }
+  .blk.duo .more { grid-column: 1 / -1; }
+  .statement { font-size: clamp(2rem, 3.4vw, 3.15rem); line-height: 1.06; letter-spacing: -.035em; }
+  .intro-sub { margin-top: 1.3rem; font-size: var(--t-lead); color: var(--ink-2); }
+  .blk .avail { margin-top: .9rem; font-size: var(--t-body); }
+  .blk .btn-row { margin-top: 1.6rem; }
+  .blk .btn-row a:not(.btn) { font-weight: 700; color: var(--ink); }
+  .cue { font-size: var(--t-small); color: var(--ink-3) !important; margin-top: 1.6rem !important; }
+  .frames.two { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; cursor: zoom-in; }
+  .blk > .cap { margin-top: .5rem; }
+  .xp-pic { margin: -.2rem 0 1.8rem; max-width: 28rem; }
+  .about-pics { margin-top: 1.1rem; }
+  @media (max-height: 820px) and (min-width: 901px) { .xp-pic { max-width: 22rem; } }
+  .xp li { padding: 1.1rem 0; border-top: 1px solid var(--rule); }
+  .xp li:first-child { border-top: 0; padding-top: 0; }
+  .xp .when { display: block; color: var(--ink-3); font-size: var(--t-small); font-variant-numeric: tabular-nums; }
+  .xp b { font-size: var(--t-h3); }
+  .xp .org { display: block; color: var(--ink-2); }
+  .xp p { margin-top: .35rem; }
+  .about { display: grid; grid-template-columns: 7rem 1fr; gap: 1.4rem; }
+  .about img { width: 100%; height: auto; border-radius: 4px; background: #fff; }
+  .about h2 { margin-bottom: .4rem; }
+  .about .links { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; margin-top: 1.1rem; }
+  .about .links a { font-weight: 700; color: var(--ink); }
+  body[data-page="home"] .foot-main { display: none; }
+  body[data-page="home"] .site-foot { position: relative; z-index: 2; }
+  @media (max-width: 1180px) { .blk.duo { grid-template-columns: 1fr; } .blk.duo .item + .item { margin-top: 1.6rem; } .blk.duo .frame { max-width: 22rem; } }
+  /* narrow screens: the 3D is a fixed band under the header, with the steps across its top; the text scrolls below it */
+  @media (max-width: 900px) {
+    body[data-page="home"], html[data-theme="dark"] body[data-page="home"] { background: var(--paper); }
+    .scene-page::before { display: none; }
+    #turbine { inset: 64px 0 auto 0; height: 48svh; z-index: 3; box-shadow: 0 1px 0 var(--rule); }
+    .tags { z-index: 4; }
+    .build { top: 64px; z-index: 5; left: 0; right: 0; padding: .6rem var(--gutter) 0; background: var(--paper); border-bottom: 1px solid var(--rule); }
+    .build-title { display: none; }
+    .build-track { margin: 0 0 4.4rem; }
+    .build-steps { gap: 0 4px; }
+    .build-steps li { border-top-width: 4px; padding-top: 0; font-size: 0; line-height: 0; }
+    .build-steps li::before { content: none; }
+    .build-steps li.on b { display: block; position: absolute; left: 0; top: calc(100% + .5rem); font-size: var(--t-small); line-height: 1.3; color: var(--ink); }
+    .build-steps li.on span { top: calc(100% + .5rem); padding-top: 1.35rem; font-size: var(--t-xs); }
+    .build-intro { font-size: var(--t-xs); top: calc(100% + .5rem); }
+    .scene-page { padding: calc(48svh + 1px) 0 34svh; border-top: 0; }
+    .blk-sec, .blk-sec.intro { min-height: 0; display: block; padding: 2.2rem var(--gutter) 2.4rem; }
+    .blk-sec + .blk-sec { border-top: 1px solid var(--rule); }
+    .blk, .blk.wide { width: 100%; }
+    .blk.duo { grid-template-columns: 1fr 1fr; } .blk.duo .item + .item { margin-top: 0; } .blk.duo .frame { max-width: none; }
+    .statement { font-size: clamp(1.75rem, 7vw, 2.6rem); }
+    body.past-line #turbine { opacity: 0; }
+  }
+  @media (max-width: 560px) { .blk.duo { grid-template-columns: 1fr; } .blk.duo .item + .item { margin-top: 1.6rem; } .about { grid-template-columns: 5.5rem 1fr; gap: 1rem; } }
+  /* after the cover: the page arrives once, gently */
+  .intro .blk > * { transition: opacity .9s ease, transform 1.1s cubic-bezier(.2,.8,.15,1); }
+  .intro .blk { transition: opacity .9s ease, transform 1.1s cubic-bezier(.2,.8,.15,1); }
+  body.loading .intro .blk { opacity: 0; transform: translateY(28px); }
+  body.loading .office-tab { opacity: 0; }
+  @media (prefers-reduced-motion: reduce) { .intro .blk { transition: opacity .3s; } body.loading .intro .blk { transform: none; } }
+
+</style>
+</head>
+<body class="loading" data-page="home" data-step="0">
+<div id="cover" role="dialog" aria-label="Welcome">
+  <canvas id="veil" aria-hidden="true"></canvas>
+  <canvas id="flow" aria-hidden="true"></canvas>
+  <canvas id="letters" aria-hidden="true"></canvas>
+  <div class="cv-top"><div><b>Chenyu Li</b>Mechanical Engineering</div><span>University of Toronto</span></div>
+  <div class="cv-bot">
+    <p class="cv-line">Wind turbines, robots and the business that gets them built.</p>
+    <p class="cv-wx" id="cv-wx" data-no-i18n aria-live="off"><svg class="wx-arrow" id="cv-wx-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="wx-txt"><b id="cv-wx-head"></b><span id="cv-wx-text"></span></span></p>
+  </div>
+  <button class="cv-enter" id="cv-enter" type="button" disabled aria-label="Loading">
+    <span class="cv-fill" id="cv-fill"></span><span class="cv-label"><span id="cv-word">Loading</span> <span id="cv-pct" data-no-i18n>0%</span></span>
+    <svg class="cv-arrow" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h11M10 4.5 14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</div>
+
+<!-- shell:header -->
+<header class="site-bar" id="bar">
+  <a class="site-name" href="index.html">Chenyu Li</a>
+  <nav class="site-nav" id="site-nav" aria-label="Pages"><ul>
+    <li><a href="projects.html">Projects</a></li>
+    <li><a href="experience.html">Experience</a></li>
+    <li><a href="life.html">Life</a></li>
+    <li><a href="resume.html">Resume</a></li>
+  </ul></nav>
+  <div class="bar-tools">
+    <div class="bar-social">
+      <a href="mailto:info.chenyuli@gmail.com" aria-label="Email" title="Email"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="m3 6.5 9 6.5 9-6.5"/></svg></a>
+      <a href="https://linkedin.com/in/li-chenyu" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+      <a href="https://github.com/chenyu-u" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg></a>
+    </div>
+    <div data-prefs-slot></div>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></button>
+  </div>
+</header>
+<a class="office-tab" href="laptop.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19h20"/></svg><span>My office</span></a>
+<!-- /shell:header -->
+
+<canvas id="turbine" aria-hidden="true"></canvas>
+<svg class="tags" id="tags" aria-hidden="true"></svg>
+<div class="detail" id="detail" aria-hidden="true"><span>Detail A: inside the nacelle</span></div>
+<nav class="build" id="build" aria-label="How a wind turbine goes up">
+  <p class="build-title"><b>How a wind turbine goes up</b></p>
+  <div class="build-track">
+    <ol class="build-steps" id="build-steps">
+      <li><b>Foundation</b><span>Concrete poured around a ring of anchor bolts that hold the tower down.</span></li>
+      <li><b>Tower</b><span>Three rolled-steel sections, lifted one onto the next and bolted at their flanges.</span></li>
+      <li><b>Drivetrain</b><span>Main bearing, shaft, gearbox, brake and generator on one bedplate, set on the yaw bearing.</span></li>
+      <li><b>Nacelle</b><span>A glass-fibre cover over the machinery, with the wind sensors and aviation lights on top.</span></li>
+      <li><b>Hub</b><span>A cast hub with three pitch bearings that turn the blades to control power, under a nose cone.</span></li>
+      <li><b>Blades</b><span>Three glass-fibre blades, lifted one at a time and bolted to the pitch bearings.</span></li>
+      <li><b>Power on</b><span>Turned into the wind, the blades pitch and it starts making power.</span></li>
+    </ol>
+    <p class="build-intro">Every part is laid out on site. The faint outline shows where each one goes.</p>
+  </div>
+</nav>
+<main id="main" class="scene-page">
+
+  <section class="blk-sec intro" aria-label="Introduction">
+    <div class="blk wide">
+      <h1 class="statement">I love designing things that move, from wind turbines and robots to the business that gets them built.</h1>
+      <p class="intro-sub">Mechanical Engineering student at the University of Toronto, with minors in robotics, engineering business and advanced manufacturing.</p>
+      <p class="avail"><i aria-hidden="true"></i><span>Available for an internship or co-op from May to August 2027, and for a 12 to 16 month Professional Experience Year from May 2028.</span></p>
+      <div class="btn-row">
+        <a class="btn primary" href="resume.html#request">Request my resume</a>
+        <a class="btn" href="story.html">Follow the wind, my story in 3D</a>
+      </div>
+      <p class="cue">Scroll and watch the turbine go up, one lift at a time.</p>
+    </div>
+  </section>
+
+  <section class="blk-sec" id="work">
+    <div class="blk">
+      <h2>Selected projects</h2>
+      <div class="frames two" data-images='["projects/vawt-delft-tunnel.webp","projects/vawt-delft-assembly.webp","projects/vawt-1.webp","projects/vawt-2.webp"]'>
+        <figure class="frame"><img src="projects/vawt-delft-tunnel-1200.webp" srcset="projects/vawt-delft-tunnel-600.webp 600w, projects/vawt-delft-tunnel-1200.webp 1200w, projects/vawt-delft-tunnel.webp 1500w" sizes="(max-width: 560px) 46vw, (max-width: 900px) 46vw, 300px" width="900" height="1200" alt="The team in front of our vertical-axis wind turbine in the wind tunnel at Delft University of Technology" loading="lazy" decoding="async" /></figure>
+        <figure class="frame"><img src="projects/vawt-delft-assembly-1200.webp" srcset="projects/vawt-delft-assembly-600.webp 600w, projects/vawt-delft-assembly-1200.webp 1200w, projects/vawt-delft-assembly.webp 2400w" sizes="(max-width: 560px) 46vw, (max-width: 900px) 46vw, 300px" width="1200" height="675" alt="The team assembling the turbine's blades and arms on the workshop floor" loading="lazy" decoding="async" /></figure>
+      </div>
+      <p class="cap">At the 2026 International Small Wind Turbine Contest in the Netherlands.</p>
+      <h3>Vertical-axis wind turbine</h3>
+      <p>A six-foot turbine we designed, analysed, machined and assembled, then tested in the wind tunnel at Delft University of Technology. It started making usable power at 4 m/s.</p>
+      <p class="ctx">University of Toronto Wind Turbine Design Team, 2025 to 2026. Now team captain.</p>
+    </div>
+  </section>
+
+  <section class="blk-sec">
+    <div class="blk duo">
+      <div class="item">
+        <figure class="frame white" data-images='["projects/ski-assist-1.webp","projects/ski-assist-2.webp","projects/ski-assist-3.webp","projects/ski-assist-cad.mp4"]'><img src="projects/ski-assist-1.webp" width="939" height="193" alt="Computer-aided design model of the motorized ski-assist attachment" loading="lazy" decoding="async" /></figure>
+        <h3>Motorized ski-assist device for children</h3>
+        <p>A powered attachment that helps young cross-country skiers keep up with their parents. From eighty concepts to two that I modelled and drew; my paddle-wheel design ranked first.</p>
+      </div>
+      <div class="item">
+        <figure class="frame"><a href="robot-sim.html"><img src="projects/arm.webp" width="856" height="570" alt="The robotic arm simulation" loading="lazy" decoding="async" /></a></figure>
+        <h3><a href="robot-sim.html">Pick-and-place robotic arm</a></h3>
+        <p>A simulation you can try in the browser, built to check reach, joints and gripper geometry before buying any motors.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk-sec">
+    <div class="blk duo">
+      <div class="item">
+        <figure class="frame"><a href="project-ema-survey.html"><img src="projects/EMA-survey.webp" width="793" height="792" alt="The survey clock face on a Fitbit watch" loading="lazy" decoding="async" /></a></figure>
+        <h3><a href="project-ema-survey.html">Fitbit survey app</a></h3>
+        <p>A watch face and phone companion that asks participants in a heat-exposure study how they feel through the day.</p>
+      </div>
+      <div class="item">
+        <figure class="frame"><a href="project-bluetooth-car.html"><img src="projects/bluetooth-car-1.webp" width="1200" height="1600" alt="The Bluetooth-controlled car with its 3D printed body" loading="lazy" decoding="async" /></a></figure>
+        <h3><a href="project-bluetooth-car.html">Bluetooth-controlled car</a></h3>
+        <p>A four-wheel-drive car with a chassis and body I designed and printed, driven from a phone.</p>
+      </div>
+      <p class="more"><a href="projects.html">All nine projects</a></p>
+    </div>
+  </section>
+
+  <section class="blk-sec" id="experience">
+    <div class="blk">
+      <h2>Experience</h2>
+      <figure class="pic xp-pic" data-images='["utwind/team-uoft-sign.webp","utwind/alumni-fest-2026.webp","utwind/team-steps.webp"]'>
+        <div class="frame"><img src="utwind/team-uoft-sign-1200.webp" srcset="utwind/team-uoft-sign-600.webp 600w, utwind/team-uoft-sign-1200.webp 1200w, utwind/team-uoft-sign.webp 1460w" sizes="(max-width: 900px) 92vw, 528px" width="1200" height="819" alt="The University of Toronto Wind Turbine Design Team with the U of T letters on front campus" loading="lazy" decoding="async" /></div>
+        <figcaption>The wind turbine design team I captain, on front campus in October 2026.</figcaption>
+      </figure>
+      <ol class="xp">
+        <li><span class="when">August 2026 to present</span><b>Team Captain</b> <span class="org">University of Toronto Wind Turbine Design Team</span><p>Leading 100+ members across six departments and a $50,000+ budget through the design of our 2026 to 2027 turbine.</p></li>
+        <li><span class="when">May to August 2026</span><b>Undergraduate Research Intern</b> <span class="org">Hub for Advancing Buildings, University of Toronto</span><p>Trained reinforcement learning agents for building cooling on a computing cluster, and built tools for field data and a Fitbit study.</p></li>
+        <li><span class="when">July 2026 to present</span><b>Consulting Engineering Projects Director</b> <span class="org">University of Toronto Engineering Students Consulting Association</span><p>Leading a seven-person team building a cloud software prototype for a client.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="blk-sec">
+    <div class="blk">
+      <ol class="xp">
+        <li><span class="when">August 2026 to present</span><b>Associate Consultant</b> <span class="org">University of Toronto Consulting Association</span><p>Market and competitor research behind a client's strategy.</p></li>
+        <li><span class="when">May 2026 to present</span><b>Vice President of Competitions</b> <span class="org">Ontario Engineering Competition 2028</span><p>Planning nine competitions for 350+ students from 19 Ontario universities.</p></li>
+        <li><span class="when">June 2022 to May 2025</span><b>Founder and Owner</b> <span class="org">SnowScape Landscaping, Calgary</span><p>Started at fourteen and grew it to 100+ clients and a crew of ten.</p></li>
+      </ol>
+      <p class="more"><a href="experience.html">Every role in full</a></p>
+    </div>
+  </section>
+
+  <section class="blk-sec" id="about">
+    <div class="blk about">
+      <img src="about.webp" width="1600" height="1600" alt="Chenyu Li" loading="lazy" decoding="async" />
+      <div>
+        <h2>About</h2>
+        <p>I grew up in Calgary, skiing in Banff and playing hockey, and started my first business at fourteen. Now I study Mechanical Engineering at the University of Toronto and spend most of my time between design teams, consulting work and research.</p>
+        <p>Outside of class I run along the waterfront (<span id="run-line" data-no-i18n>this year's figures load from Strava</span>), play intramural hockey and travel to see how other cities are built.</p>
+        <div class="frames two about-pics" data-images='["hockey/intramural-shot.webp","hockey/intramural-team.webp","utwind/alumni-fest-2026.webp"]'>
+          <figure class="frame"><img src="hockey/intramural-shot-1200.webp" srcset="hockey/intramural-shot-600.webp 600w, hockey/intramural-shot-1200.webp 1200w, hockey/intramural-shot.webp 2400w" sizes="(max-width: 560px) 46vw, (max-width: 900px) 40vw, 230px" width="1200" height="800" alt="Taking a shot in an engineering intramural hockey game" loading="lazy" decoding="async" /></figure>
+          <figure class="frame"><img src="utwind/alumni-fest-2026-1200.webp" srcset="utwind/alumni-fest-2026-600.webp 600w, utwind/alumni-fest-2026-1200.webp 1200w, utwind/alumni-fest-2026.webp 2400w" sizes="(max-width: 560px) 46vw, (max-width: 900px) 40vw, 230px" width="1200" height="900" alt="At the wind turbine design team booth at the 2026 University of Toronto Alumni Fest" loading="lazy" decoding="async" /></figure>
+        </div>
+        <p class="links"><a href="life.html">Life outside engineering</a> <a href="story.html">Follow the wind, a 3D story</a> <a href="laptop.html">My office in 3D</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk-sec" id="contact">
+    <div class="blk">
+      <h2>Get in touch</h2>
+      <p>I'm looking for an internship or co-op from May to August 2027, and a 12 to 16 month Professional Experience Year starting in May 2028. I'm always happy to talk about engineering, design teams or research.</p>
+      <div class="btn-row">
+        <a class="btn primary" href="resume.html#request">Request my resume</a>
+        <a href="mailto:info.chenyuli@gmail.com">info.chenyuli@gmail.com</a>
+        <a href="https://linkedin.com/in/li-chenyu" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+<!-- shell:footer -->
+<footer class="site-foot"><div class="wrap">
+  <div class="foot-main">
+    <h2>Say hello</h2>
+    <a class="foot-mail" href="mailto:info.chenyuli@gmail.com">info.chenyuli@gmail.com</a>
+    <p>I'm looking for an internship or co-op from May to August 2027, and a 12 to 16 month Professional Experience Year starting in May 2028. <a href="resume.html#request">Request my resume</a></p>
+  </div>
+  <div class="foot-cols">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="life.html">Life</a></li>
+      <li><a href="resume.html">Resume</a></li>
+    </ul>
+    <ul>
+      <li><a href="https://linkedin.com/in/li-chenyu" target="_blank" rel="noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/chenyu-u" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="https://hab.civmin.utoronto.ca/people/chenyu-li/" target="_blank" rel="noopener">Research group</a></li>
+    </ul>
+    <ul>
+      <li><a href="story.html">Follow the wind, a 3D story</a></li>
+      <li><a href="laptop.html">My office in 3D</a></li>
+      <li><a href="robot-sim.html">Robotic arm simulator</a></li>
+    </ul>
+  </div>
+  <p class="foot-small">© 2026 Chenyu Li, Toronto</p>
+</div></footer>
+<!-- /shell:footer -->
+
+<script>
+(function () {
+  // the cover fills as the page loads: a short minimum, then the first images and the font
+  var S = window.__story, t0 = performance.now();
+  (function tick() {
+    if (S.has3d) return;
+    S.buildProgress = Math.min(.9, (performance.now() - t0) / 1600);
+    requestAnimationFrame(tick);
+  })();
+  if (!window.WebGLRenderingContext) document.body.classList.add('no3d');
+  setTimeout(function () { if (!S.has3d) document.body.classList.add('no3d'); }, 15000);
+
+  // where the visitor is: step k when block k is centred on the screen (0 … 7)
+  var H = window.__home, secs = [].slice.call(document.querySelectorAll('.blk-sec'));
+  var K = [], lis = [].slice.call(document.querySelectorAll('#build-steps li')), shownStep = -1, endY = 0;
+  function measure() {
+    var y = scrollY, vh = innerHeight;
+    // a block is "current" when its centre reaches the middle of the space the text has: the whole screen on
+    // wide screens, the part below the 3D band on narrow ones
+    var narrow = innerWidth <= 900, band = narrow ? document.getElementById('turbine').getBoundingClientRect().bottom : 0, mid = band + (vh - band) / 2;
+    K = secs.map(function (el, i) { var r = el.querySelector('.blk').getBoundingClientRect(); return i === 0 ? 0 : r.top + y + r.height / 2 - mid; });
+    endY = narrow ? document.querySelector('.site-foot').getBoundingClientRect().top + y - vh * .92 : secs[secs.length - 1].getBoundingClientRect().bottom + y - vh * .4;
+    update();
+    if (H.redraw) H.redraw();
+  }
+  function update() {
+    var y = scrollY, i = 0;
+    while (i < K.length - 1 && y >= K[i + 1]) i++;
+    var f = i < K.length - 1 ? (y - K[i]) / Math.max(1, K[i + 1] - K[i]) : 0;
+    H.u = Math.max(0, Math.min(K.length - 1, i + Math.max(0, Math.min(1, f))));
+    var st = Math.round(H.u);
+    if (st !== shownStep) {   // step k of the build is current while block k is on screen
+      shownStep = st; document.body.setAttribute('data-step', st);
+      lis.forEach(function (li, k) { li.classList.toggle('on', k + 1 === st); li.classList.toggle('done', k + 1 < st); });
+    }
+    document.body.classList.toggle('past-line', y > endY);
+  }
+  addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', measure); addEventListener('load', measure);
+  if ('ResizeObserver' in window) new ResizeObserver(measure).observe(document.getElementById('main'));
+  measure();
+  // running figures for the about section
+  fetch('strava.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
+    var y = d.ytd || {}, el = document.getElementById('run-line');
+    if (y.count) el.textContent = Math.round(y.distance / 1000) + ' km over ' + y.count + ' runs so far this year';
+  }).catch(function () {});
+})();
+</script>
+<script>
+/* Cover (shared with story.html): "Chenyu Li" as an object in a wind tunnel. Streamlines flow left to right and bend around the
+   letters (a distance field of the lettering steers them). The ring fills as the 3D world is built.
+   Entering: the letters break into particles that the wind carries off, and the dark screen itself is
+   blown away in streaks, gust by gust, uncovering the Rockies while the camera dives in. */
+(function () {
+  var S = window.__story, cover = document.getElementById('cover'), btn = document.getElementById('cv-enter');
+  var fill = document.getElementById('cv-fill'), pct = document.getElementById('cv-pct'), word = document.getElementById('cv-word');
+  var veil = document.getElementById('veil'), flow = document.getElementById('flow'), letters = document.getElementById('letters');
+  var vx = veil.getContext('2d'), fx = flow.getContext('2d'), lx = letters.getContext('2d');
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var BG = '#0B1830';
+  var W, H, dpr, CELL = 5, GW, GH, dist, parts = [], speedUp = 1, entered = false, running = true, exitT0 = 0, bits = null, seeds = null, sprite = null;
+  var hover = 0, hoverOn = false, gatherT0 = 0, BC = { x: 0, y: 0 };   // button hover, the pull-in on click, button centre (device px)
+  // the free stream follows Toronto's real wind (north is up). Until it is known, and from the click on,
+  // it is the tunnel's own steady left-to-right flow, so the way in looks exactly the same every time.
+  var LW = { a: 0, s: 1, g: 0 }, LT = { a: 0, s: 1, g: 0 }, cx = 1, cy = 0;
+  var wxEl = document.getElementById('cv-wx'), wxTx = document.getElementById('cv-wx-text'), wxAr = document.getElementById('cv-wx-arrow');
+  function liveWind(d) {
+    if (d) {
+      var to = (d.dir + 180) * Math.PI / 180;                      // meteorological "from" → the way it blows
+      LT.a = Math.atan2(-Math.cos(to), Math.sin(to));               // screen angle: east → right, north → up
+      LT.s = Math.max(.55, Math.min(1.7, .55 + d.speed / 32));      // calm drifts, a gale streams
+      LT.g = Math.max(0, Math.min(1, (d.gust - d.speed) / Math.max(d.speed, 8)));
+      if (d.speed < 2) { LT.a = 0; LT.s = .5; LT.g = 0; }
+      wxAr.style.setProperty('--wx-rot', (d.speed < 2 ? 0 : LT.a * 180 / Math.PI).toFixed(1) + 'deg');
+      wxAr.style.visibility = d.speed < 2 ? 'hidden' : '';
+      if (!(t > 1.2) && !gatherT0) { LW.a = LT.a; LW.s = LT.s; LW.g = LT.g; }   // known before the flow has settled (cache, fast network): start in the real wind, no swing
+    }
+    var txt = window.__wx ? window.__wx.line('cover') : '';
+    wxTx.textContent = txt; document.getElementById('cv-wx-head').textContent = txt ? window.__wx.line('head') : ''; wxEl.classList.toggle('on', !!txt);
+  }
+  if (window.__wx) window.__wx.on(liveWind);
+  S.coverOpaque = true;
+
+  // the cover's own box (the layout viewport): unlike innerWidth/innerHeight it doesn't shrink when a phone pinch-zooms
+  function VW() { return cover.clientWidth || document.documentElement.clientWidth; }
+  function VH() { return cover.clientHeight || document.documentElement.clientHeight; }
+  function layoutText() {
+    var portrait = VH() > VW() * 1.1, lines = portrait ? ['Chenyu', 'Li'] : ['Chenyu Li'];
+    var size = portrait ? Math.min(VW() * .27, VH() * .2) : Math.min(VW() * .155, VH() * .3);
+    return { lines: lines, size: size * dpr, font: '800 ' + Math.round(size * dpr) + 'px Archivo, system-ui, sans-serif' };
+  }
+  function drawLetters(ctx, L, fill) {
+    ctx.font = L.font; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = fill;
+    var lh = L.size * .9, total = lh * L.lines.length, y0 = H * .43 - total / 2 + L.size * .78;
+    L.bottom = y0 + (L.lines.length - 1) * lh + L.size * .2;          // under the descender of the y
+    L.lines.forEach(function (t, i) { ctx.fillText(t, (W - ctx.measureText(t).width) * .5, y0 + i * lh); });   // each line centred
+  }
+  function build() {
+    dpr = Math.min(devicePixelRatio || 1, 2); bw = VW(); bh = VH();
+    W = veil.width = flow.width = letters.width = Math.round(VW() * dpr); H = veil.height = flow.height = letters.height = Math.round(VH() * dpr);
+    vx.fillStyle = BG; vx.fillRect(0, 0, W, H);
+    var L = layoutText();
+    lx.font = L.font; var wmax = 0; L.lines.forEach(function (t) { wmax = Math.max(wmax, lx.measureText(t).width); });
+    if (wmax > W * .86) { L.size *= W * .86 / wmax; L.font = '800 ' + Math.round(L.size) + 'px Archivo, system-ui, sans-serif'; }
+    lx.clearRect(0, 0, W, H); drawLetters(lx, L, '#F1EEE7'); seed(L);
+    // the button sits centred under the name
+    cover.style.setProperty('--btn-top', Math.round(L.bottom / dpr + Math.max(30, VH() * .055)) + 'px');
+    var br = btn.getBoundingClientRect(); BC.x = (br.left + br.width / 2) * dpr; BC.y = (br.top + br.height / 2) * dpr;
+    CELL = Math.round(5 * dpr); GW = Math.ceil(W / CELL); GH = Math.ceil(H / CELL);
+    var m = document.createElement('canvas'); m.width = GW; m.height = GH; var mx = m.getContext('2d');
+    mx.scale(1 / CELL, 1 / CELL); drawLetters(mx, L, '#fff');
+    // the streams part around the button too
+    mx.beginPath(); if (mx.roundRect) mx.roundRect(br.left * dpr, br.top * dpr, br.width * dpr, br.height * dpr, br.height * dpr / 2); else mx.rect(br.left * dpr, br.top * dpr, br.width * dpr, br.height * dpr); mx.fill();
+    var px = mx.getImageData(0, 0, GW, GH).data; dist = new Float32Array(GW * GH);
+    for (var i = 0; i < GW * GH; i++) dist[i] = px[i * 4 + 3] > 100 ? -1 : 1e6;
+    for (var y = 0; y < GH; y++) for (var x = 0; x < GW; x++) { var k = y * GW + x; if (dist[k] < 0) continue;
+      var d = dist[k]; if (x > 0) d = Math.min(d, Math.max(0, dist[k - 1]) + 1); if (y > 0) d = Math.min(d, Math.max(0, dist[k - GW]) + 1);
+      if (x > 0 && y > 0) d = Math.min(d, Math.max(0, dist[k - GW - 1]) + 1.414); if (x < GW - 1 && y > 0) d = Math.min(d, Math.max(0, dist[k - GW + 1]) + 1.414); dist[k] = d; }
+    for (y = GH - 1; y >= 0; y--) for (x = GW - 1; x >= 0; x--) { k = y * GW + x; if (dist[k] < 0) continue;
+      d = dist[k]; if (x < GW - 1) d = Math.min(d, Math.max(0, dist[k + 1]) + 1); if (y < GH - 1) d = Math.min(d, Math.max(0, dist[k + GW]) + 1);
+      if (x < GW - 1 && y < GH - 1) d = Math.min(d, Math.max(0, dist[k + GW + 1]) + 1.414); if (x > 0 && y < GH - 1) d = Math.min(d, Math.max(0, dist[k + GW - 1]) + 1.414); dist[k] = d; }
+    var N = VW() < 640 ? 950 : 1500; parts = [];
+    for (i = 0; i < N; i++) parts.push(spawn(Math.random() * W));
+    fx.clearRect(0, 0, W, H);
+    // a soft streak used to blow the dark screen away: solid on the left, feathered at the leading edge and top/bottom
+    sprite = document.createElement('canvas'); sprite.width = 512; sprite.height = 64; var sx = sprite.getContext('2d');
+    var gH = sx.createLinearGradient(0, 0, 512, 0); gH.addColorStop(0, 'rgba(0,0,0,1)'); gH.addColorStop(.78, 'rgba(0,0,0,1)'); gH.addColorStop(1, 'rgba(0,0,0,0)');
+    sx.fillStyle = gH; sx.fillRect(0, 0, 512, 64);
+    sx.globalCompositeOperation = 'destination-in';
+    var gV = sx.createLinearGradient(0, 0, 0, 64); gV.addColorStop(0, 'rgba(0,0,0,0)'); gV.addColorStop(.3, 'rgba(0,0,0,1)'); gV.addColorStop(.7, 'rgba(0,0,0,1)'); gV.addColorStop(1, 'rgba(0,0,0,0)');
+    sx.fillStyle = gV; sx.fillRect(0, 0, 512, 64);
+    document.body.classList.add('cover-on');
+  }
+  function spawn(x, y) { return { x: x, y: y == null ? Math.random() * H : y, life: 200 + Math.random() * 400, hi: Math.random() < .1 }; }
+  // a new stream enters through whichever edges the wind is blowing in from, in proportion to the flow through each
+  function spawnUp() {
+    var l = Math.max(0, cx) * H, r = Math.max(0, -cx) * H, tp = Math.max(0, cy) * W, bt = Math.max(0, -cy) * W, k = Math.random() * (l + r + tp + bt);
+    if ((k -= l) < 0) return spawn(-Math.random() * 40);
+    if ((k -= r) < 0) return spawn(W + Math.random() * 40);
+    if ((k -= tp) < 0) return spawn(Math.random() * W, -Math.random() * 40);
+    return spawn(Math.random() * W, H + Math.random() * 40);
+  }
+  function D(x, y) { var gx = Math.max(0, Math.min(GW - 1, x / CELL | 0)), gy = Math.max(0, Math.min(GH - 1, y / CELL | 0)); return dist[gy * GW + gx]; }
+
+  /* The lettering as particles, one for every few pixels of ink. Where they start is worked out when the
+     cover is built (from a small copy of the lettering), so the click on Enter has nothing to compute. */
+  function seed(L) {
+    var step = Math.max(2, Math.round(2.5 * dpr)), c = document.createElement('canvas'), xy;
+    for (;;) {
+      c.width = Math.ceil(W / step); c.height = Math.ceil(H / step);
+      var g = c.getContext('2d', { willReadFrequently: true }); g.setTransform(1 / step, 0, 0, 1 / step, 0, 0); drawLetters(g, L, '#fff');
+      var px = g.getImageData(0, 0, c.width, c.height).data; xy = [];
+      for (var y = 0; y < c.height; y++) for (var x = 0; x < c.width; x++) if (px[(y * c.width + x) * 4 + 3] >= 128) xy.push(x * step, y * step);
+      if (xy.length <= 13000 || step > 14) break;                       // at most 6500 particles, however large the screen
+      step++;
+    }
+    seeds = { step: step, xy: xy };
+  }
+  function shatter() {
+    var list = [], s = seeds.step, xy = seeds.xy;
+    for (var i = 0; i < xy.length; i += 2) list.push({ x: xy[i], y: xy[i + 1], vx: 0, vy: 0, d: (xy[i] / W) * .42 + Math.random() * .16, life: .7 + Math.random() * .6, s: s * (.7 + Math.random() * .5), seed: Math.random() * 6.28 });
+    return list;
+  }
+
+  var last = performance.now(), t = 0;
+  function frame(now) {
+    if (!running) return;
+    requestAnimationFrame(frame);
+    var dt = Math.min(.05, (now - last) / 1000); last = now; t += dt;
+    var step = 60 * dt, ex = entered && exitT0 ? (now - exitT0) / 1000 : -1;
+    hover += ((hoverOn ? 1 : 0) - hover) * Math.min(1, dt * 5);
+    var g = gatherT0 ? (now - gatherT0) / 1000 : -1;
+    speedUp = ex >= 0 ? 1 + 7 * Math.min(1, ex / .7) * Math.min(1, ex / .7) : 1 + hover * .9;
+    // ease toward the live wind (shortest way round); once the visitor clicks, swing back to the tunnel's flow
+    var tA = g >= 0 ? 0 : LT.a, tS = g >= 0 ? 1 : LT.s, tG = g >= 0 ? 0 : LT.g, kw = 1 - Math.exp(-dt * (g >= 0 ? 7 : .9));
+    var da = Math.atan2(Math.sin(tA - LW.a), Math.cos(tA - LW.a));
+    LW.a += da * kw; LW.s += (tS - LW.s) * kw; LW.g += (tG - LW.g) * kw;
+    cx = Math.cos(LW.a); cy = Math.sin(LW.a);
+    var gust = 1 + LW.g * .45 * (Math.sin(t * .9) * .6 + Math.sin(t * 2.3 + 1.7) * .4);   // gusts: the whole stream surges and eases
+    // streamlines
+    fx.globalCompositeOperation = 'destination-out'; fx.fillStyle = 'rgba(0,0,0,' + Math.min(1, .075 * step * (ex >= 0 ? .6 : 1)) + ')'; fx.fillRect(0, 0, W, H);
+    fx.globalCompositeOperation = 'source-over'; fx.lineWidth = (ex >= 0 ? 1.6 : 1.1) * dpr; fx.lineCap = 'round';
+    var U = 2.1 * dpr * speedUp * step * LW.s * gust, R = 26, his = [], wav = .12 + LW.g * .1;
+    fx.beginPath(); fx.strokeStyle = 'rgba(236,238,242,.55)';
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i], dc = ex >= 0 ? 1e6 : D(p.x, p.y);
+      var along = p.x * cx + p.y * cy, across = p.y * cx - p.x * cy;
+      var wv = Math.sin(along * .0025 / dpr + t * .7 + across * .002 / dpr) * wav;
+      var vxx = cx - cy * wv, vy = cy + cx * wv;
+      if (dc >= 0 && dc < R) {
+        var gxp = D(p.x + CELL, p.y) - D(p.x - CELL, p.y), gyp = D(p.x, p.y + CELL) - D(p.x, p.y - CELL), gl = Math.hypot(gxp, gyp) || 1;
+        var nx = gxp / gl, ny = gyp / gl, w = Math.exp(-dc / 7), dot = vxx * nx + vy * ny;
+        if (dot < 0) { vxx -= dot * nx * w * 1.05; vy -= dot * ny * w * 1.05; }
+        var sp = 1 + .7 * w; vxx *= sp; vy *= sp;
+      }
+      if (g >= 0 && ex < 0) {                                       // clicked: every stream is drawn into the button, spiralling
+        var ddx = BC.x - p.x, ddy = BC.y - p.y, dl = Math.hypot(ddx, ddy) || 1, pull = Math.min(1, g / .3) * Math.min(1, g / .3);
+        var ux = (ddx * .88 - ddy * .38) / dl, uy = (ddy * .88 + ddx * .38) / dl, spd = Math.min(dl * .35, (10 + 70 * pull) * dpr * step);
+        vxx = vxx * (1 - pull) + ux * pull * spd / U; vy = vy * (1 - pull) + uy * pull * spd / U;
+        if (dl < 30 * dpr) { parts[i] = spawn(Math.random() * W); continue; }
+        dc = 1e6;
+      }
+      var ox = p.x, oy = p.y; p.x += vxx * U; p.y += vy * U; p.life -= step;
+      if (dc < 0 || p.x > W + 45 || p.x < -45 || p.y < -45 || p.y > H + 45 || p.life < 0) { parts[i] = Math.random() < .85 ? spawnUp() : spawn(Math.random() * W); continue; }
+      if (p.hi) his.push(ox, oy, p.x, p.y); else { fx.moveTo(ox, oy); fx.lineTo(p.x, p.y); }
+    }
+    fx.stroke();
+    fx.beginPath(); fx.strokeStyle = 'rgba(120,165,235,.9)';
+    for (i = 0; i < his.length; i += 4) { fx.moveTo(his[i], his[i + 1]); fx.lineTo(his[i + 2], his[i + 3]); }
+    fx.stroke();
+    if (ex >= 0) exitFrame(ex, dt);
+  }
+
+  // ── the way in ───────────────────────────────────────────────
+  var BANDS = 26, delays = [];
+  for (var b = 0; b < BANDS; b++) delays.push(.12 + .22 * Math.abs(Math.sin(b * 1.7)) + (b % 4) * .035 + Math.random() * .06);
+  function ease(u) { u = Math.max(0, Math.min(1, u)); return u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2; }
+  function exitFrame(ex, dt) {
+    // 1. the name comes apart, left edge first, and is carried downwind
+    lx.clearRect(0, 0, W, H);
+    lx.fillStyle = '#F1EEE7';
+    var acc = 2600 * dpr;
+    for (var i = 0; i < bits.length; i++) {
+      var q = bits[i], age = ex - q.d;
+      if (age < 0) { lx.fillRect(q.x, q.y, q.s, q.s); continue; }
+      if (age > q.life) continue;
+      q.vx += acc * dt * (.6 + .8 * Math.sin(q.seed) * Math.sin(q.seed)); q.vy += Math.sin(q.seed + age * 9) * 900 * dpr * dt;
+      q.x += q.vx * dt; q.y += q.vy * dt;
+      lx.globalAlpha = 1 - age / q.life;
+      lx.fillRect(q.x, q.y, q.s * (1 + age * 3), q.s * .7);            // stretched along the wind as it speeds up
+    }
+    lx.globalAlpha = 1;
+    // 2. the dark screen is blown away in streaks
+    vx.globalCompositeOperation = 'destination-out';
+    var bh = H / BANDS * 2.4;
+    for (var k = 0; k < BANDS; k++) {
+      var u = ease((ex - delays[k]) / .95), front = W * (-.2 + 1.55 * u);
+      if (front <= 0) continue;
+      var y = (k + .5) * H / BANDS + Math.sin(k * 2.3 + ex * 3) * H / BANDS * .3;
+      vx.drawImage(sprite, -W * .1, y - bh / 2, front + W * .1, bh);
+    }
+    vx.globalCompositeOperation = 'source-over';
+    if (ex > 1.45) vx.clearRect(0, 0, W, H);
+    // 3. streamlines thin out into the scene
+    flow.style.opacity = String(Math.max(0, 1 - Math.max(0, ex - .9) / .7));
+    if (ex > .55 && document.body.classList.contains('loading')) { document.body.classList.remove('loading'); if (window.__lenis) window.__lenis.start(); }
+    if (ex > 1.75) { running = false; cover.remove(); if (location.hash) { var el = document.querySelector(location.hash); if (el) el.scrollIntoView(); } }
+  }
+
+  // progress ring: follows the 3D build, never jumps
+  var shown = 0, ready = false;
+  function progress() {
+    if (entered) return;
+    requestAnimationFrame(progress);
+    var target = S.has3d || document.body.classList.contains('no3d') ? 1 : (S.buildProgress || 0) * .97;
+    shown += (target - shown) * .12; if (target === 1 && shown > .985) shown = 1;
+    fill.style.transform = 'scaleX(' + shown.toFixed(3) + ')';
+    if (!ready) pct.textContent = Math.round(shown * 100) + '%';
+    if (shown === 1 && !ready) {
+      ready = true; btn.disabled = false; btn.classList.add('ready'); cover.classList.add('ready'); word.textContent = 'Enter'; pct.remove(); btn.removeAttribute('aria-label');
+      // straight in only when arriving from another page of this site; a reload (Ctrl+R) or a fresh visit shows the cover
+      var nav = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0] || {}).type, fromSite = false, seen = false;
+      try { seen = sessionStorage.getItem('cl-entered') === '1'; fromSite = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) {}
+      if (nav !== 'reload' && seen && fromSite) enter(true);
+      else if (nav !== 'reload' && location.hash && fromSite) enter(true);
+    }
+  }
+  function enter(quick) {
+    if (!ready || entered) return; entered = true;
+    try { sessionStorage.setItem('cl-entered', '1'); } catch (e) {}
+    if (!quick && window.__sound) window.__sound.enter();          // the whoosh, and the score fading in (this click unlocks audio)
+    if (reduce || quick) {                                         // reduced motion, or already seen this visit: straight in
+      if (quick && location.hash) { var el = document.querySelector(location.hash); if (el) requestAnimationFrame(function () { el.scrollIntoView(); }); } cover.classList.add('leaving'); S.coverOpaque = false; S.introStart = performance.now(); document.body.classList.remove('loading'); if (window.__lenis) window.__lenis.start(); running = false; cover.remove(); return; }
+    // the streams rush into the button for a beat, then the name is blown apart
+    btn.classList.add('firing'); gatherT0 = performance.now();
+    setTimeout(function () {
+      cover.classList.add('leaving');
+      bits = shatter();
+      exitT0 = performance.now();
+      S.coverOpaque = false;                                       // the world was drawn once behind the cover; it starts moving now
+      S.introStart = exitT0 + 120;
+    }, 380);
+  }
+  // only the button opens the site (Enter/Space work on it once focused)
+  btn.addEventListener('click', function () { enter(false); });
+  btn.addEventListener('pointerenter', function () { hoverOn = ready; });
+  btn.addEventListener('pointerleave', function () { hoverOn = false; });
+  btn.addEventListener('focus', function () { hoverOn = ready; }); btn.addEventListener('blur', function () { hoverOn = false; });
+
+  var fontReady = document.fonts && document.fonts.load ? document.fonts.load('800 100px Archivo') : Promise.resolve();
+  Promise.race([fontReady, new Promise(function (r) { setTimeout(r, 1500); })]).then(function () { build(); requestAnimationFrame(frame); });
+  // rebuild only for a real change of window size: not for pinch-zoom, and not for the phone
+  // browser's toolbar sliding in and out (a small height change)
+  var rt, bw = 0, bh = 0;
+  addEventListener('resize', function () {
+    if (entered || (window.visualViewport && visualViewport.scale > 1.01)) return;
+    clearTimeout(rt); rt = setTimeout(function () { if (VW() !== bw || Math.abs(VH() - bh) > 140) build(); }, 150);
+  });
+  requestAnimationFrame(progress);
+})();
+</script>
+<script type="module" src="turbine.js?v=9"></script>
+</body>
+</html>

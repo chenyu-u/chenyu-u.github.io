@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="favicon.png" type="image/png" />
+  <title>Fitbit Survey App for a Heat-Exposure Study | Chenyu Li</title>
+  <meta name="description" content="A custom Fitbit clock face and companion app that runs wellbeing surveys for a University of Toronto heat-exposure study, with the engineering design process explained step by step." />
+  <link rel="preload" href="fonts/archivo-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="project.css?v=8" />
+  <!-- Theme (light/dark) + language (EN / 中文 / DE) menus — shared by every page -->
+  <link rel="stylesheet" href="shell.css?v=8" />
+  <link rel="stylesheet" href="site-prefs.css" />
+  <script src="site-prefs.js"></script>
+  <script src="site.js?v=9" defer></script>
+</head>
+<body data-page="projects">
+
+<!-- shell:header -->
+<header class="site-bar" id="bar">
+  <a class="site-name" href="index.html">Chenyu Li</a>
+  <nav class="site-nav" id="site-nav" aria-label="Pages"><ul>
+    <li><a href="projects.html">Projects</a></li>
+    <li><a href="experience.html">Experience</a></li>
+    <li><a href="life.html">Life</a></li>
+    <li><a href="resume.html">Resume</a></li>
+  </ul></nav>
+  <div class="bar-tools">
+    <div class="bar-social">
+      <a href="mailto:info.chenyuli@gmail.com" aria-label="Email" title="Email"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="m3 6.5 9 6.5 9-6.5"/></svg></a>
+      <a href="https://linkedin.com/in/li-chenyu" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+      <a href="https://github.com/chenyu-u" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg></a>
+    </div>
+    <div data-prefs-slot></div>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></button>
+  </div>
+</header>
+<a class="office-tab" href="laptop.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19h20"/></svg><span>My office</span></a>
+<!-- /shell:header -->
+
+<!-- HERO -->
+<div class="pp-hero">
+  <div class="wrap">
+    <a class="back pp-back-row" href="projects.html"><span aria-hidden="true">←</span> All projects</a>
+    <div class="pp-hero-grid">
+      <div>
+        <p class="lbl">Project file · Building Energy and Indoor Environment Lab, University of Toronto</p>
+        <h1>Fitbit Survey App for a Heat-Exposure Study</h1>
+        <p class="pp-lede">A custom <strong>Fitbit OS</strong> clock face and <strong>phone companion app</strong> that survey study participants four times a day and deliver their answers to the research team as a comma-separated values file ready for analysis. I developed it in <strong>JavaScript</strong>, <strong>SVG</strong> and <strong>CSS</strong> for a multi-summer heat-exposure study in residential buildings.</p>
+        <div class="pp-tags"><span class="ptag">JavaScript</span><span class="ptag">Fitbit OS SDK 4.2</span><span class="ptag">SVG/CSS</span><span class="ptag">Web API</span><span class="ptag">JSONBin</span><span class="ptag">Node.js</span><span class="ptag">Technical Documentation</span></div>
+      </div>
+      <figure class="pp-hero-img contain" style="margin:0">
+        <img width="793" height="792" src="projects/EMA-survey.webp" alt="Fitbit Versa 2 showing the Preferred Temperature survey question with Cooler, Comfy and Warmer buttons" loading="lazy" decoding="async" />
+        <figcaption>The temperature question on the Versa 2.</figcaption>
+      </figure>
+    </div>
+    <dl class="pp-spec"><div><dt>Type</dt><dd>Research software</dd></div><div><dt>Role</dt><dd>Clock face and companion developer</dd></div><div><dt>Scale</dt><dd>20+ participant kits</dd></div><div><dt>Output</dt><dd>Automated comma-separated values export</dd></div></dl>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="wrap pp-body">
+  <nav class="pp-toc" aria-label="On this page"><p>On this page</p><ol><li><a href="#overview">Overview</a></li><li><a href="#process">Design process</a></li><li><a href="#code">Selected code</a></li><li><a href="#learned">What I learned</a></li></ol></nav>
+  <article>
+
+<section id="overview">
+  <h2>Overview</h2>
+  <div class="short"><span class="k">The short version</span><p>The study needed to know how residents feel inside their apartments during hot summers. Are they too warm, does the air feel stuffy, are they tired or stressed? End-of-day surveys rely on memory, so this app asks in the moment instead. The watch face buzzes four times a day and asks a few questions with large picture buttons. Each answer moves from the watch to a paired Android phone, from the phone to a cloud store, and into a file the research team can analyze.</p></div>
+  <p style="margin-top:1rem">I developed this app during my summer research internship with the Building Energy and Indoor Environment Lab, part of the Hub for Advancing Buildings at the University of Toronto. The study is led by a PhD candidate in the lab and uses <strong>ecological momentary assessment</strong>, a method where participants answer short surveys in the moment and in the environment being studied. Each participant kit pairs a <strong>Fitbit Versa 2</strong> with a dedicated Android phone. I was responsible for the software: the watch clock face, the phone companion, the <strong>data pipeline</strong> to the cloud, and the <strong>technical documentation</strong> the lab uses to rebuild and maintain the system. The page follows the project in the order I worked through it, from the research need to the handover.</p>
+</section>
+
+<section id="process">
+  <h2>Engineering design process</h2>
+  <ol class="steps">
+<li class="step"><h3>Define the problem</h3><span class="phase">Step 1 · Problem definition</span><div class="plain"><span class="k">In short</span><p>The lab needed several self-reported surveys a day from each participant, with no researcher present.</p></div><p>The study looks at how people in multi-unit residential buildings experience summer heat. That required comfort and wellbeing data collected several times a day over a whole season, from participants going about their normal routines. The data also had to arrive clean and ready to analyze, with no manual transcription.</p></li>
+<li class="step"><h3>Set requirements and constraints</h3><span class="phase">Step 2 · Requirements</span><div class="plain"><span class="k">In short</span><p>Before writing any code, I set out what the survey had to do and the limits it had to work within.</p></div><ul><li><strong>Scheduling:</strong> prompts at 9:00, 12:00, 15:00 and 18:00, plus a survey participants can start any time they feel uncomfortably hot or cold.</li><li><strong>Usability:</strong> each survey fits a 300 by 300 pixel screen and takes a few taps with no typing, using large icons and colour cues.</li><li><strong>Privacy:</strong> survey answers only, with no heart rate, activity or other health data, and every record tied to a study ID instead of a personal account.</li><li><strong>Reliability:</strong> no answer is lost if the phone is briefly offline.</li><li><strong>Cost:</strong> storage fits a free tier. Twenty kits, four surveys a day and two requests per survey come to about 160 requests a day, well under the limit of roughly 10,000 a month.</li><li><strong>Platform:</strong> the Versa 2 requires Fitbit SDK 4.2, which means an older JavaScript runtime on the watch and Node 14 for the build tools.</li></ul></li>
+<li class="step"><h3>Make the key design decisions</h3><span class="phase">Step 3 · Concept selection</span><div class="plain"><span class="k">In short</span><p>I made the survey the watch face itself, so it is on screen the moment a participant looks at their wrist.</p></div><ul><li><strong>Clock face, not an app.</strong> A Fitbit app has to be opened from a menu, but a clock face is always displayed. Building the survey as a clock face put it in front of participants as soon as they raised their wrist, and the device still works as a watch between surveys.</li><li><strong>Data-driven interface.</strong> I built one template with a two-option row and a three-option row that renders every question from a configuration list. The display code fills in the text, icons and colours from the list, so adding or rewording a question is a one-entry edit. That paid off when the questions changed during development.</li><li><strong>Hosted storage.</strong> The companion sends standard web requests, so a hosted JSON store could handle the data, with no server to set up, secure or pay for.</li></ul><p>From those decisions I split the system into four layers. Each layer has one job and passes its data to the next in a fixed format, so any fault can be traced to a single layer.</p><figure><p class="dia-hint">Swipe sideways to see the full diagram &rarr;</p><div class="dia-scroll" style="--dia-min:820px" tabindex="0" role="group" aria-label="Data pipeline diagram"><svg class="dia" viewBox="0 0 990 228" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Data pipeline: the Fitbit watch sends answers over Bluetooth to a companion app on an Android phone, which uploads them over HTTPS to JSONBin. A Node script on a research laptop downloads everything into one CSV file."><defs><marker id="ah" viewBox="0 0 10 10" refX="9.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0 1.2 L10 5 L0 8.8 z" fill="#1B2430"/></marker><pattern id="hatch" width="4.5" height="4.5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0 V6" stroke="#1B2430" stroke-width="1"/></pattern></defs><rect x="20" y="40" width="185" height="100" class="part-em"/><text x="112.5" y="61" font-size="12" text-anchor="middle" class="" font-weight="700">FITBIT VERSA 2</text><text x="112.5" y="78" font-size="10" text-anchor="middle" class="sub">clock face app</text><text x="112.5" y="92" font-size="10" text-anchor="middle" class="sub">schedule, questions, haptics</text><text x="112.5" y="106" font-size="10" text-anchor="middle" class="sub">app/index.js</text><rect x="275" y="40" width="185" height="100" class="part"/><text x="367.5" y="61" font-size="12" text-anchor="middle" class="" font-weight="700">ANDROID PHONE</text><text x="367.5" y="78" font-size="10" text-anchor="middle" class="sub">Fitbit companion</text><text x="367.5" y="92" font-size="10" text-anchor="middle" class="sub">record, CSV backup, retry</text><text x="367.5" y="106" font-size="10" text-anchor="middle" class="sub">companion/index.js</text><rect x="530" y="40" width="185" height="100" class="part"/><text x="622.5" y="61" font-size="12" text-anchor="middle" class="" font-weight="700">JSONBIN</text><text x="622.5" y="78" font-size="10" text-anchor="middle" class="sub">cloud store</text><text x="622.5" y="92" font-size="10" text-anchor="middle" class="sub">one JSON array of sessions</text><text x="622.5" y="106" font-size="10" text-anchor="middle" class="sub">REST over HTTPS</text><rect x="785" y="40" width="185" height="100" class="part"/><text x="877.5" y="61" font-size="12" text-anchor="middle" class="" font-weight="700">RESEARCH LAPTOP</text><text x="877.5" y="78" font-size="10" text-anchor="middle" class="sub">Node.js script</text><text x="877.5" y="92" font-size="10" text-anchor="middle" class="sub">writes one CSV for analysis</text><text x="877.5" y="106" font-size="10" text-anchor="middle" class="sub">pull_data.js</text><path d="M205 90 L275 90" class="wire w-rf" marker-end="url(#ah)"/><text x="240" y="82" font-size="10" text-anchor="middle" class="sub" font-style="italic">Bluetooth</text><path d="M460 90 L530 90" class="wire " marker-end="url(#ah)"/><text x="495" y="82" font-size="10" text-anchor="middle" class="sub" font-style="italic">GET, PUT</text><text x="495" y="107" font-size="9.5" text-anchor="middle" class="sub">HTTPS</text><path d="M785 90 L715 90" class="wire " marker-end="url(#ah)"/><text x="750" y="82" font-size="10" text-anchor="middle" class="sub" font-style="italic">GET</text><text x="750" y="107" font-size="9.5" text-anchor="middle" class="sub">HTTPS</text><text x="112" y="164" font-size="9.5" text-anchor="middle" class="sub">WORN BY PARTICIPANT</text><text x="367" y="164" font-size="9.5" text-anchor="middle" class="sub">ONE PER PARTICIPANT KIT</text><text x="622" y="164" font-size="9.5" text-anchor="middle" class="sub">SHARED BY ALL KITS</text><text x="877" y="164" font-size="9.5" text-anchor="middle" class="sub">RUN BY RESEARCHER</text><path d="M20 192 h34" class="wire "/><text x="62" y="195.5" font-size="9.5" text-anchor="start" class="sub">Internet link</text><path d="M20 207 h34" class="wire w-rf"/><text x="62" y="210.5" font-size="9.5" text-anchor="start" class="sub">Wireless link</text></svg></div><figcaption>Fig. 1. Data pipeline I designed, from the participant's wrist to the analysis file.</figcaption></figure><div class="tbl-wrap"><table>
+    <thead><tr><th>Layer</th><th>Platform</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td>Watch application</td><td>Fitbit OS, SDK 4.2</td><td>Displays the clock face and the SURVEY button, keeps the schedule, shows one question at a time, and sends completed answers to the phone.</td></tr>
+      <tr><td>Companion</td><td>Fitbit mobile app on Android</td><td>Builds a flat record for each survey, stamps it with the participant ID and local time, saves a local comma-separated values backup, uploads it, and retries if the upload fails.</td></tr>
+      <tr><td>Cloud store</td><td>JSONBin</td><td>Stores every survey from every participant in a single JSON array.</td></tr>
+      <tr><td>Retrieval</td><td>Node.js on a laptop</td><td>Downloads the array and converts it to a comma-separated values file with one row per survey.</td></tr>
+    </tbody>
+  </table></div></li>
+<li class="step"><h3>Design the survey logic and the data record</h3><span class="phase">Step 4 · Detailed design</span><div class="plain"><span class="k">In short</span><p>I mapped every survey path in a flowchart before writing any code.</p></div><figure><p class="dia-hint">Swipe sideways to see the full diagram &rarr;</p><div class="dia-scroll" style="--dia-min:820px" tabindex="0" role="group" aria-label="Survey flowchart"><svg class="dia" viewBox="0 0 990 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Survey flowchart. A timer or the survey button starts a survey. The next slot is queued first. If the participant is not home a partial record is saved. If they are home, the sleep question is inserted if it has not been asked today, then the remaining questions are asked and a full record is saved."><defs><marker id="ah" viewBox="0 0 10 10" refX="9.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0 1.2 L10 5 L0 8.8 z" fill="#1B2430"/></marker><pattern id="hatch" width="4.5" height="4.5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0 V6" stroke="#1B2430" stroke-width="1"/></pattern></defs><rect x="20" y="40" width="140" height="46" rx="23.0" class="part-em"/><text x="90.0" y="62.0" font-size="10.5" text-anchor="middle" class="" font-weight="600">TIMER FIRES</text><text x="90.0" y="76.0" font-size="9.5" text-anchor="middle" class="sub">9:00 12:00 15:00 18:00</text><rect x="20" y="118" width="140" height="46" rx="23.0" class="part-em"/><text x="90.0" y="140.0" font-size="10.5" text-anchor="middle" class="" font-weight="600">SURVEY BUTTON</text><text x="90.0" y="154.0" font-size="9.5" text-anchor="middle" class="sub">participant taps it</text><rect x="205" y="66" width="160" height="72" class="part"/><text x="285.0" y="92.5" font-size="10.5" text-anchor="middle" class="" font-weight="600">START SURVEY</text><text x="285.0" y="106.5" font-size="9.5" text-anchor="middle" class="sub">queue the NEXT slot first,</text><text x="285.0" y="119.5" font-size="9.5" text-anchor="middle" class="sub">then vibrate three times</text><path d="M160 63 L182 63 L182 90 L205 90" class="wire " marker-end="url(#ah)"/><path d="M160 141 L182 141 L182 114 L205 114" class="wire " marker-end="url(#ah)"/><path d="M400.0 102 L480 58.0 L560.0 102 L480 146.0 Z" class="part"/><text x="480" y="101" font-size="10.5" text-anchor="middle" class="" font-weight="600">AT HOME</text><text x="480" y="114" font-size="10.5" text-anchor="middle" class="" font-weight="600">RIGHT NOW?</text><path d="M365 102 L400 102" class="wire " marker-end="url(#ah)"/><rect x="625" y="70" width="165" height="64" class="part"/><text x="707.5" y="99.0" font-size="10.5" text-anchor="middle" class="" font-weight="600">SAVE PARTIAL RECORD</text><text x="707.5" y="113.0" font-size="9.5" text-anchor="middle" class="sub">home = no, rest left blank</text><path d="M560 102 L625 102" class="wire " marker-end="url(#ah)"/><text x="592" y="94" font-size="10" text-anchor="middle" class="sub" font-style="italic">NO</text><path d="M400.0 256 L480 212.0 L560.0 256 L480 300.0 Z" class="part"/><text x="480" y="255" font-size="10.5" text-anchor="middle" class="" font-weight="600">SLEEP ASKED</text><text x="480" y="268" font-size="10.5" text-anchor="middle" class="" font-weight="600">TODAY?</text><path d="M480 146 L480 212" class="wire " marker-end="url(#ah)"/><text x="500" y="184" font-size="10" text-anchor="middle" class="sub" font-style="italic">YES</text><rect x="205" y="224" width="160" height="64" class="part"/><text x="285.0" y="253.0" font-size="10.5" text-anchor="middle" class="" font-weight="600">INSERT SLEEP QUESTION</text><text x="285.0" y="267.0" font-size="9.5" text-anchor="middle" class="sub">asked once per day</text><path d="M400 256 L365 256" class="wire " marker-end="url(#ah)"/><text x="383" y="248" font-size="10" text-anchor="middle" class="sub" font-style="italic">NO</text><rect x="395" y="366" width="170" height="76" class="part"/><text x="480.0" y="394.5" font-size="10.5" text-anchor="middle" class="" font-weight="600">REMAINING QUESTIONS</text><text x="480.0" y="408.5" font-size="9.5" text-anchor="middle" class="sub">temperature, humidity, air,</text><text x="480.0" y="421.5" font-size="9.5" text-anchor="middle" class="sub">energy, stress, social</text><path d="M480 300 L480 366" class="wire " marker-end="url(#ah)"/><text x="500" y="338" font-size="10" text-anchor="middle" class="sub" font-style="italic">YES</text><path d="M285 288 L285 404 L395 404" class="wire " marker-end="url(#ah)"/><rect x="625" y="372" width="165" height="64" class="part"/><text x="707.5" y="401.0" font-size="10.5" text-anchor="middle" class="" font-weight="600">SAVE FULL RECORD</text><text x="707.5" y="415.0" font-size="9.5" text-anchor="middle" class="sub">send to phone</text><path d="M565 404 L625 404" class="wire " marker-end="url(#ah)"/><rect x="830" y="228" width="140" height="52" rx="26.0" class="part-em"/><text x="900.0" y="253.0" font-size="10.5" text-anchor="middle" class="" font-weight="600">SAVED SCREEN</text><text x="900.0" y="267.0" font-size="9.5" text-anchor="middle" class="sub">3 s, then clock face</text><path d="M790 102 L900 102 L900 228" class="wire " marker-end="url(#ah)"/><path d="M790 404 L900 404 L900 280" class="wire " marker-end="url(#ah)"/><text x="20" y="420" font-size="9.5" text-anchor="start" class="" font-weight="700">AT ANY QUESTION</text><text x="20" y="435" font-size="9.5" text-anchor="start" class="sub">Back arrow: re-answer the previous one.</text><text x="20" y="449" font-size="9.5" text-anchor="start" class="sub">Stop icon: discard. Next slot stays queued.</text></svg></div><figcaption>Fig. 2. Survey flowchart. Every path ends in a saved record or an intentional discard.</figcaption></figure><p>The first question asks whether the participant is home. The study is about conditions inside the apartment, so a "no" ends the survey right away and saves a short record. That keeps the burden on participants low while still confirming they got the prompt.</p><p>I designed every survey to save as one flat record with the same fourteen fields. A question that was not asked is stored as null and shows up as an empty cell, so the analysis scripts never have to guess which columns are present.</p><p>Timestamps are recorded in the participant's local time with the UTC offset, for example <code>2025-09-01T09:04:22-04:00</code>. I wrote a helper for this because JavaScript records time in UTC by default, and without it a 9:00 survey would not read as 9:00.</p></li>
+<li class="step"><h3>Build within the platform limits</h3><span class="phase">Step 5 · Implementation</span><div class="plain"><span class="k">In short</span><p>I built the watch app within the limits of an older, constrained device.</p></div><p>The SDK 4.2 runtime on the watch does not support arrow functions, so I wrote the watch code with named functions throughout. The phone companion runs on a newer engine with no such limit. For touch input, I replaced <code>click</code> events, which were unreliable on the device, with a <code>mousedown</code> event on a transparent rectangle over each button.</p><p>I placed each icon on a coloured tile so the dark artwork stays visible on the black screen. The colours also carry meaning: green for comfortable, red and blue for the two opposite directions, and yellow for neutral. Every image in the layout starts with a valid placeholder, which works around a platform bug where an image without a starting source can refuse to load later.</p></li>
+<li class="step"><h3>Test, find faults, fix them</h3><span class="phase">Step 6 · Verification</span><div class="plain"><span class="k">In short</span><p>I tested the app the way real participants use it, including surveys they ignore.</p></div><ul><li><strong>Ignored surveys.</strong> The next survey was originally scheduled only after the current one finished, so one ignored survey stopped every later one. I changed it to schedule the next survey at the start of each survey. A related fix clears the manual-survey flag, so an ignored manual survey no longer mislabels the next scheduled one.</li><li><strong>Sleep question.</strong> It was tied to the 9:00 survey, which missed anyone not home in the morning. I moved it so it is asked the first time each day a participant says they are home, and its date is recorded only when it is actually shown.</li><li><strong>Offline uploads.</strong> The first version tried each upload once. I changed the companion to save a local comma-separated values backup, hold each survey in a buffer and retry on every reconnection, so a brief offline moment no longer loses data.</li><li><strong>Deployment.</strong> The university network blocked the developer connection to the watch, so I installed it over a phone hotspot on the 2.4 GHz band, the only band the Versa 2 supports.</li></ul></li>
+<li class="step"><h3>Verify on hardware and hand over</h3><span class="phase">Step 7 · Handover</span><div class="plain"><span class="k">In short</span><p>I verified the app end to end on hardware and documented it for the lab to deploy.</p></div><p>I installed and verified the app end to end on a test watch: complete a survey, check the confirmation screen, and confirm the record reaches the cloud store under the right participant ID. The PhD candidate leading the study then installed it on the remaining watches and deployed the kits.</p><p>For the handover I wrote a <strong>24-section development guide</strong> covering the architecture, build setup, installation, data format, testing procedure, and every known failure with its fix. Research software is often lost when the student who wrote it graduates, and the guide keeps this system maintainable.</p></li>
+<li class="step"><h3>Review the result</h3><span class="phase">Step 8 · Evaluation</span><div class="plain"><span class="k">In short</span><p>The app went into use in the study, and I documented its limitations for the lab.</p></div><p>The app supports a multi-summer study with more than 20 participants and delivers a file the research team can analyze directly. I documented three limitations for the lab:</p><ul><li>Timers live in memory, because Fitbit OS gives clock faces no persistent alarm. After a restart, the schedule resumes once the clock face reloads.</li><li>Only the phone buffers answers. A survey completed while the phone is out of Bluetooth range is lost.</li><li>Each upload reads the full data list, adds a record and writes it back, which is not atomic, so two uploads in the same second could overwrite each other. At 160 uploads a day that is unlikely, and the local backups allow recovery, but an append-only endpoint or a separate store for each participant would remove the risk.</li></ul></li>
+
+  </ol>
+</section>
+
+<section id="code">
+  <h2>Selected code</h2>
+  <p class="code-note">JavaScript · Fitbit SDK 4.2 · three short excerpts that carry the main design ideas</p>
+<div class="walk"><pre tabindex="0" aria-label="Code: A question is data, not code"><code>{
+  id: <span class="n">&quot;temp_preference&quot;</span>,
+  lines: [<span class="n">&quot;Preferred&quot;</span>, <span class="n">&quot;Temperature&quot;</span>],
+  options: [
+    { value: <span class="n">&quot;cooler&quot;</span>, icon: <span class="n">&quot;images/icons/prefer_cold.png&quot;</span>,
+      label: <span class="n">&quot;Cooler&quot;</span>, color: C_BLUE  },
+    { value: <span class="n">&quot;comfy&quot;</span>,  icon: <span class="n">&quot;images/icons/comfy.png&quot;</span>,
+      label: <span class="n">&quot;Comfy&quot;</span>,  color: C_GREEN },
+    { value: <span class="n">&quot;warmer&quot;</span>, icon: <span class="n">&quot;images/icons/prefer_warmer.png&quot;</span>,
+      label: <span class="n">&quot;Warmer&quot;</span>, color: C_RED   }
+  ]
+}</code></pre><div class="say"><span class="tag">Watch app</span><h4>A question is data, not code</h4><p>Every question is one object like this. The display code never refers to temperature or humidity directly. It only knows how to draw whatever object it is given.</p><p>The <code>value</code> is what gets saved, the <code>label</code> is the text the participant sees, and the <code>color</code> is the tile drawn behind the icon.</p></div></div>
+<div class="walk"><pre tabindex="0" aria-label="Code: Schedule the next survey first"><code><span class="k">function</span> startSurvey() {
+  currentQuestion = <span class="n">0</span>;
+  responses       = [];
+  surveyActive    = <span class="k">true</span>;
+
+  <span class="c">// Schedule the NEXT survey immediately. Even if this survey</span>
+  <span class="c">// is ignored indefinitely, the next slot will still fire.</span>
+  scheduleSurvey();
+
+  QUESTIONS = BASE_QUESTIONS.filter(<span class="k">function</span>(q) {
+    <span class="k">return</span> q.id !== <span class="n">&quot;sleep_quality&quot;</span>;
+  });
+
+  vibration.start(<span class="n">&quot;nudge-max&quot;</span>);
+  setTimeout(buzz2, <span class="n">600</span>);
+  setTimeout(buzz3, <span class="n">1200</span>);
+  showQuestion(<span class="n">0</span>);
+}</code></pre><div class="say"><span class="tag">Watch app</span><h4>Schedule the next survey first</h4><p>This order is the fix for the most serious bug I found in testing. Because <code>scheduleSurvey()</code> runs before the first question appears, the 12:00 survey is scheduled even if the 9:00 survey is never answered.</p><p>The sleep question is removed at the start and added back later, but only if the participant says they are home. The three vibrations are 600 ms apart so the prompt is hard to miss.</p></div></div>
+<div class="walk"><pre tabindex="0" aria-label="Code: Never lose an answer"><code>messaging.peerSocket.addEventListener(<span class="n">&quot;message&quot;</span>, (evt) =&gt; {
+  <span class="k">const</span> message = evt.data;
+  <span class="k">if</span> (message &amp;&amp; message.type === <span class="n">&quot;survey_response&quot;</span>) {
+    <span class="k">const</span> session = buildSession(message.payload,
+      message.triggeredManually || <span class="k">false</span>,
+      message.includesSleep     || <span class="k">false</span>);
+    appendToLocalCSV(session);      <span class="c">// 1. local backup first</span>
+    stagedResponses.push(session);  <span class="c">// 2. hold in retry buffer</span>
+    pushSession(session);           <span class="c">// 3. try the upload</span>
+  }
+});
+
+<span class="c">// When the watch reconnects, retry anything still buffered.</span>
+messaging.peerSocket.addEventListener(<span class="n">&quot;open&quot;</span>, () =&gt; {
+  stagedResponses.forEach(session =&gt; pushSession(session));
+});</code></pre><div class="say"><span class="tag">Phone companion</span><h4>Never lose an answer</h4><p>When answers arrive from the watch, three things happen in a fixed order: save a local backup, add the survey to the retry buffer, then upload it. A survey only leaves the buffer once the server confirms it was received.</p><p>The second handler runs every time the watch reconnects and retries any survey that is still waiting.</p></div></div>
+
+</section>
+
+<section id="learned">
+  <h2>What this project taught me</h2>
+  <div class="cards">
+    <div class="card"><h4>Test the unhappy path</h4><p>The worst bug only showed up when a survey was ignored, which is exactly what real participants do. Testing only the normal case would have missed it.</p></div>
+    <div class="card"><h4>Design the data first</h4><p>Locking in the record format early let me build and revise the watch app, the phone app and the download script independently.</p></div>
+    <div class="card"><h4>Documentation is part of the deliverable</h4><p>In a research lab, the next person to maintain the code is usually another student. Software nobody else can rebuild was not really finished.</p></div>
+    <div class="card"><h4>Be explicit about limits</h4><p>Every system has ways it can fail. Writing them down, along with what causes them, was more useful to the lab than leaving them out.</p></div>
+  </div>
+</section>
+
+  </article>
+</div>
+
+<div class="pp-next"><div class="wrap"><a href="robot-sim.html"><small>Next project</small><b>Robotic Arm Simulation</b></a><a href="project-bluetooth-car.html"><small>Also</small><b>Bluetooth-Controlled Car</b></a><a href="projects.html"><small>Back to</small><b>All projects</b></a></div></div>
+<!-- shell:footer -->
+<footer class="site-foot"><div class="wrap">
+  <div class="foot-main">
+    <h2>Say hello</h2>
+    <a class="foot-mail" href="mailto:info.chenyuli@gmail.com">info.chenyuli@gmail.com</a>
+    <p>I'm looking for an internship or co-op from May to August 2027, and a 12 to 16 month Professional Experience Year starting in May 2028. <a href="resume.html#request">Request my resume</a></p>
+  </div>
+  <div class="foot-cols">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="life.html">Life</a></li>
+      <li><a href="resume.html">Resume</a></li>
+    </ul>
+    <ul>
+      <li><a href="https://linkedin.com/in/li-chenyu" target="_blank" rel="noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/chenyu-u" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="https://hab.civmin.utoronto.ca/people/chenyu-li/" target="_blank" rel="noopener">Research group</a></li>
+    </ul>
+    <ul>
+      <li><a href="story.html">Follow the wind, a 3D story</a></li>
+      <li><a href="laptop.html">My office in 3D</a></li>
+      <li><a href="robot-sim.html">Robotic arm simulator</a></li>
+    </ul>
+  </div>
+  <p class="foot-small">© 2026 Chenyu Li, Toronto</p>
+</div></footer>
+<!-- /shell:footer -->
+
+<script>
+  /* highlight the current section in the contents rail */
+  (function () {
+    var links = document.querySelectorAll('.pp-toc a');
+    if (!links.length || !('IntersectionObserver' in window)) return;
+    var map = {};
+    links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        links.forEach(function (a) { a.classList.remove('on'); });
+        if (map[e.target.id]) map[e.target.id].classList.add('on');
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('article > section[id]').forEach(function (s) { io.observe(s); });
+  })();
+</script>
+</body>
+</html>

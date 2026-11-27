@@ -1,0 +1,62 @@
+/* ═══════════════════════════════════════════════════════════════════
+   shell.css · header, footer and office tab, shared by every page (the 3D story included).
+   Markup is stamped by tools/shell.mjs. Uses the page's tokens:
+   --paper --paper-2 --ink --ink-2 --ink-3 --rule --wind --f
+═══════════════════════════════════════════════════════════════════ */
+
+/* ── header: name on the left, four pages, quiet tools on the right ── */
+.site-bar {
+  position: sticky; top: 0; z-index: 60; height: 64px;
+  display: flex; align-items: center; gap: 2rem;
+  padding: 0 clamp(20px, 4vw, 56px);
+  background: var(--paper); border-bottom: 1px solid var(--rule);
+}
+.site-name { font-weight: 700; font-size: 1.0625rem; letter-spacing: -.01em; text-decoration: none; color: var(--ink); white-space: nowrap; }
+.site-nav { margin-right: auto; }
+.site-nav ul, .foot-cols ul { list-style: none; margin: 0; padding: 0; }
+.site-nav ul { display: flex; gap: 1.6rem; }
+.site-nav a { font-size: .9375rem; color: var(--ink-2); text-decoration: none; padding: .4rem 0; border-bottom: 2px solid transparent; }
+.site-nav a:hover { color: var(--ink); }
+.site-nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--wind); }
+.bar-tools { display: flex; align-items: center; gap: .2rem; }
+.bar-social { display: flex; gap: .1rem; margin-right: .4rem; padding-right: .6rem; border-right: 1px solid var(--rule); }
+.bar-social a, .menu-btn { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 6px; color: var(--ink-2); background: none; border: 0; cursor: pointer; }
+.bar-social a:hover, .menu-btn:hover { color: var(--ink); background: var(--paper-2); }
+/* the theme and language menus sit as plain controls, like the icons beside them */
+.site-bar .sp-btn { border: 0; background: none; color: var(--ink-2); height: 34px; border-radius: 6px; }
+.site-bar .sp-btn:hover, .site-bar .sp-dd.open .sp-btn { background: var(--paper-2); color: var(--ink); }
+.menu-btn { display: none; }
+@media (max-width: 860px) {
+  .site-bar { gap: 1rem; }
+  .menu-btn { display: inline-flex; }
+  .bar-social { display: none; }
+  .site-nav { position: fixed; inset: 64px 0 auto 0; margin: 0; background: var(--paper); border-bottom: 1px solid var(--rule); display: none; padding: .5rem clamp(20px, 4vw, 56px) 1.2rem; }
+  .site-nav.open { display: block; }
+  .site-nav ul { flex-direction: column; gap: 0; }
+  .site-nav a { display: block; font-size: 1.25rem; color: var(--ink); padding: .7rem 0; border: 0; }
+  .site-nav a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--wind); text-decoration-thickness: 2px; text-underline-offset: 6px; }
+  .bar-tools { margin-left: auto; }
+}
+
+/* ── the 3D office, a small tab on the right edge ── */
+.office-tab {
+  position: fixed; right: 0; bottom: 190px; z-index: 55; display: flex; align-items: center; gap: .5rem;
+  padding: .55rem .8rem .55rem .7rem; border-radius: 6px 0 0 6px; background: var(--ink); color: var(--paper);
+  font-size: .8125rem; font-weight: 700; text-decoration: none; transform: translateX(calc(100% - 38px)); transition: transform .25s ease;
+}
+.office-tab:hover, .office-tab:focus-visible { transform: none; }
+@media (max-width: 860px) { .office-tab { display: none; } }
+html.in-office .office-tab { display: none; }
+
+/* ── footer: the one thing to do next, then the rest of the site ── */
+.site-foot { background: var(--paper-2); color: var(--ink-2); padding: clamp(3.5rem, 8vw, 6rem) 0 2rem; font-size: .9375rem; }
+.site-foot a { color: var(--ink); text-decoration: none; }
+.site-foot a:hover { text-decoration: underline; text-decoration-color: var(--wind); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.foot-main h2 { font-size: 1rem; font-weight: 400; color: var(--ink-2); margin: 0; }
+.foot-mail { display: inline-block; font-size: clamp(1.75rem, 4.4vw, 3.25rem); font-weight: 700; letter-spacing: -.025em; line-height: 1.1; margin-top: .35rem; word-break: break-word; }
+.foot-main p { margin-top: 1rem; max-width: 40rem; }
+.foot-main p a { text-decoration: underline; text-decoration-color: var(--wind); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.foot-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 13rem)); gap: 1.5rem 2rem; margin-top: clamp(2.5rem, 6vw, 4rem); }
+.foot-cols li + li { margin-top: .4rem; }
+.foot-small { margin-top: 3rem; color: var(--ink-3); font-size: .875rem; }
+@media (max-width: 640px) { .foot-cols { grid-template-columns: 1fr 1fr; } }

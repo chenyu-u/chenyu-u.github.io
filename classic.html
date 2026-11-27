@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Chenyu Li</title>
+<!-- The one-page portfolio was split into experience.html, projects.html, life.html and resume.html.
+     Old links (and their #sections) are sent to the page that now holds that section. -->
+<script>
+(function () {
+  var to = { about: 'index.html#welcome', projects: 'projects.html', experience: 'experience.html', coursework: 'resume.html#coursework',
+    running: 'life.html#running', hobbies: 'life.html#hobbies', volunteering: 'life.html#volunteering', contact: 'index.html#contact' };
+  location.replace(to[location.hash.slice(1)] || 'projects.html');
+})();
+</script>
+<meta http-equiv="refresh" content="0; url=projects.html" />
+<link rel="canonical" href="projects.html" />
+</head>
+<body>
+<p><a href="projects.html">This page has moved to my projects page.</a></p>
+</body>
+</html>
