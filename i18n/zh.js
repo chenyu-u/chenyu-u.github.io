@@ -2218,5 +2218,16 @@ window.CL_I18N.zh = {
  "The engineering intramural hockey team on the ice after a game": "工程学院校内冰球队在比赛结束后站在冰面上",
  "Chenyu skating with his stick on the ice": "辰宇拿着球杆在冰面上滑行",
  "Coaching a U11 team": "执教一支U11球队",
- "The game, team and skating photos are from this season's engineering intramurals at Varsity Arena.": "这些比赛、球队和滑冰照片均来自本赛季在Varsity Arena举行的工程学院校内联赛。"
+ "The game, team and skating photos are from this season's engineering intramurals at Varsity Arena.": "这些比赛、球队和滑冰照片均来自本赛季在Varsity Arena举行的工程学院校内联赛。",
+ "Our vertical-axis wind turbine on its stand in the wind tunnel at Delft University of Technology": "我们那台垂直轴风力发电机安装在代尔夫特理工大学风洞内的支架上",
+ "The turbine, its hub, and our team at the 2026 International Small Wind Turbine Contest in the Netherlands.": "这台风力涡轮机、其轮毂以及我们的团队，摄于2026年在荷兰举办的国际小型风力涡轮机大赛现场。",
+ "The turbine in the wind tunnel (photo 2 of 5)": "风洞中的涡轮机（第2张，共5张）",
+ "The turbine's hub assembly (photo 3 of 5)": "涡轮机的轮毂总成（第3张图，共5张）",
+ "Assembling the turbine (photo 4 of 5)": "组装涡轮机（第4张图，共5张）",
+ "The team booth at Alumni Fest (photo 5 of 5)": "校友节上的团队展位（第5张，共5张）",
+ "Second concept model (photo 2 of 4)": "第二款概念车（第2张，共4张）",
+ "Third concept model (photo 3 of 4)": "第三款概念模型（共4张照片中的第3张）",
+ "Video of the computer-aided design model (photo 4 of 4)": "计算机辅助设计模型的视频（第4张图，共4张）",
+ "The 2024 structure going up (photo 2 of 2)": "2024年建筑正在施工中（第2张，共2张）",
+ "The car from another angle (photo 2 of 2)": "这辆车的另一个角度（第2张，共2张）"
 };

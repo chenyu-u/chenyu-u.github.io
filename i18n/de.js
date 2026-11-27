@@ -2214,5 +2214,16 @@ window.CL_I18N.de = {
  "The engineering intramural hockey team on the ice after a game": "Die interne Eishockeymannschaft der Ingenieurwissenschaften auf dem Eis nach einem Spiel",
  "Chenyu skating with his stick on the ice": "Chenyu, der mit seinem Schläger auf dem Eis läuft",
  "Coaching a U11 team": "Eine U11-Mannschaft trainieren",
- "The game, team and skating photos are from this season's engineering intramurals at Varsity Arena.": "Die Fotos vom Spiel, der Mannschaft und beim Eislaufen stammen von den diesjährigen Intramural-Wettkämpfen der Ingenieurstudenten in der Varsity Arena."
+ "The game, team and skating photos are from this season's engineering intramurals at Varsity Arena.": "Die Fotos vom Spiel, der Mannschaft und beim Eislaufen stammen von den diesjährigen Intramural-Wettkämpfen der Ingenieurstudenten in der Varsity Arena.",
+ "Our vertical-axis wind turbine on its stand in the wind tunnel at Delft University of Technology": "Unsere Windkraftanlage mit vertikaler Achse auf ihrem Ständer im Windkanal der Technischen Universität Delft",
+ "The turbine, its hub, and our team at the 2026 International Small Wind Turbine Contest in the Netherlands.": "Die Windkraftanlage, ihre Nabe und unser Team beim Internationalen Kleinwindkraftanlagen-Wettbewerb 2026 in den Niederlanden.",
+ "The turbine in the wind tunnel (photo 2 of 5)": "Die Turbine im Windkanal (Foto 2 von 5)",
+ "The turbine's hub assembly (photo 3 of 5)": "Die Nabenbaugruppe der Turbine (Foto 3 von 5)",
+ "Assembling the turbine (photo 4 of 5)": "Montage der Turbine (Foto 4 von 5)",
+ "The team booth at Alumni Fest (photo 5 of 5)": "Der Stand des Teams beim Alumni-Fest (Foto 5 von 5)",
+ "Second concept model (photo 2 of 4)": "Zweites Konzeptmodell (Foto 2 von 4)",
+ "Third concept model (photo 3 of 4)": "Drittes Konzeptmodell (Foto 3 von 4)",
+ "Video of the computer-aided design model (photo 4 of 4)": "Video des CAD-Modells (Foto 4 von 4)",
+ "The 2024 structure going up (photo 2 of 2)": "Der Bau des Gebäudes für das Jahr 2024 (Foto 2 von 2)",
+ "The car from another angle (photo 2 of 2)": "Das Auto aus einem anderen Blickwinkel (Foto 2 von 2)"
 };
