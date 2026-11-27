@@ -63,7 +63,7 @@
       var el = e && e.target.closest && e.target.closest('img, video'), idx = 0;
       if (el) {
         var abs = function (u) { try { return new URL(u, document.baseURI).href; } catch (_) { return u; } };
-        var src = (el.currentSrc || el.getAttribute('src') || '').replace(/-1200\.webp/, '.webp');   /* the page shows the 1200 px copy; the viewer opens the full-size one */
+        var src = (el.currentSrc || el.getAttribute('src') || '').replace(/-(600|1200)\.webp/, '.webp');   /* the page shows a 600 or 1200 px copy; the viewer opens the full-size one */
         idx = imgs.map(abs).indexOf(abs(src)); if (idx < 0) idx = 0;
       }
       openLb(imgs, idx);
@@ -75,6 +75,12 @@
   });
 
   /* logo fallback: a missing logo shows its initials */
+  /* thumbnails under a project's main photo open the viewer at that photo */
+  $$('.proj-thumbs').forEach(function (strip) {
+    var wrap = strip.parentNode.querySelector('[data-images]'); if (!wrap) return;
+    var imgs = JSON.parse(wrap.dataset.images);
+    strip.addEventListener('click', function (e) { var b = e.target.closest('[data-idx]'); if (b) openLb(imgs, +b.dataset.idx); });
+  });
   $$('.exp-logo img').forEach(function (img) {
     var fail = function () { var m = document.createElement('span'); m.className = 'exp-logo-mono'; m.textContent = (img.closest('.exp-org').querySelector('.exp-co') || {}).textContent ? img.closest('.exp-org').querySelector('.exp-co').textContent.replace(/[^A-Z]/g, '').slice(0, 3) : ''; img.replaceWith(m); };
     if (img.complete && !img.naturalWidth) fail(); else img.addEventListener('error', fail);
